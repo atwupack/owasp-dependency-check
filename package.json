@@ -21,8 +21,8 @@
     "colors": "^1.4.0",
     "commander": "^9.3.0",
     "extract-zip": "^2.0.1",
-    "node-fetch": "^2.6.7",
-    "nodejs-file-downloader": "^4.9.3",
+    "node-fetch": "^3.3.2",
+    "nodejs-file-downloader": "^4.13.0",
     "rimraf": "^3.0.2"
   },
   "engines": {

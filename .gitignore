@@ -3,3 +3,4 @@ dependency-check-reports
 dependency-check.log
 node_modules
 out
+/.idea/
