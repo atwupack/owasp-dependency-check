@@ -4,6 +4,7 @@ const { program } = require('commander');
 const { run } = require('./lib/dependency-check');
 
 program
+    .allowExcessArguments()
   .allowUnknownOption()
   .option('-o, --out <path>', 'the folder to write reports to', './dependency-check-reports')
   .option('--bin <path>', 'directory to which the dependency-check CLI will be installed', './dependency-check-bin')
@@ -19,6 +20,5 @@ Some defaults are provided:
 - format     Default: HTML and JSON
 - scan       Default: 'src' folder in working directory`);
 
-program.parse(process.argv);
-
+program.parse();
 run();
