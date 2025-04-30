@@ -1,14 +1,10 @@
 # owasp-dependency-check
 
-## ⚠️⚠️ Looking for a maintainer ⚠️⚠️
-
-**We will no longer maintain this package and we are looking for somebody to take over. If you want to continue developing this package, please reach out to me.**
-
----
+This is a fork of [etnetera/owasp-dependency-check](https://github.com/etnetera/owasp-dependency-check) which is no longer maintained.
 
 > ⚠️ Requires **Node.js** version 14 or greater.
 
-Node.js wrapper for the [OWASP depencency-check CLI tool](https://dependency-check.github.io/DependencyCheck/).
+Node.js wrapper for the [OWASP dependency-check CLI tool](https://dependency-check.github.io/DependencyCheck/).
 
 ```
 npm install -D owasp-dependency-check
