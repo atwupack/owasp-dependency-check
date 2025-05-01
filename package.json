@@ -11,6 +11,7 @@
   "bugs": {
     "url": "https://github.com/atwupack/owasp-dependency-check/issues"
   },
+  "type": "module",
   "bin": {
     "owasp-dependency-check": "index.js"
   },

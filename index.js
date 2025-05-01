@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-
-const { program } = require('commander');
-const { run } = require('./lib/dependency-check');
+import {program} from "commander";
+import  { run } from './lib/dependency-check.js';
 
 program
     .allowExcessArguments()
