@@ -46,3 +46,4 @@ Use `owasp-dependency-check --help` to check other options.
 - [ ] Improve logging
 - [ ] Improve error handling
 - [ ] Maybe conversion to TypeScript
+- [ ] Add unit tests
