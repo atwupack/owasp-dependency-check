@@ -37,3 +37,9 @@ You can specify any options which the [OWASP depencency-check CLI tool](https://
 ### Additional options
 
 Use `owasp-dependency-check --help` to check other options.
+
+## TODOs before Version 1.0.0
+
+- [ ] Add support for proxies (started)
+- [ ] Improve logging
+- [ ] Improve error handling

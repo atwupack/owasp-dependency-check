@@ -4,3 +4,4 @@ dependency-check.log
 node_modules
 out
 /.idea/
+/dependency-check-data/
