@@ -1,6 +1,7 @@
 # owasp-dependency-check
 
 [![build](https://github.com/atwupack/owasp-dependency-check/actions/workflows/build.yml/badge.svg)](https://github.com/atwupack/owasp-dependency-check/actions/workflows/build.yml)
+[![npm-publish](https://github.com/atwupack/owasp-dependency-check/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/atwupack/owasp-dependency-check/actions/workflows/npm-publish.yml)
 
 This is a fork of [etnetera/owasp-dependency-check](https://github.com/etnetera/owasp-dependency-check) which is no longer maintained.
 
