@@ -1,12 +1,15 @@
 {
-  "name": "owasp-dependency-check",
-  "version": "0.0.25",
+  "name": "@atwupack/owasp-dependency-check",
+  "version": "0.1.0",
   "description": "A Node.js wrapper for the CLI version of OWASP dependency-check tool.",
-  "keywords": ["OWASP", "Security"],
+  "keywords": [
+    "owasp",
+    "security"
+  ],
   "homepage": "https://github.com/atwupack/owasp-dependency-check",
   "repository": {
     "type": "git",
-    "url": "https://github.com/atwupack/owasp-dependency-check"
+    "url": "git+https://github.com/atwupack/owasp-dependency-check.git"
   },
   "bugs": {
     "url": "https://github.com/atwupack/owasp-dependency-check/issues"
@@ -24,9 +27,7 @@
       "email": "ivan.centes@etnetera.cz"
     }
   ],
-  "author": {
-    "name": "André Twupack"
-  },
+  "author": "André Twupack",
   "license": "MIT",
   "dependencies": {
     "colors": "^1.4.0",
@@ -35,9 +36,14 @@
     "node-fetch": "^3.3.2",
     "nodejs-file-downloader": "^4.13.0",
     "rimraf": "^6.0.1",
-    "https-proxy-agent": "^7.0.6"
+    "https-proxy-agent": "^7.0.6n"
   },
   "engines": {
     "node": ">=14"
-  }
+  },
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {}
 }

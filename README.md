@@ -1,5 +1,7 @@
 # owasp-dependency-check
 
+[![build](https://github.com/atwupack/owasp-dependency-check/actions/workflows/build.yml/badge.svg)](https://github.com/atwupack/owasp-dependency-check/actions/workflows/build.yml)
+
 This is a fork of [etnetera/owasp-dependency-check](https://github.com/etnetera/owasp-dependency-check) which is no longer maintained.
 
 > ⚠️ Requires **Node.js** version 14 or greater.
