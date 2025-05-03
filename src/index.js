@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import {program} from "commander";
-import  { run } from './lib/dependency-check.js';
+import  { run } from './dependency-check.js';
 
 program
     .allowExcessArguments()

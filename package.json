@@ -16,10 +16,11 @@
   },
   "type": "module",
   "bin": {
-    "owasp-dependency-check": "index.js"
+    "owasp-dependency-check": "dist/index.js"
   },
   "scripts": {
-    "test": "node index.js --project \"ProjectTest\" --scan \"package-lock.json\" --out \"out\" --format \"HTML\" --format \"XML\""
+    "build": "tsc",
+    "owasp": "node dist/index.js --project \"ProjectTest\" --scan \"package-lock.json\" --format \"HTML\" --format \"XML\" --data \"dependency-check-data\""
   },
   "contributors": [
     {
@@ -33,17 +34,17 @@
     "colors": "^1.4.0",
     "commander": "^13.1.0",
     "extract-zip": "^2.0.1",
+    "https-proxy-agent": "^7.0.6n",
     "node-fetch": "^3.3.2",
     "nodejs-file-downloader": "^4.13.0",
     "rimraf": "^6.0.1",
-    "https-proxy-agent": "^7.0.6n"
+    "@types/node": "^18.15.3"
   },
   "engines": {
     "node": ">=14"
   },
-  "main": "index.js",
-  "directories": {
-    "lib": "lib"
-  },
-  "devDependencies": {}
+  "main": "dist/index.js",
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
 }

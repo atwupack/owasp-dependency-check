@@ -2,6 +2,10 @@ import {cleanDir, getCmdArguments, getJavaToolOptions, log} from "./utils.js";
 import path from "path";
 import {exec} from "child_process";
 
+/**
+ * @param {string} executable
+ * @param {string} outDir
+ */
 export function runDependencyCheck(executable, outDir) {
     cleanDir(path.resolve(process.cwd(), outDir));
 

@@ -1,11 +1,10 @@
 import {rimraf} from "rimraf";
-import os from "os";
-import path from "path";
-import fs from "fs";
+import * as os from "os";
+import * as path from "path";
+import * as fs from "fs";
 import { program } from "commander";
 import { mkdir } from 'fs/promises';
 import colors from 'colors';
-import url from 'url';
 
 const IS_WIN = os.platform() === 'win32';
 
@@ -68,6 +67,9 @@ export function getExecutable() {
   return path.resolve(binDir, 'dependency-check', 'bin', `dependency-check.${IS_WIN ? 'bat' : 'sh'}`);
 }
 
+/**
+ * @param {string} dir
+ */
 export async function cleanDir(dir) {
   const cleanResult = await rimraf.rimraf(dir);
 
@@ -99,10 +101,17 @@ function getProjectName() {
   return projectName;
 }
 
+/**
+ * @param {string[]} args
+ * @param {string} argPrefix
+ */
 function hasCmdArg(args, argPrefix) {
   return args.find(arg => arg.startsWith(`${argPrefix}=`) || arg.startsWith(`${argPrefix} `) || arg === argPrefix);
 }
 
+/**
+ * @param {string[]} logData
+ */
 export function log(...logData) {
   if (!logData) {
     return;

@@ -46,5 +46,5 @@ Use `owasp-dependency-check --help` to check other options.
 - [ ] Add support for proxies (started)
 - [ ] Improve logging
 - [ ] Improve error handling
-- [ ] Maybe conversion to TypeScript
+- [ ] conversion to TypeScript (started)
 - [ ] Add unit tests
