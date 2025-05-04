@@ -20,7 +20,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "owasp": "node dist/index.js --project \"ProjectTest\" --scan \"package-lock.json\" --format \"HTML\" --format \"XML\" --data \"dependency-check-data\""
+    "eslint": "eslint .",
+    "owasp": "node dist/index.js --scan \"package-lock.json\" --format \"HTML\" --format \"XML\" --data \"dependency-check-data\""
   },
   "contributors": [
     {
@@ -31,20 +32,26 @@
   "author": "André Twupack",
   "license": "MIT",
   "dependencies": {
-    "commander": "^13.1.0",
+    "@colors/colors": "^1.6.0",
+    "@commander-js/extra-typings": "^13.1.0",
+    "@types/node": "^18.15.3",
     "extract-zip": "^2.0.1",
     "https-proxy-agent": "^7.0.6n",
     "node-fetch": "^3.3.2",
     "nodejs-file-downloader": "^4.13.0",
-    "rimraf": "^6.0.1",
-    "@types/node": "^18.15.3",
-    "@colors/colors": "^1.6.0"
+    "rimraf": "^6.0.1"
+  },
+  "peerDependencies": {
+    "commander": "^13.1.0"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=18"
   },
   "main": "dist/index.js",
   "devDependencies": {
-    "typescript": "^5.8.3"
+    "@eslint/js": "^9.26.0",
+    "eslint": "^9.26.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.31.1"
   }
 }
