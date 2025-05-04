@@ -1,6 +1,6 @@
 {
   "name": "@atwupack/owasp-dependency-check",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A Node.js wrapper for the CLI version of OWASP dependency-check tool.",
   "keywords": [
     "owasp",
