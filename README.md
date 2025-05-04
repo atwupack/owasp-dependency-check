@@ -5,7 +5,7 @@
 
 This is a fork of [etnetera/owasp-dependency-check](https://github.com/etnetera/owasp-dependency-check) which is no longer maintained.
 
-> ⚠️ Requires **Node.js** version 14 or greater.
+> ⚠️ Requires **Node.js** version 18 or greater.
 
 Node.js wrapper for the [OWASP dependency-check CLI tool](https://dependency-check.github.io/DependencyCheck/).
 
