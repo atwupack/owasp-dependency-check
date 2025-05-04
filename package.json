@@ -31,14 +31,14 @@
   "author": "André Twupack",
   "license": "MIT",
   "dependencies": {
-    "colors": "^1.4.0",
     "commander": "^13.1.0",
     "extract-zip": "^2.0.1",
     "https-proxy-agent": "^7.0.6n",
     "node-fetch": "^3.3.2",
     "nodejs-file-downloader": "^4.13.0",
     "rimraf": "^6.0.1",
-    "@types/node": "^18.15.3"
+    "@types/node": "^18.15.3",
+    "@colors/colors": "^1.6.0"
   },
   "engines": {
     "node": ">=14"

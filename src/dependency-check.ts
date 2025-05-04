@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import fs from 'fs';
 import {program} from 'commander';
 import { getBinDir,  log, getExecutable, isReady } from './utils.js';
 import {install} from "./installer.js";

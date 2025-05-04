@@ -1,6 +1,6 @@
 import {cleanDir, getProxyUrl} from "./utils.js";
 import fetch from "node-fetch";
-import { Downloader } from "nodejs-file-downloader";
+import { Downloader, DownloaderConfig } from "nodejs-file-downloader";
 import extract from "extract-zip";
 import path from "path";
 import fs from "fs";
@@ -11,10 +11,7 @@ const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
 const LATEST_RELEASE_URL = 'https://api.github.com/repos/dependency-check/DependencyCheck/releases/latest';
 const TAG_RELEASE_URL = 'https://api.github.com/repos/dependency-check/DependencyCheck/releases/tags/';
 
-/**
- * @param {string} odcVersion
- */
-async function findDownloadUrl(odcVersion) {
+async function findDownloadUrl(odcVersion: string) {
     // if the odc version is the latest, use the latest URL, otherwise use version URL
     const url = odcVersion === 'latest' ? LATEST_RELEASE_URL : TAG_RELEASE_URL + odcVersion;
     const proxyUrl = getProxyUrl();
@@ -29,22 +26,16 @@ async function findDownloadUrl(odcVersion) {
     const res = await fetch(url, init);
     const body = await res.text();
     const json = JSON.parse(body);
-    return json.assets.find((/** @type {{ name: string; }} */ a) => NAME_RE.test(a.name));
+    return json.assets.find((a: { name: string; }) => NAME_RE.test(a.name));
 }
 
-/**
- * @param {string} installDir
- * @param {string} odcVersion
- */
-export async function install(installDir, odcVersion) {
+export async function install(installDir: string, odcVersion: string) {
     await cleanDir(installDir);
 
     try {
         const asset = await findDownloadUrl(odcVersion);
-        /**
-         * @type import("nodejs-file-downloader").DownloaderConfig
-         */
-        let config = {
+
+        let config: DownloaderConfig = {
             url: asset.browser_download_url,
             directory: installDir,
             fileName: asset.name,

@@ -28,7 +28,7 @@ The easiest way is to add a new NPM script to your `package.json`, for example:
 
 ### Owasp Dependency Core options
 
-You can specify any options which the [OWASP depencency-check CLI tool](https://dependency-check.github.io/DependencyCheck/) provides. For example, to generate a HTML and JSON report, use:
+You can specify any options that the [OWASP dependency-check CLI tool](https://dependency-check.github.io/DependencyCheck/) provides. For example, to generate an HTML and JSON report, use:
 
 ```
 "scripts": {
@@ -46,5 +46,5 @@ Use `owasp-dependency-check --help` to check other options.
 - [ ] Add support for proxies (started)
 - [ ] Improve logging
 - [ ] Improve error handling
-- [ ] conversion to TypeScript (started)
+- [X] Conversion to TypeScript (started)
 - [ ] Add unit tests

@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "allowJs": true,
     "target": "ES6",
-    "checkJs": true,
     "strict": true,
     "maxNodeModuleJsDepth": 0,
     "moduleResolution": "nodenext",
-    "module": "NodeNext"
+    "module": "NodeNext",
+    "noEmitOnError": true,
+    "alwaysStrict": true,
   },
   "include": ["./src/**/*"]
 }

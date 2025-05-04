@@ -1,12 +1,9 @@
 import {cleanDir, getCmdArguments, getJavaToolOptions, log} from "./utils.js";
 import path from "path";
 import {exec} from "child_process";
+import colors from '@colors/colors/safe.js';
 
-/**
- * @param {string} executable
- * @param {string} outDir
- */
-export function runDependencyCheck(executable, outDir) {
+export function runDependencyCheck(executable: string, outDir: string) {
     cleanDir(path.resolve(process.cwd(), outDir));
 
     let env = process.env;
@@ -40,7 +37,7 @@ export function runDependencyCheck(executable, outDir) {
                 return;
             }
 
-            log('Done.'.green);
+            log(colors.green('Done.'));
         })
     })
 }
