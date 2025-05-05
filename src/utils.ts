@@ -28,7 +28,6 @@ export function getJavaToolOptions() {
 }
 
 
-
 export function getExecutable() {
   const binDir = getBinDir();
 

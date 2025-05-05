@@ -11,6 +11,7 @@ const cli = program
     .option('--force-install', 'install the dependency-check CLI even if there already is one (will be overwritten)', false)
     .option('--odc-version <version>', 'the version of the dependency-check CLI to install in format "v1.2.3" or "latest"', 'latest')
     .option('-p, --proxy <url>', 'the URL to a proxy server in the format http(s)://[user]:[password]@<server>:[port]')
+    .option('--github-token <token>', 'personal GitHub token to authenticate against API')
     .addHelpText('after', `
 You can also use any arguments supported by the Owasp Dependency Check CLI tool, see: https://jeremylong.github.io/DependencyCheck/dependency-check-cli/arguments.html
 
@@ -22,6 +23,10 @@ Some defaults are provided:
 
 export function getProxyUrl() {
     return cli.opts().proxy;
+}
+
+export function getGitHubToken() {
+    return cli.opts().githubToken;
 }
 
 export function getOutDir() {

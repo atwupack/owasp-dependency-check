@@ -1,11 +1,11 @@
 import {cleanDir} from "./utils.js";
-import fetch from "node-fetch";
-import { Downloader, DownloaderConfig } from "nodejs-file-downloader";
+import fetch, {RequestInit} from "node-fetch";
+import {Downloader, DownloaderConfig} from "nodejs-file-downloader";
 import extract from "extract-zip";
 import path from "path";
 import fs from "fs";
-import { HttpsProxyAgent } from 'https-proxy-agent';
-import {getProxyUrl} from "./cli.js";
+import {HttpsProxyAgent} from 'https-proxy-agent';
+import {getGitHubToken, getProxyUrl} from "./cli.js";
 
 const LOG_FILE_NAME = 'dependency-check.log';
 const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
@@ -22,14 +22,16 @@ interface GithubReleases {
 async function findDownloadUrl(odcVersion: string) {
     // if the odc version is the latest, use the latest URL, otherwise use version URL
     const url = odcVersion === 'latest' ? LATEST_RELEASE_URL : TAG_RELEASE_URL + odcVersion;
+    const init: RequestInit = {};
     const proxyUrl = getProxyUrl();
-    let init;
     if (proxyUrl) {
-        const proxyAgent = new HttpsProxyAgent(proxyUrl);
-        init = { agent: proxyAgent };
+        init.agent = new HttpsProxyAgent(proxyUrl);
     }
-    else {
-        init = {};
+    const githubToken = getGitHubToken();
+    if (githubToken) {
+        init.headers = {
+            Authorization: `Bearer ${githubToken}`,
+        };
     }
     const res = await fetch(url, init);
     const body = await res.text();
