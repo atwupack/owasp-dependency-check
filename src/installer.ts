@@ -2,7 +2,6 @@ import {cleanDir} from "./utils.js";
 import fetch, {RequestInit} from "node-fetch";
 import {Downloader, DownloaderConfig} from "nodejs-file-downloader";
 import extract from "extract-zip";
-import path from "path";
 import fs from "fs";
 import {HttpsProxyAgent} from 'https-proxy-agent';
 import {getGitHubToken, getProxyUrl} from "./cli.js";
@@ -13,13 +12,13 @@ const LATEST_RELEASE_URL = 'https://api.github.com/repos/dependency-check/Depend
 const TAG_RELEASE_URL = 'https://api.github.com/repos/dependency-check/DependencyCheck/releases/tags/';
 
 interface GithubReleases {
-    assets: {
+    assets?: {
         name: string;
         browser_download_url: string;
     }[];
-};
+}
 
-async function findDownloadUrl(odcVersion: string) {
+async function findDownloadAsset(odcVersion: string) {
     // if the odc version is the latest, use the latest URL, otherwise use version URL
     const url = odcVersion === 'latest' ? LATEST_RELEASE_URL : TAG_RELEASE_URL + odcVersion;
     const init: RequestInit = {};
@@ -34,8 +33,13 @@ async function findDownloadUrl(odcVersion: string) {
         };
     }
     const res = await fetch(url, init);
-    const body = await res.text();
-    const json = JSON.parse(body) as GithubReleases;
+    if (!res.ok) {
+        throw new Error(`Could not fetch release from GitHub: ${res.statusText}`);
+    }
+    const json = await res.json() as GithubReleases;
+    if (!json.assets) {
+        throw new Error('Could not find assets in release');
+    }
     const asset = json.assets.find(a => NAME_RE.test(a.name));
     if (!asset) {
         throw new Error(`Could not find asset for version ${odcVersion}`);
@@ -43,27 +47,38 @@ async function findDownloadUrl(odcVersion: string) {
     return asset;
 }
 
+async function downloadRelease(url: string, name: string, installDir: string) {
+    const config: DownloaderConfig = {
+        url: url,
+        directory: installDir,
+        fileName: name,
+    };
+    if (getProxyUrl()) {
+        config.proxy = getProxyUrl();
+    }
+    const downloader = new Downloader(config);
+    const report = await downloader.download();
+    if (report.downloadStatus === 'COMPLETE' && report.filePath) {
+        return report.filePath;
+    }
+    else {
+        throw new Error(`Download failed from ${url}`);
+    }
+}
+
+async function extractRelease(filePath: string, installDir: string) {
+    await extract(filePath, {
+        dir: installDir,
+    });
+}
+
 export async function install(installDir: string, odcVersion: string) {
     await cleanDir(installDir);
 
     try {
-        const asset = await findDownloadUrl(odcVersion);
-
-        const config: DownloaderConfig = {
-            url: asset.browser_download_url,
-            directory: installDir,
-            fileName: asset.name,
-        };
-        if (getProxyUrl()) {
-            config.proxy = getProxyUrl();
-        }
-
-        const downloader = new Downloader(config);
-        await downloader.download();
-
-        await extract(path.resolve(installDir, asset.name), {
-            dir: installDir,
-        });
+        const asset = await findDownloadAsset(odcVersion);
+        const filePath = await downloadRelease(asset.browser_download_url, asset.name, installDir);
+        await extractRelease(filePath, installDir);
     }
     catch (e: unknown) {
         // TODO: why does only this part write into a log file?

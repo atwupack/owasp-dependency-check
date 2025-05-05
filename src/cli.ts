@@ -19,7 +19,9 @@ Some defaults are provided:
 - project    Default: "name" from package.json in working directory
 - data       Default: dependency-check-data directory in system temp folder
 - format     Default: HTML and JSON
-- scan       Default: 'src' folder in working directory`).parse();
+- scan       Default: package-lock.json in working directory
+
+You can use the environment variable OWASP_BIN to specify a local installation of the Owasp Dependency Check CLI tool.`).parse();
 
 export function getProxyUrl() {
     return cli.opts().proxy;
@@ -89,7 +91,6 @@ function getProjectName() {
             console.error(e);
         }
     }
-
     return projectName ?? 'Unknown Project';
 }
 
