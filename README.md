@@ -44,8 +44,8 @@ Use `owasp-dependency-check --help` to check other options.
 ## TODOs before Version 1.0.0
 
 - [ ] Add support for proxies (started, untested)
+- [ ] Add support for GitHub authentication to avoid rate limits
 - [ ] Improve logging
 - [ ] Improve error handling
 - [X] Conversion to TypeScript
 - [ ] Add unit tests
-- [ ] Add support for GitHub authentication to avoid API rate limits
