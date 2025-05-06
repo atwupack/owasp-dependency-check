@@ -21,14 +21,23 @@ Some defaults are provided:
 - format     Default: HTML and JSON
 - scan       Default: package-lock.json in working directory
 
-You can use the environment variable OWASP_BIN to specify a local installation of the Owasp Dependency Check CLI tool.`).parse();
+The following environment variables are supported:
+- OWASP_BIN: path to a local installation of the Owasp Dependency Check CLI tool
+- NVD_API_KET: personal NVD API key to authenticate against API
+- GITHUB_TOKEN: personal GitHub token to authenticate against API`).parse();
 
 export function getProxyUrl() {
     return cli.opts().proxy;
 }
 
 export function getGitHubToken() {
-    return cli.opts().githubToken;
+    if (cli.opts().githubToken) {
+        return cli.opts().githubToken;
+    }
+    if (process.env.GITHUB_TOKEN) {
+        return process.env.GITHUB_TOKEN;
+    }
+    return undefined
 }
 
 export function getOutDir() {
@@ -53,6 +62,10 @@ export function getCmdArguments() {
         `--out=${cli.opts().out}`,
         ...cli.args
     ];
+
+    if (!hasCmdArg(args, '--nvdApiKey') && process.env.NVD_API_KEY) {
+        args.push(`--nvdApiKey="${process.env.NVD_API_KEY}"`);
+    }
 
     if (!hasCmdArg(args, '--project')) {
         args.push(`--project="${getProjectName()}"`);
