@@ -10,7 +10,7 @@ This is a fork of [etnetera/owasp-dependency-check](https://github.com/etnetera/
 Node.js wrapper for the [OWASP dependency-check CLI tool](https://dependency-check.github.io/DependencyCheck/).
 
 ```
-npm install -D owasp-dependency-check
+npm install -D @atwupack/owasp-dependency-check
 ```
 
 ## Usage
@@ -43,8 +43,8 @@ Use `owasp-dependency-check --help` to check other options.
 
 ## TODOs before Version 1.0.0
 
-- [ ] Add support for proxies (started, untested)
-- [ ] Add support for GitHub authentication to avoid rate limits
+- [X] Add support for proxies
+- [X] Add support for GitHub authentication to avoid rate limits
 - [ ] Improve logging
 - [ ] Improve error handling
 - [X] Conversion to TypeScript
