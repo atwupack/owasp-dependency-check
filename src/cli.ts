@@ -84,7 +84,7 @@ export function getCmdArguments() {
         args.push('--scan=package-lock.json');
     }
 
-    return args.join(' ');
+    return args;
 }
 
 function hasCmdArg(args: string[], argPrefix: string) {
