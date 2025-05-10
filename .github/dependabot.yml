@@ -10,4 +10,4 @@ updates:
       interval: "daily"
     groups:
       all-actions:
-        patterns: [ "*" ]
+        patterns: ["*"]

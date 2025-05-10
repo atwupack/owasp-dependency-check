@@ -1,12 +1,12 @@
-import {rimraf} from "rimraf";
+import { rimraf } from "rimraf";
 import os from "os";
 import path from "path";
 import fs from "fs";
-import { mkdir } from 'fs/promises';
-import colors from '@colors/colors/safe.js';
-import {getBinDir, getProxyUrl} from "./cli.js";
+import { mkdir } from "fs/promises";
+import colors from "@colors/colors/safe.js";
+import { getBinDir, getProxyUrl } from "./cli.js";
 
-const IS_WIN = os.platform() === 'win32';
+const IS_WIN = os.platform() === "win32";
 
 export function getJavaToolOptions() {
   const proxyUrl = getProxyUrl();
@@ -27,11 +27,15 @@ export function getJavaToolOptions() {
   return javaToolOptions;
 }
 
-
 export function getExecutable() {
   const binDir = getBinDir();
 
-  return path.resolve(binDir, 'dependency-check', 'bin', `dependency-check.${IS_WIN ? 'bat' : 'sh'}`);
+  return path.resolve(
+    binDir,
+    "dependency-check",
+    "bin",
+    `dependency-check.${IS_WIN ? "bat" : "sh"}`,
+  );
 }
 
 export async function cleanDir(dir: string) {
@@ -50,8 +54,10 @@ export function isReady() {
 }
 
 export function log(...logData: string[]) {
-  console.log([
-      colors.bgGreen(colors.white(' owasp-dependency-check: ')),
-    ...logData,
-  ].join(' '));
+  console.log(
+    [
+      colors.bgGreen(colors.white(" owasp-dependency-check: ")),
+      ...logData,
+    ].join(" "),
+  );
 }
