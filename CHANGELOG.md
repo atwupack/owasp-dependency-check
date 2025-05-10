@@ -8,3 +8,4 @@
 
 - Added support for the environment variable GITHUB_TOKEN which can be used instead of the `--github-token` parameter. The CLI parameter takes precedence over the environment variable.
 - Added support for the environment variable NVD_API_KEY. If set and `--nvdApiKey` is not provided on the command line, this will set the parameter `--nvdApiKey` while calling the OWASP Dependency Check tool.
+- The output of the OWASP dependency-check is displayed during execution of the tool.  
