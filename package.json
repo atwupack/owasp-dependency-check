@@ -34,7 +34,9 @@
   "dependencies": {
     "@colors/colors": "^1.6.0",
     "@commander-js/extra-typings": "^13.1.0",
+    "@types/cross-spawn": "^6.0.6",
     "@types/node": "^22.15.14",
+    "cross-spawn": "^7.0.6",
     "extract-zip": "^2.0.1",
     "https-proxy-agent": "^7.0.6n",
     "node-fetch": "^3.3.2",
