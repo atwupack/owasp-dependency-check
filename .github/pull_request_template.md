@@ -10,5 +10,5 @@ Related issue:
 
 ### Additional notes
 * Are there open topics?
-* Are there other releated issues or pull requests?
+* Are there other related issues or pull requests?
 
