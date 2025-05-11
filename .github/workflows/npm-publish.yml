@@ -30,6 +30,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run eslint
+      - run: npm run knip
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

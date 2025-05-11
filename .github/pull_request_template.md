@@ -5,6 +5,7 @@ Related issue:
 ### Validations
 * [ ] Run `npm run build` successfully
 * [ ] Run `npm run eslint` successfully
+* [ ] Run `npm run knip` successfully
 * [ ] Run `npx prettier . --write`
 
 ### Additional notes

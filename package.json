@@ -21,6 +21,7 @@
   "scripts": {
     "build": "tsc",
     "eslint": "eslint .",
+    "knip": "knip",
     "owasp": "node dist/index.js --scan \"package-lock.json\" --format \"HTML\" --format \"XML\" --data \"dependency-check-data\""
   },
   "contributors": [
@@ -55,6 +56,7 @@
     "eslint": "^9.26.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.0",
+    "knip": "^5.55.1",
     "prettier": "3.5.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.31.1"
