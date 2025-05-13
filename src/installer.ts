@@ -1,12 +1,11 @@
-import { cleanDir } from "./utils.js";
+import { cleanDir, ensureError, exitProcess } from "./utils.js";
 import fetch, { RequestInit } from "node-fetch";
 import { Downloader, DownloaderConfig } from "nodejs-file-downloader";
 import extract from "extract-zip";
-import fs from "fs";
 import { HttpsProxyAgent } from "https-proxy-agent";
-import { getGitHubToken, getProxyUrl } from "./cli.js";
+import { getGitHubToken, getLogFilePath, getProxyUrl } from "./cli.js";
+import fs from "fs";
 
-const LOG_FILE_NAME = "dependency-check.log";
 const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
 const LATEST_RELEASE_URL =
   "https://api.github.com/repos/dependency-check/DependencyCheck/releases/latest";
@@ -68,31 +67,33 @@ async function downloadRelease(url: string, name: string, installDir: string) {
   }
 }
 
-async function extractRelease(filePath: string, installDir: string) {
+async function unzipRelease(filePath: string, installDir: string) {
   await extract(filePath, {
     dir: installDir,
   });
 }
 
-export async function install(installDir: string, odcVersion: string) {
-  await cleanDir(installDir);
-
+export async function installDependencyCheck(
+  installDir: string,
+  odcVersion: string,
+) {
   try {
+    await cleanDir(installDir);
+
     const asset = await findDownloadAsset(odcVersion);
     const filePath = await downloadRelease(
       asset.browser_download_url,
       asset.name,
       installDir,
     );
-    await extractRelease(filePath, installDir);
-  } catch (e: unknown) {
-    // TODO: why does only this part write into a log file?
+    await unzipRelease(filePath, installDir);
+  } catch (e) {
+    const error = ensureError(e);
+    const log = getLogFilePath();
     console.error(
-      `Failed to download and install. See ${LOG_FILE_NAME} for more details.`,
+      `Failed to download and install. See ${log} for more details.`,
     );
-    if (e instanceof Error) {
-      fs.writeFileSync(LOG_FILE_NAME, e.toString());
-    }
-    process.exit(1); // TODO: that's not good
+    fs.writeFileSync(log, error.toString());
+    exitProcess(1);
   }
 }

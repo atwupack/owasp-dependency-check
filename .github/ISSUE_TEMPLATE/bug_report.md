@@ -1,10 +1,9 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
+title: ""
 labels: bug
 assignees: atwupack
-
 ---
 
 **Describe the bug**
@@ -17,8 +16,9 @@ Please provide the the command line arguments you have used when experiencing th
 A clear and concise description of what you expected to happen.
 
 **Please complete the following information:**
- - OS: [e.g. iOS]
- - Node version: [e.g. 20]
+
+- OS: [e.g. iOS]
+- Node version: [e.g. 20]
 
 **Additional context**
 Add any other context about the problem here.

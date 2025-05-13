@@ -1,4 +1,10 @@
-import { cleanDir, getJavaToolOptions, log } from "./utils.js";
+import {
+  cleanDir,
+  ensureError,
+  exitProcess,
+  getJavaToolOptions,
+  log,
+} from "./utils.js";
 import path from "path";
 import {
   SpawnOptions,
@@ -9,14 +15,9 @@ import spawn from "cross-spawn";
 import colors from "@colors/colors/safe.js";
 import { getCmdArguments } from "./cli.js";
 
-export async function runDependencyCheck(executable: string, outDir: string) {
-  log("Dependency-Check Core path:", executable);
-  await cleanDir(path.resolve(process.cwd(), outDir));
-
-  const env = process.env;
-  if (getJavaToolOptions()) {
-    env.JAVA_TOOL_OPTIONS = getJavaToolOptions();
-  }
+function runVersionCheck(executable: string) {
+  const versionCmdArguments = ["--version"];
+  const versionCmd = `${executable} --version`;
 
   const versionSpawnOpts:
     | SpawnOptions
@@ -26,14 +27,6 @@ export async function runDependencyCheck(executable: string, outDir: string) {
     shell: false,
     encoding: "utf-8",
   };
-  const dependencyCheckSpawnOpts: SpawnOptions = {
-    cwd: path.resolve(process.cwd()),
-    shell: false,
-    stdio: "inherit",
-  };
-
-  const versionCmdArguments = ["--version"];
-  const versionCmd = `${executable} ${versionCmdArguments.join(" ")}`;
 
   log("Running command:\n", versionCmd);
   const versionSpawn = spawn.sync(
@@ -41,6 +34,13 @@ export async function runDependencyCheck(executable: string, outDir: string) {
     versionCmdArguments,
     versionSpawnOpts,
   );
+  if (versionSpawn.error) {
+    throw versionSpawn.error;
+  }
+  if (versionSpawn.status && versionSpawn.status !== 0) {
+    throw new Error(versionSpawn.stderr.toString());
+  }
+
   const versionSpawnResult = versionSpawn.stdout;
 
   const re = /\D* (\d+\.\d+\.\d+).*/;
@@ -49,17 +49,49 @@ export async function runDependencyCheck(executable: string, outDir: string) {
     "Dependency-Check Core version:",
     versionMatch ? versionMatch[1] : versionSpawnResult,
   );
+}
+
+function runAnalysis(executable: string) {
+  const env = process.env;
+  if (getJavaToolOptions()) {
+    env.JAVA_TOOL_OPTIONS = getJavaToolOptions();
+  }
+
+  const dependencyCheckSpawnOpts: SpawnOptions = {
+    cwd: path.resolve(process.cwd()),
+    shell: false,
+    stdio: "inherit",
+  };
 
   const dependencyCheckCmdArguments = getCmdArguments();
   const dependencyCheckCmd = `${executable} ${dependencyCheckCmdArguments.join(" ")}`;
 
   log("Running command:\n", dependencyCheckCmd);
-  const dependencyCheckSpawn = spawn(
+  const dependencyCheckSpawn = spawn.sync(
     executable,
     dependencyCheckCmdArguments,
     dependencyCheckSpawnOpts,
   );
-  dependencyCheckSpawn.on("close", () => {
-    log(colors.green("Done."));
-  });
+
+  if (dependencyCheckSpawn.error) {
+    throw dependencyCheckSpawn.error;
+  }
+
+  log(colors.green("Done."));
+  return dependencyCheckSpawn.status;
+}
+
+export async function runDependencyCheck(executable: string, outDir: string) {
+  try {
+    log("Dependency-Check Core path:", executable);
+    await cleanDir(path.resolve(process.cwd(), outDir));
+
+    runVersionCheck(executable);
+    const resultCode = runAnalysis(executable);
+    exitProcess(resultCode);
+  } catch (e) {
+    const error = ensureError(e);
+    log(error.message);
+    exitProcess(1);
+  }
 }

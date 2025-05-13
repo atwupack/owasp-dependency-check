@@ -36,4 +36,3 @@ jobs:
       - run: npm ci
       - run: npm run eslint
       - run: npm run knip
-

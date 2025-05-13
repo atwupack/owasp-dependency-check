@@ -1,14 +1,15 @@
-Related issue: 
+Related issue:
 
 ### Description
 
 ### Validations
-* [ ] Run `npm run build` successfully
-* [ ] Run `npm run eslint` successfully
-* [ ] Run `npm run knip` successfully
-* [ ] Run `npx prettier . --write`
+
+- [ ] Run `npm run build` successfully
+- [ ] Run `npm run eslint` successfully
+- [ ] Run `npm run knip` successfully
+- [ ] Run `npx prettier . --write`
 
 ### Additional notes
-* Are there open topics?
-* Are there other related issues or pull requests?
 
+- Are there open topics?
+- Are there other related issues or pull requests?

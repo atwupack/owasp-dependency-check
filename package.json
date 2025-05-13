@@ -16,21 +16,29 @@
   },
   "type": "module",
   "bin": {
-    "owasp-dependency-check": "dist/index.js"
+    "owasp-dependency-check": "dist/dependency-check.js"
   },
   "scripts": {
     "build": "tsc",
     "eslint": "eslint .",
     "knip": "knip",
-    "owasp": "node dist/index.js --scan \"package-lock.json\" --format \"HTML\" --format \"XML\" --data \"dependency-check-data\""
+    "owasp": "node dist/dependency-check.js --scan \"package-lock.json\" --format \"HTML\" --format \"XML\" --data \"dependency-check-data\"",
+    "format": "prettier . --write"
   },
   "contributors": [
     {
-      "name": "Ivan Centes",
-      "email": "ivan.centes@etnetera.cz"
+      "name": "Ivan Čentéš",
+      "url": "https://github.com/centi"
+    },
+    {
+      "name": "gian1200",
+      "url": "https://github.com/gian1200"
     }
   ],
-  "author": "André Twupack",
+  "author": {
+    "name": "André Twupack",
+    "url": "https://github.com/atwupack/"
+  },
   "license": "MIT",
   "dependencies": {
     "@colors/colors": "^1.6.0",
@@ -50,7 +58,7 @@
   "engines": {
     "node": ">=18"
   },
-  "main": "dist/index.js",
+  "main": "dist/dependency-check.js",
   "devDependencies": {
     "@eslint/js": "^9.26.0",
     "eslint": "^9.26.0",

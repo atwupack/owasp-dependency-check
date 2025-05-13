@@ -4,7 +4,7 @@ import path from "path";
 import fs from "fs";
 import { mkdir } from "fs/promises";
 import colors from "@colors/colors/safe.js";
-import { getBinDir, getProxyUrl } from "./cli.js";
+import { getBinDir, getProxyUrl, ignoreErrors } from "./cli.js";
 
 const IS_WIN = os.platform() === "win32";
 
@@ -60,4 +60,27 @@ export function log(...logData: string[]) {
       ...logData,
     ].join(" "),
   );
+}
+
+export function ensureError(value: unknown): Error {
+  if (value instanceof Error) return value;
+
+  let stringified: string;
+  try {
+    stringified = JSON.stringify(value);
+  } catch {
+    stringified = "[Unable to stringify the thrown value]";
+  }
+
+  return new Error(
+    `This value was thrown as is, not through an Error: ${stringified}`,
+  );
+}
+
+export function exitProcess(code: number | null) {
+  if (ignoreErrors()) {
+    process.exit(0);
+  } else {
+    process.exit(code);
+  }
 }
