@@ -3,8 +3,7 @@ import fetch, { RequestInit } from "node-fetch";
 import { Downloader, DownloaderConfig } from "nodejs-file-downloader";
 import extract from "extract-zip";
 import { HttpsProxyAgent } from "https-proxy-agent";
-import { getGitHubToken, getLogFilePath, getProxyUrl } from "./cli.js";
-import fs from "fs";
+import { getGitHubToken, getProxyUrl } from "./cli.js";
 
 const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
 const LATEST_RELEASE_URL =
@@ -89,11 +88,7 @@ export async function installDependencyCheck(
     await unzipRelease(filePath, installDir);
   } catch (e) {
     const error = ensureError(e);
-    const log = getLogFilePath();
-    console.error(
-      `Failed to download and install. See ${log} for more details.`,
-    );
-    fs.writeFileSync(log, error.toString());
+    console.error("Failed to download and install: ", error.message);
     exitProcess(1);
   }
 }

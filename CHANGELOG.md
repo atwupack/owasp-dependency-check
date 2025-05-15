@@ -12,10 +12,10 @@
 
 ## Version 0.4.1
 
-- Fixed bug with default `--data` directory on Windows. 
+- Fixed bug with default `--data` directory on Windows.
 
 ## Version 0.5.0
 
-- Added optional `--log` parameter to specify the path to the log file.
+- Removed creation of a log file if an error occurs during installation.
 - The exit code is always not equal to zero if an error occurs. The exit code of the OWASP Dependency Check tool will be used as the exit code for this program.
 - Added parameter `--ignore-errors` which forces the program to always exit with code 0.

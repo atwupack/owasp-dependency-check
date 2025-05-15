@@ -34,7 +34,6 @@ const cli = program
     "--github-token <token>",
     "personal GitHub token to authenticate against API",
   )
-  .option("-l, --log <path>", "path to a log file", "dependency-check.log")
   .option("--ignore-errors", "always exit with code 0", false)
   .addHelpText(
     "after",
@@ -56,10 +55,6 @@ The following environment variables are supported:
 
 export function ignoreErrors() {
   return cli.opts().ignoreErrors;
-}
-
-export function getLogFilePath() {
-  return path.resolve(cli.opts().log);
 }
 
 export function getProxyUrl() {
