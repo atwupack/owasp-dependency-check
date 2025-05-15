@@ -1,6 +1,6 @@
 {
   "name": "@atwupack/owasp-dependency-check",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A Node.js wrapper for the CLI version of OWASP dependency-check tool.",
   "keywords": [
     "owasp",
@@ -22,7 +22,7 @@
     "build": "tsc",
     "eslint": "eslint .",
     "knip": "knip",
-    "owasp": "node dist/dependency-check.js --scan \"package-lock.json\" --format \"HTML\" --format \"XML\" --data \"dependency-check-data\"",
+    "owasp": "node dist/index.js --data dependency-check-data",
     "format": "prettier . --write"
   },
   "contributors": [

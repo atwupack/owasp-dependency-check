@@ -93,27 +93,27 @@ export function getBinDir() {
 }
 
 export function getCmdArguments() {
-  const args = [`--out=${cli.opts().out}`, ...cli.args];
+  const args = ["--out", cli.opts().out, ...cli.args];
 
   if (!hasCmdArg(args, "--nvdApiKey") && process.env.NVD_API_KEY) {
-    args.push(`--nvdApiKey="${process.env.NVD_API_KEY}"`);
+    args.push("--nvdApiKey", process.env.NVD_API_KEY);
   }
 
   if (!hasCmdArg(args, "--project")) {
-    args.push(`--project="${getProjectName()}"`);
+    args.push("--project", `"${getProjectName()}"`);
   }
 
   if (!hasCmdArg(args, "-d") && !hasCmdArg(args, "--data")) {
-    args.push(`--data="${path.join(os.tmpdir(), "dependency-check-data")}"`);
+    args.push("--data", `"${path.join(os.tmpdir(), "dependency-check-data")}"`);
   }
 
   if (!hasCmdArg(args, "-f") && !hasCmdArg(args, "--format")) {
-    args.push("--format=HTML");
-    args.push("--format=JSON");
+    args.push("--format", "HTML");
+    args.push("--format", "JSON");
   }
 
   if (!hasCmdArg(args, "-s") && !hasCmdArg(args, "--scan")) {
-    args.push("--scan=package-lock.json");
+    args.push("--scan", "package-lock.json");
   }
 
   return args;

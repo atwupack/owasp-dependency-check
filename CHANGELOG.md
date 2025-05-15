@@ -10,6 +10,10 @@
 - Added support for the environment variable NVD_API_KEY. If set and `--nvdApiKey` is not provided on the command line, this will set the parameter `--nvdApiKey` while calling the OWASP Dependency Check tool.
 - The output of the OWASP dependency-check is displayed during execution of the tool.
 
+## Version 0.4.1
+
+- Fixed bug with default `--data` directory on Windows. 
+
 ## Version 0.5.0
 
 - Added optional `--log` parameter to specify the path to the log file.
