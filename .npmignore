@@ -3,3 +3,5 @@ node_modules
 src
 eslint.config.mjs
 tsconfig.json
+prettier.config.mjs
+dist/*.spec.js

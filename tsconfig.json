@@ -7,7 +7,9 @@
     "moduleResolution": "nodenext",
     "module": "NodeNext",
     "noEmitOnError": true,
-    "alwaysStrict": true
+    "alwaysStrict": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false
   },
-  "include": ["./src/**/*"]
+  "include": ["src"]
 }

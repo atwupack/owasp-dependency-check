@@ -20,6 +20,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "test": "node --test dist/*.spec.js",
     "eslint": "eslint .",
     "knip": "knip",
     "owasp": "node dist/dependency-check.js --data dependency-check-data",
