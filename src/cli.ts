@@ -1,7 +1,12 @@
-import { program } from "@commander-js/extra-typings";
+import {
+  program,
+  Option,
+  InvalidArgumentError,
+} from "@commander-js/extra-typings";
 import path from "path";
 import os from "os";
 import { readFileSync } from "fs";
+import { ifPresent, orElseGet } from "./utils.js";
 
 const cli = program
   .allowExcessArguments()
@@ -29,14 +34,38 @@ const cli = program
   .option(
     "-p, --proxy <url>",
     "the URL to a proxy server in the format http(s)://[user]:[password]@<server>:[port]",
+    parseProxyUrl,
   )
-  .option(
-    "--github-token <token>",
-    "personal GitHub token to authenticate against API",
+  .addOption(
+    new Option(
+      "--github-token <token>",
+      "GitHub token to authenticate against API",
+    ).env("GITHUB_TOKEN"),
+  )
+  .addOption(
+    new Option(
+      "--nvdApiKey <key>",
+      "NVD API key to authenticate against API",
+    ).env("NVD_API_KEY"),
+  )
+  .addOption(
+    new Option("--project <name>", "the name of the project being scanned").env(
+      "PROJECT_NAME",
+    ),
   )
   .option("--ignore-errors", "always exit with code 0", false)
+  .option(
+    "-d, --data <path>",
+    "the location of the data directory used to store persistent data",
+    path.join(os.tmpdir(), "dependency-check-data"),
+  )
+  .option("-s, --scan <path...>", "the paths to scan ", ["package-lock.json"])
+  .option("-f, --format <format...>", "the formats to generate", [
+    "HTML",
+    "JSON",
+  ])
   .addHelpText(
-    "after",
+    "afterAll",
     `
 You can also use any arguments supported by the Owasp Dependency Check CLI tool, see: https://jeremylong.github.io/DependencyCheck/dependency-check-cli/arguments.html
 
@@ -62,13 +91,7 @@ export function getProxyUrl() {
 }
 
 export function getGitHubToken() {
-  if (cli.opts().githubToken) {
-    return cli.opts().githubToken;
-  }
-  if (process.env.GITHUB_TOKEN) {
-    return process.env.GITHUB_TOKEN;
-  }
-  return undefined;
+  return cli.opts().githubToken;
 }
 
 export function getOutDir() {
@@ -90,50 +113,46 @@ export function getBinDir() {
 export function getCmdArguments() {
   const args = ["--out", cli.opts().out, ...cli.args];
 
-  if (!hasCmdArg(args, "--nvdApiKey") && process.env.NVD_API_KEY) {
-    args.push("--nvdApiKey", process.env.NVD_API_KEY);
-  }
+  ifPresent(cli.opts().nvdApiKey, (key) => {
+    args.push("--nvdApiKey", key);
+  });
 
-  if (!hasCmdArg(args, "--project")) {
-    args.push("--project", `"${getProjectName()}"`);
-  }
+  cli.opts().scan.forEach((scan) => {
+    args.push("--scan", scan);
+  });
 
-  if (!hasCmdArg(args, "-d") && !hasCmdArg(args, "--data")) {
-    args.push("--data", `"${path.join(os.tmpdir(), "dependency-check-data")}"`);
-  }
+  args.push(
+    "--project",
+    orElseGet(cli.opts().project, getProjectNameFromPackageJson),
+  );
 
-  if (!hasCmdArg(args, "-f") && !hasCmdArg(args, "--format")) {
-    args.push("--format", "HTML");
-    args.push("--format", "JSON");
-  }
+  args.push("--data", cli.opts().data);
 
-  if (!hasCmdArg(args, "-s") && !hasCmdArg(args, "--scan")) {
-    args.push("--scan", "package-lock.json");
-  }
+  cli.opts().format.forEach((format) => {
+    args.push("--format", format);
+  });
 
   return args;
 }
 
-function hasCmdArg(args: string[], argPrefix: string) {
-  return args.find(
-    (arg) =>
-      arg.startsWith(`${argPrefix}=`) ||
-      arg.startsWith(`${argPrefix} `) ||
-      arg === argPrefix,
-  );
+function getProjectNameFromPackageJson() {
+  try {
+    const packageJson = readFileSync(path.resolve("package.json")).toString();
+    const parsedJson = JSON.parse(packageJson) as { name: string };
+    return parsedJson.name;
+  } catch (e) {
+    console.error(e);
+  }
+  return "Unknown Project";
 }
 
-function getProjectName() {
-  let projectName = process.env.PROJECT_NAME;
-
-  if (!projectName) {
-    try {
-      const packageJson = readFileSync(path.resolve("package.json")).toString();
-      const parsedJson = JSON.parse(packageJson) as { name: string };
-      projectName = parsedJson.name;
-    } catch (e) {
-      console.error(e);
-    }
+function parseProxyUrl(value: string) {
+  const url = URL.parse(value);
+  if (!url?.protocol || !url.hostname) {
+    throw new InvalidArgumentError("Invalid proxy URL");
   }
-  return projectName ?? "Unknown Project";
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw new InvalidArgumentError("Invalid HTTP(S) proxy URL");
+  }
+  return url;
 }

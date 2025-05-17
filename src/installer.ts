@@ -54,9 +54,7 @@ async function downloadRelease(url: string, name: string, installDir: string) {
     directory: installDir,
     fileName: name,
   };
-  if (getProxyUrl()) {
-    config.proxy = getProxyUrl();
-  }
+  config.proxy = getProxyUrl()?.toString();
   const downloader = new Downloader(config);
   const report = await downloader.download();
   if (report.downloadStatus === "COMPLETE" && report.filePath) {

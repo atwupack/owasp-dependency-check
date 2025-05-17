@@ -13,16 +13,15 @@ export function getJavaToolOptions() {
   if (!proxyUrl) {
     return undefined;
   }
-  const url = new URL(proxyUrl);
-  let javaToolOptions = `-Dhttps.proxyHost=${url.hostname}`;
-  if (url.port) {
-    javaToolOptions += ` -Dhttps.proxyPort=${url.port}`;
+  let javaToolOptions = `-Dhttps.proxyHost=${proxyUrl.hostname}`;
+  if (proxyUrl.port) {
+    javaToolOptions += ` -Dhttps.proxyPort=${proxyUrl.port}`;
   }
-  if (url.username) {
-    javaToolOptions += ` -Dhttps.proxyUser=${url.username}`;
+  if (proxyUrl.username) {
+    javaToolOptions += ` -Dhttps.proxyUser=${proxyUrl.username}`;
   }
-  if (url.password) {
-    javaToolOptions += ` -Dhttps.proxyPassword=${url.password}`;
+  if (proxyUrl.password) {
+    javaToolOptions += ` -Dhttps.proxyPassword=${proxyUrl.password}`;
   }
   return javaToolOptions;
 }
@@ -83,4 +82,17 @@ export function exitProcess(code: number | null) {
   } else {
     process.exit(code);
   }
+}
+
+export function ifPresent<T>(
+  value: T | undefined,
+  callback: (value: T) => void,
+) {
+  if (value) {
+    callback(value);
+  }
+}
+
+export function orElseGet<T>(value: T | undefined, callback: () => T) {
+  return value ?? callback();
 }
