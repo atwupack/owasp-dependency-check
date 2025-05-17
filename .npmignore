@@ -3,5 +3,7 @@ node_modules
 src
 eslint.config.mjs
 tsconfig.json
-prettier.config.mjs
+prettier.config.ts
+knip.config.ts
 dist/*.spec.js
+.gitattributes
