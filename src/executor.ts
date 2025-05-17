@@ -3,6 +3,7 @@ import {
   ensureError,
   exitProcess,
   getJavaToolOptions,
+  hideSecrets,
   log,
 } from "./utils.js";
 import path from "path";
@@ -64,7 +65,7 @@ function runAnalysis(executable: string) {
   };
 
   const dependencyCheckCmdArguments = getCmdArguments();
-  const dependencyCheckCmd = `${executable} ${dependencyCheckCmdArguments.join(" ")}`;
+  const dependencyCheckCmd = `${executable} ${hideSecrets(dependencyCheckCmdArguments.join(" "))}`;
 
   log("Running command:\n", dependencyCheckCmd);
   const dependencyCheckSpawn = spawn.sync(

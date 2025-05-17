@@ -96,3 +96,9 @@ export function ifPresent<T>(
 export function orElseGet<T>(value: T | undefined, callback: () => T) {
   return value ?? callback();
 }
+
+const SECRET_REGEX = /(--\S*(?:key|token|pass)\S*(?:=| +))(\S*)/gi;
+
+export function hideSecrets(input: string) {
+  return input.replace(SECRET_REGEX, "$1<secret value>");
+}
