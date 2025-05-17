@@ -82,10 +82,6 @@ The following environment variables are supported:
   )
   .parse();
 
-export function ignoreErrors() {
-  return cli.opts().ignoreErrors;
-}
-
 export function getProxyUrl() {
   return cli.opts().proxy;
 }
@@ -155,4 +151,12 @@ function parseProxyUrl(value: string) {
     throw new InvalidArgumentError("Invalid HTTP(S) proxy URL");
   }
   return url;
+}
+
+export function exitProcess(code: number | null) {
+  if (cli.opts().ignoreErrors) {
+    process.exit(0);
+  } else {
+    process.exit(code);
+  }
 }

@@ -1,12 +1,4 @@
-import {
-  cleanDir,
-  ensureError,
-  exitProcess,
-  getJavaToolOptions,
-  hideSecrets,
-  ifPresent,
-  log,
-} from "./utils.js";
+import { cleanDir, ensureError, hideSecrets, ifPresent, log } from "./utils.js";
 import path from "path";
 import {
   SpawnOptions,
@@ -15,7 +7,7 @@ import {
 } from "child_process";
 import spawn from "cross-spawn";
 import colors from "@colors/colors/safe.js";
-import { getCmdArguments } from "./cli.js";
+import { exitProcess, getCmdArguments, getProxyUrl } from "./cli.js";
 
 function runVersionCheck(executable: string) {
   const versionCmdArguments = ["--version"];
@@ -96,4 +88,22 @@ export async function runDependencyCheck(executable: string, outDir: string) {
     log(error.message);
     exitProcess(1);
   }
+}
+
+function getJavaToolOptions() {
+  const proxyUrl = getProxyUrl();
+  if (!proxyUrl) {
+    return undefined;
+  }
+  let javaToolOptions = `-Dhttps.proxyHost=${proxyUrl.hostname}`;
+  if (proxyUrl.port) {
+    javaToolOptions += ` -Dhttps.proxyPort=${proxyUrl.port}`;
+  }
+  if (proxyUrl.username) {
+    javaToolOptions += ` -Dhttps.proxyUser=${proxyUrl.username}`;
+  }
+  if (proxyUrl.password) {
+    javaToolOptions += ` -Dhttps.proxyPassword=${proxyUrl.password}`;
+  }
+  return javaToolOptions;
 }

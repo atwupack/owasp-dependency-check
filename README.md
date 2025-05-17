@@ -40,12 +40,3 @@ You can specify any options that the [OWASP dependency-check CLI tool](https://d
 ### Additional options
 
 Use `owasp-dependency-check --help` to check other options.
-
-## TODOs before Version 1.0.0
-
-- [x] Add support for proxies
-- [x] Add support for GitHub authentication to avoid rate limits
-- [ ] Improve logging
-- [ ] Improve error handling
-- [x] Conversion to TypeScript
-- [ ] Add unit tests

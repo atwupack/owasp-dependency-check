@@ -1,9 +1,9 @@
-import { cleanDir, ensureError, exitProcess } from "./utils.js";
+import { cleanDir, ensureError } from "./utils.js";
 import fetch, { RequestInit } from "node-fetch";
 import { Downloader, DownloaderConfig } from "nodejs-file-downloader";
 import extract from "extract-zip";
 import { HttpsProxyAgent } from "https-proxy-agent";
-import { getGitHubToken, getProxyUrl } from "./cli.js";
+import { exitProcess, getGitHubToken, getProxyUrl } from "./cli.js";
 
 const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
 const LATEST_RELEASE_URL =
