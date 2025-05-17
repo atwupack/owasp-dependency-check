@@ -4,6 +4,7 @@ import {
   exitProcess,
   getJavaToolOptions,
   hideSecrets,
+  ifPresent,
   log,
 } from "./utils.js";
 import path from "path";
@@ -54,9 +55,9 @@ function runVersionCheck(executable: string) {
 
 function runAnalysis(executable: string) {
   const env = process.env;
-  if (getJavaToolOptions()) {
-    env.JAVA_TOOL_OPTIONS = getJavaToolOptions();
-  }
+  ifPresent(getJavaToolOptions(), (options) => {
+    env.JAVA_OPTS = options;
+  });
 
   const dependencyCheckSpawnOpts: SpawnOptions = {
     cwd: path.resolve(process.cwd()),
