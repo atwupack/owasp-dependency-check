@@ -19,3 +19,5 @@
 - Removed creation of a log file if an error occurs during installation.
 - The exit code is always not equal to zero if an error occurs. The exit code of the OWASP Dependency Check tool will be used as the exit code for this program.
 - Added parameter `--ignore-errors` which forces the program to always exit with code 0.
+- Filter secrets from the output of the dependency-check-cli command being executed.
+- Use `JAVA_OPTS` instead of `JAVA_TOOL_OPTIONS` to pass proxy configuration to the dependency-check-cli. This prevents the JVM from printing the proxy's password to stderr.
