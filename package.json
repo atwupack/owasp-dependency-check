@@ -72,5 +72,17 @@
     "sinon": "^20.0.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.31.1"
+  },
+  "prettier": {
+    "tabWidth": 2
+  },
+  "knip": {
+    "entry": [
+      "src/dependency-check.ts",
+      "src/*.spec.ts"
+    ],
+    "project": [
+      "src/*.ts"
+    ]
   }
 }
