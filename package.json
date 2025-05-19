@@ -21,7 +21,7 @@
   "scripts": {
     "build": "tsc",
     "test": "node --test dist/*.spec.js",
-    "coverage": "node --test-coverage-exclude dist/*.spec.js --experimental-test-coverage --test dist/*.spec.js",
+    "coverage": "node --experimental-test-coverage --test dist/*.spec.js",
     "eslint": "eslint .",
     "knip": "knip",
     "owasp": "node dist/dependency-check.js --data dependency-check-data",
@@ -63,11 +63,13 @@
   "main": "dist/dependency-check.js",
   "devDependencies": {
     "@eslint/js": "^9.26.0",
+    "@types/sinon": "^17.0.4",
     "eslint": "^9.26.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.0",
     "knip": "^5.55.1",
     "prettier": "3.5.3",
+    "sinon": "^20.0.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.31.1"
   }

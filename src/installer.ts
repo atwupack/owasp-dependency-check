@@ -1,4 +1,4 @@
-import { cleanDir, ensureError } from "./utils.js";
+import { cleanDir, ensureError, ifPresent } from "./utils.js";
 import fetch, { RequestInit } from "node-fetch";
 import { Downloader, DownloaderConfig } from "nodejs-file-downloader";
 import extract from "extract-zip";
@@ -54,7 +54,9 @@ async function downloadRelease(url: string, name: string, installDir: string) {
     directory: installDir,
     fileName: name,
   };
-  config.proxy = getProxyUrl()?.toString();
+  ifPresent(getProxyUrl()?.toString(), (proxyUrl) => {
+    config.proxy = proxyUrl;
+  });
   const downloader = new Downloader(config);
   const report = await downloader.download();
   if (report.downloadStatus === "COMPLETE" && report.filePath) {
