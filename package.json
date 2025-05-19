@@ -54,9 +54,6 @@
     "nodejs-file-downloader": "^4.13.0",
     "rimraf": "^6.0.1"
   },
-  "peerDependencies": {
-    "commander": "^13.1.0"
-  },
   "engines": {
     "node": ">=18"
   },
