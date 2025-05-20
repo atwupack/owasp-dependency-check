@@ -21,3 +21,7 @@
 - Added parameter `--ignore-errors` which forces the program to always exit with code 0.
 - Filter secrets from the output of the dependency-check-cli command being executed.
 - Use `JAVA_OPTS` instead of `JAVA_TOOL_OPTIONS` to pass proxy configuration to the dependency-check-cli. This prevents the JVM from printing the proxy's password to stderr.
+
+## Version 0.5.1
+
+- Added missing shebang which prevented the tool from running correctly.

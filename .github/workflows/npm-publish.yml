@@ -34,3 +34,13 @@ jobs:
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+
+  check-published-package:
+    needs: publish-npm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install -g @atwupack/owasp-dependency-check
+      - run: npx owasp-dependency-check --help
