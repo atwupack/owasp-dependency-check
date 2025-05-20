@@ -26,6 +26,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm test
+      - run: npx owasp-dependency-check --help
   validate:
     runs-on: ubuntu-latest
     steps:

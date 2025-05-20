@@ -75,11 +75,13 @@
   },
   "knip": {
     "entry": [
-      "src/dependency-check.ts",
+      "src/dependency-check.ts!",
       "src/*.spec.ts"
     ],
     "project": [
-      "src/*.ts"
-    ]
+      "src/*.ts!",
+      "!src/*.spec.ts!"
+    ],
+    "github-actions": false
   }
 }
