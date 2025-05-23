@@ -6,7 +6,7 @@ import {
 import path from "path";
 import os from "os";
 import { readFileSync } from "fs";
-import { ifPresent, orElseGet } from "./utils.js";
+import { Maybe } from "purify-ts";
 
 const cli = program
   .allowExcessArguments()
@@ -83,11 +83,11 @@ The following environment variables are supported:
   .parse();
 
 export function getProxyUrl() {
-  return cli.opts().proxy;
+  return Maybe.fromNullable(cli.opts().proxy);
 }
 
 export function getGitHubToken() {
-  return cli.opts().githubToken;
+  return Maybe.fromNullable(cli.opts().githubToken);
 }
 
 export function getOutDir() {
@@ -106,10 +106,18 @@ export function getBinDir() {
   return path.resolve(cli.opts().bin, cli.opts().odcVersion);
 }
 
+function getNvdApiKey() {
+  return Maybe.fromNullable(cli.opts().nvdApiKey);
+}
+
+function getProject() {
+  return Maybe.fromNullable(cli.opts().project);
+}
+
 export function getCmdArguments() {
   const args = ["--out", cli.opts().out, ...cli.args];
 
-  ifPresent(cli.opts().nvdApiKey, (key) => {
+  getNvdApiKey().ifJust((key) => {
     args.push("--nvdApiKey", key);
   });
 
@@ -119,7 +127,7 @@ export function getCmdArguments() {
 
   args.push(
     "--project",
-    orElseGet(cli.opts().project, getProjectNameFromPackageJson),
+    getProject().orDefaultLazy(getProjectNameFromPackageJson),
   );
 
   args.push("--data", cli.opts().data);

@@ -1,4 +1,4 @@
-import { cleanDir, ensureError, ifPresent } from "./utils.js";
+import { cleanDir, ensureError } from "./utils.js";
 import fetch, { RequestInit } from "node-fetch";
 import { Downloader, DownloaderConfig } from "nodejs-file-downloader";
 import extract from "extract-zip";
@@ -23,16 +23,14 @@ async function findDownloadAsset(odcVersion: string) {
   const url =
     odcVersion === "latest" ? LATEST_RELEASE_URL : TAG_RELEASE_URL + odcVersion;
   const init: RequestInit = {};
-  const proxyUrl = getProxyUrl();
-  if (proxyUrl) {
+  getProxyUrl().ifJust((proxyUrl) => {
     init.agent = new HttpsProxyAgent(proxyUrl);
-  }
-  const githubToken = getGitHubToken();
-  if (githubToken) {
+  });
+  getGitHubToken().ifJust((token) => {
     init.headers = {
-      Authorization: `Bearer ${githubToken}`,
+      Authorization: `Bearer ${token}`,
     };
-  }
+  });
   const res = await fetch(url, init);
   if (!res.ok) {
     throw new Error(`Could not fetch release from GitHub: ${res.statusText}`);
@@ -54,8 +52,8 @@ async function downloadRelease(url: string, name: string, installDir: string) {
     directory: installDir,
     fileName: name,
   };
-  ifPresent(getProxyUrl()?.toString(), (proxyUrl) => {
-    config.proxy = proxyUrl;
+  getProxyUrl().ifJust((proxyUrl) => {
+    config.proxy = proxyUrl.toString();
   });
   const downloader = new Downloader(config);
   const report = await downloader.download();

@@ -52,6 +52,7 @@
     "https-proxy-agent": "^7.0.6n",
     "node-fetch": "^3.3.2",
     "nodejs-file-downloader": "^4.13.0",
+    "purify-ts": "^2.1.0",
     "rimraf": "^6.0.1"
   },
   "engines": {

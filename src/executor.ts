@@ -1,4 +1,4 @@
-import { cleanDir, ensureError, hideSecrets, ifPresent, log } from "./utils.js";
+import { cleanDir, ensureError, hideSecrets, log } from "./utils.js";
 import path from "path";
 import {
   SpawnOptions,
@@ -8,6 +8,7 @@ import {
 import spawn from "cross-spawn";
 import colors from "@colors/colors/safe.js";
 import { exitProcess, getCmdArguments, getProxyUrl } from "./cli.js";
+import { Maybe } from "purify-ts";
 
 function runVersionCheck(executable: string) {
   const versionCmdArguments = ["--version"];
@@ -47,7 +48,7 @@ function runVersionCheck(executable: string) {
 
 function runAnalysis(executable: string) {
   const env = process.env;
-  ifPresent(getJavaToolOptions(), (options) => {
+  getJavaToolOptions().ifJust((options) => {
     env.JAVA_OPTS = options;
   });
 
@@ -72,7 +73,7 @@ function runAnalysis(executable: string) {
   }
 
   log(colors.green("Done."));
-  return dependencyCheckSpawn.status;
+  return Maybe.fromNullable(dependencyCheckSpawn.status);
 }
 
 export async function runDependencyCheck(executable: string, outDir: string) {
@@ -81,8 +82,7 @@ export async function runDependencyCheck(executable: string, outDir: string) {
     await cleanDir(path.resolve(process.cwd(), outDir));
 
     runVersionCheck(executable);
-    const resultCode = runAnalysis(executable);
-    exitProcess(resultCode);
+    runAnalysis(executable).ifJust(exitProcess);
   } catch (e) {
     const error = ensureError(e);
     log(error.message);
@@ -91,19 +91,17 @@ export async function runDependencyCheck(executable: string, outDir: string) {
 }
 
 function getJavaToolOptions() {
-  const proxyUrl = getProxyUrl();
-  if (!proxyUrl) {
-    return undefined;
-  }
-  let javaToolOptions = `-Dhttps.proxyHost=${proxyUrl.hostname}`;
-  if (proxyUrl.port) {
-    javaToolOptions += ` -Dhttps.proxyPort=${proxyUrl.port}`;
-  }
-  if (proxyUrl.username) {
-    javaToolOptions += ` -Dhttps.proxyUser=${proxyUrl.username}`;
-  }
-  if (proxyUrl.password) {
-    javaToolOptions += ` -Dhttps.proxyPassword=${proxyUrl.password}`;
-  }
-  return javaToolOptions;
+  return getProxyUrl().map((proxyUrl) => {
+    let javaToolOptions = `-Dhttps.proxyHost=${proxyUrl.hostname}`;
+    if (proxyUrl.port) {
+      javaToolOptions += ` -Dhttps.proxyPort=${proxyUrl.port}`;
+    }
+    if (proxyUrl.username) {
+      javaToolOptions += ` -Dhttps.proxyUser=${proxyUrl.username}`;
+    }
+    if (proxyUrl.password) {
+      javaToolOptions += ` -Dhttps.proxyPassword=${proxyUrl.password}`;
+    }
+    return javaToolOptions;
+  });
 }

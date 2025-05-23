@@ -37,15 +37,6 @@ export function ensureError(value: unknown): Error {
   );
 }
 
-export function ifPresent<T>(
-  value: T | undefined,
-  callback: (value: T) => void,
-) {
-  if (value) {
-    callback(value);
-  }
-}
-
 export function orElseGet<T>(value: T | undefined, callback: () => T) {
   return value ?? callback();
 }

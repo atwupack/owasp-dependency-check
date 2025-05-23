@@ -1,12 +1,6 @@
 import { describe, it } from "node:test";
 import * as assert from "node:assert/strict";
-import {
-  ensureError,
-  hideSecrets,
-  ifPresent,
-  orElseGet,
-  log,
-} from "./utils.js";
+import { ensureError, hideSecrets, log } from "./utils.js";
 import sinon from "sinon";
 
 void describe("utils.ts", () => {
@@ -64,47 +58,6 @@ void describe("utils.ts", () => {
         error.message,
         'This value was thrown as is, not through an Error: {"message":"Test Error","stack":"Test Stack","name":"Test Name","code":"Test Code","errno":"Test Errno"}',
       );
-    });
-  });
-
-  void describe("ifPresent", () => {
-    void it("should not call callback if undefined", () => {
-      ifPresent(undefined, () => {
-        throw new Error("Callback called");
-      });
-    });
-    void it("should not call callback if null", () => {
-      ifPresent(null, () => {
-        throw new Error("Callback called");
-      });
-    });
-    void it("should call callback if defined", () => {
-      let called = false;
-      ifPresent("test", () => {
-        called = true;
-      });
-      assert.ok(called);
-    });
-  });
-
-  void describe("orElseGet", () => {
-    void it("should return provided value", () => {
-      const result = orElseGet("Test", () => {
-        return "Invalid";
-      });
-      assert.equal(result, "Test");
-    });
-    void it("should return callback value if input is undefined", () => {
-      const result = orElseGet(undefined, () => {
-        return "Valid";
-      });
-      assert.equal(result, "Valid");
-    });
-    void it("should return callback value if input is null", () => {
-      const result = orElseGet(null, () => {
-        return "Valid";
-      });
-      assert.equal(result, "Valid");
     });
   });
 
