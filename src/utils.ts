@@ -37,10 +37,6 @@ export function ensureError(value: unknown): Error {
   );
 }
 
-export function orElseGet<T>(value: T | undefined, callback: () => T) {
-  return value ?? callback();
-}
-
 const SECRET_REGEX = /(--\S*(?:key|token|pass)\S*(?:=| +))(\S*)/gi;
 
 export function hideSecrets(input: string) {
