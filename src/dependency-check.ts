@@ -9,6 +9,7 @@ import {
   getGitHubToken,
   getOdcVersion,
   getOutDir,
+  getOwaspBinary,
   getProxyUrl,
 } from "./cli.js";
 import path from "path";
@@ -32,13 +33,11 @@ function isReady() {
 }
 
 export async function run() {
-  const envOwaspBin = process.env.OWASP_BIN;
-
-  if (envOwaspBin && fs.existsSync(envOwaspBin)) {
+  getOwaspBinary().ifJust(async (owaspBinary) => {
     log("Locally preinstalled (OWASP_BIN) Dependency-Check Core found.");
-    await runDependencyCheck(envOwaspBin, getOutDir(), getProxyUrl());
+    await runDependencyCheck(owaspBinary, getOutDir(), getProxyUrl());
     return;
-  }
+  });
 
   const binDir = getBinDir();
 

@@ -5,7 +5,7 @@ import {
 } from "@commander-js/extra-typings";
 import path from "path";
 import os from "os";
-import { readFileSync } from "fs";
+import fs, { readFileSync } from "fs";
 import { Maybe } from "purify-ts";
 
 const cli = program
@@ -53,6 +53,14 @@ const cli = program
       "PROJECT_NAME",
     ),
   )
+  .addOption(
+    new Option(
+      "--owasp-bin <path>",
+      "the path to a preinstalled dependency-check-cli binary",
+    )
+      .env("OWASP_BIN")
+      .argParser(parseOwaspBinary),
+  )
   .option("--ignore-errors", "always exit with code 0", false)
   .option(
     "-d, --data <path>",
@@ -81,6 +89,10 @@ The following environment variables are supported:
 - GITHUB_TOKEN: personal GitHub token to authenticate against API`,
   )
   .parse();
+
+export function getOwaspBinary() {
+  return Maybe.fromNullable(cli.opts().owaspBin);
+}
 
 export function getProxyUrl() {
   return Maybe.fromNullable(cli.opts().proxy);
@@ -159,6 +171,14 @@ function parseProxyUrl(value: string) {
     throw new InvalidArgumentError("Invalid HTTP(S) proxy URL");
   }
   return url;
+}
+
+function parseOwaspBinary(value: string) {
+  const binPath = path.resolve(value);
+  if (!fs.existsSync(binPath)) {
+    throw new InvalidArgumentError("Invalid path to OWASP binary");
+  }
+  return binPath;
 }
 
 export function exitProcess(code: number | null) {
