@@ -3,7 +3,14 @@ import fs from "fs";
 import { log } from "./utils.js";
 import { installDependencyCheck } from "./installer.js";
 import { runDependencyCheck } from "./executor.js";
-import { forceInstall, getBinDir, getOdcVersion, getOutDir } from "./cli.js";
+import {
+  forceInstall,
+  getBinDir,
+  getGitHubToken,
+  getOdcVersion,
+  getOutDir,
+  getProxyUrl,
+} from "./cli.js";
 import path from "path";
 import os from "os";
 
@@ -29,7 +36,7 @@ export async function run() {
 
   if (envOwaspBin && fs.existsSync(envOwaspBin)) {
     log("Locally preinstalled (OWASP_BIN) Dependency-Check Core found.");
-    await runDependencyCheck(envOwaspBin, getOutDir());
+    await runDependencyCheck(envOwaspBin, getOutDir(), getProxyUrl());
     return;
   }
 
@@ -37,11 +44,16 @@ export async function run() {
 
   if (forceInstall() || !isReady()) {
     log("No Dependency-Check Core executable found. Downloading into:", binDir);
-    await installDependencyCheck(binDir, getOdcVersion());
+    await installDependencyCheck(
+      binDir,
+      getOdcVersion(),
+      getProxyUrl(),
+      getGitHubToken(),
+    );
     log("Download done.");
   }
 
-  await runDependencyCheck(getExecutable(), getOutDir());
+  await runDependencyCheck(getExecutable(), getOutDir(), getProxyUrl());
 }
 
 void run();

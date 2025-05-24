@@ -3,7 +3,8 @@ import fetch, { RequestInit } from "node-fetch";
 import { Downloader, DownloaderConfig } from "nodejs-file-downloader";
 import extract from "extract-zip";
 import { HttpsProxyAgent } from "https-proxy-agent";
-import { exitProcess, getGitHubToken, getProxyUrl } from "./cli.js";
+import { exitProcess } from "./cli.js";
+import { Maybe } from "purify-ts";
 
 const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
 const LATEST_RELEASE_URL =
@@ -18,15 +19,19 @@ interface GithubReleases {
   }[];
 }
 
-async function findDownloadAsset(odcVersion: string) {
+async function findDownloadAsset(
+  odcVersion: string,
+  proxyUrl: Maybe<URL>,
+  githubToken: Maybe<string>,
+) {
   // if the odc version is the latest, use the latest URL, otherwise use version URL
   const url =
     odcVersion === "latest" ? LATEST_RELEASE_URL : TAG_RELEASE_URL + odcVersion;
   const init: RequestInit = {};
-  getProxyUrl().ifJust((proxyUrl) => {
+  proxyUrl.ifJust((proxyUrl) => {
     init.agent = new HttpsProxyAgent(proxyUrl);
   });
-  getGitHubToken().ifJust((token) => {
+  githubToken.ifJust((token) => {
     init.headers = {
       Authorization: `Bearer ${token}`,
     };
@@ -46,13 +51,18 @@ async function findDownloadAsset(odcVersion: string) {
   return asset;
 }
 
-async function downloadRelease(url: string, name: string, installDir: string) {
+async function downloadRelease(
+  url: string,
+  name: string,
+  installDir: string,
+  proxyUrl: Maybe<URL>,
+) {
   const config: DownloaderConfig = {
     url: url,
     directory: installDir,
     fileName: name,
   };
-  getProxyUrl().ifJust((proxyUrl) => {
+  proxyUrl.ifJust((proxyUrl) => {
     config.proxy = proxyUrl.toString();
   });
   const downloader = new Downloader(config);
@@ -73,15 +83,18 @@ async function unzipRelease(filePath: string, installDir: string) {
 export async function installDependencyCheck(
   installDir: string,
   odcVersion: string,
+  proxyUrl: Maybe<URL>,
+  githubToken: Maybe<string>,
 ) {
   try {
     await cleanDir(installDir);
 
-    const asset = await findDownloadAsset(odcVersion);
+    const asset = await findDownloadAsset(odcVersion, proxyUrl, githubToken);
     const filePath = await downloadRelease(
       asset.browser_download_url,
       asset.name,
       installDir,
+      proxyUrl,
     );
     await unzipRelease(filePath, installDir);
   } catch (e) {

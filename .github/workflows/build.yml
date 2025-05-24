@@ -10,7 +10,19 @@ on:
     branches: ["main"]
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run eslint
+      - run: npm run knip
+
   build:
+    needs: validate
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -28,13 +40,3 @@ jobs:
       - run: npm test
       - run: npm install -g .
       - run: npx owasp-dependency-check --help
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: npm ci
-      - run: npm run eslint
-      - run: npm run knip
