@@ -45,3 +45,4 @@ jobs:
           node-version: 22
       - run: npm install -g @atwupack/owasp-dependency-check
       - run: npx owasp-dependency-check --help
+      - run: npx owasp-dependency-check --version

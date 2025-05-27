@@ -40,3 +40,4 @@ jobs:
       - run: npm test
       - run: npm install -g .
       - run: npx owasp-dependency-check --help
+      - run: npx owasp-dependency-check --version
