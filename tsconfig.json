@@ -1,11 +1,8 @@
 {
+  "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "target": "ES6",
-    "strict": true,
     "maxNodeModuleJsDepth": 0,
-    "moduleResolution": "nodenext",
-    "module": "NodeNext",
     "noEmitOnError": true,
     "alwaysStrict": true,
     "allowUnreachableCode": false,

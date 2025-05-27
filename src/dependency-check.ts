@@ -14,6 +14,7 @@ import {
 } from "./cli.js";
 import path from "path";
 import os from "os";
+import { Maybe } from "purify-ts";
 
 const IS_WIN = os.platform() === "win32";
 
@@ -33,26 +34,31 @@ function isReady() {
 }
 
 export async function run() {
-  getOwaspBinary().ifJust(async (owaspBinary) => {
+  let executable = getOwaspBinary();
+  if (executable.isNothing()) {
+    const binDir = getBinDir();
+
+    if (forceInstall() || !isReady()) {
+      log(
+        "No Dependency-Check Core executable found. Downloading into:",
+        binDir,
+      );
+      await installDependencyCheck(
+        binDir,
+        getOdcVersion(),
+        getProxyUrl(),
+        getGitHubToken(),
+      );
+      log("Download done.");
+    }
+    executable = Maybe.of(getExecutable());
+  } else {
     log("Locally preinstalled (OWASP_BIN) Dependency-Check Core found.");
-    await runDependencyCheck(owaspBinary, getOutDir(), getProxyUrl());
-    return;
-  });
-
-  const binDir = getBinDir();
-
-  if (forceInstall() || !isReady()) {
-    log("No Dependency-Check Core executable found. Downloading into:", binDir);
-    await installDependencyCheck(
-      binDir,
-      getOdcVersion(),
-      getProxyUrl(),
-      getGitHubToken(),
-    );
-    log("Download done.");
   }
 
-  await runDependencyCheck(getExecutable(), getOutDir(), getProxyUrl());
+  executable.ifJust(async (executable) => {
+    await runDependencyCheck(executable, getOutDir(), getProxyUrl());
+  });
 }
 
 void run();
