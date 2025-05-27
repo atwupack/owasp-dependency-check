@@ -1,4 +1,4 @@
-import { cleanDir, ensureError, hideSecrets, log } from "./utils.js";
+import { cleanDir, hideSecrets, log } from "./utils.js";
 import path from "path";
 import {
   SpawnOptions,
@@ -7,10 +7,10 @@ import {
 } from "child_process";
 import spawn from "cross-spawn";
 import colors from "@colors/colors/safe.js";
-import { exitProcess, getCmdArguments } from "./cli.js";
+import { getCmdArguments } from "./cli.js";
 import { Maybe } from "purify-ts";
 
-function runVersionCheck(executable: string) {
+function executeVersionCheck(executable: string) {
   const versionCmdArguments = ["--version"];
   const versionCmd = `${executable} --version`;
 
@@ -46,7 +46,7 @@ function runVersionCheck(executable: string) {
   );
 }
 
-function runAnalysis(executable: string, proxyUrl: Maybe<URL>) {
+function executeAnalysis(executable: string, proxyUrl: Maybe<URL>) {
   const env = process.env;
   proxyUrl.ifJust((proxyUrl) => {
     env.JAVA_OPTS = buildJavaToolOptions(proxyUrl);
@@ -76,22 +76,16 @@ function runAnalysis(executable: string, proxyUrl: Maybe<URL>) {
   return Maybe.fromNullable(dependencyCheckSpawn.status);
 }
 
-export async function runDependencyCheck(
+export async function executeDependencyCheck(
   executable: string,
   outDir: string,
   proxyUrl: Maybe<URL>,
 ) {
-  try {
-    log("Dependency-Check Core path:", executable);
-    await cleanDir(path.resolve(process.cwd(), outDir));
+  log("Dependency-Check Core path:", executable);
+  await cleanDir(path.resolve(process.cwd(), outDir));
 
-    runVersionCheck(executable);
-    runAnalysis(executable, proxyUrl).ifJust(exitProcess);
-  } catch (e) {
-    const error = ensureError(e);
-    log(error.message);
-    exitProcess(1);
-  }
+  executeVersionCheck(executable);
+  return executeAnalysis(executable, proxyUrl);
 }
 
 function buildJavaToolOptions(proxyUrl: URL) {

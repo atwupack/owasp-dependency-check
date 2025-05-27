@@ -72,7 +72,11 @@ const cli = program
     "HTML",
     "JSON",
   ])
-  .version(process.env.npm_package_version ?? "<unknown>", undefined, "print the version of the node module")
+  .version(
+    process.env.npm_package_version ?? "<unknown>",
+    undefined,
+    "print the version of the node module",
+  )
   .addHelpText(
     "afterAll",
     `

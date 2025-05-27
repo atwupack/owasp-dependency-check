@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import fs from "fs";
-import { log } from "./utils.js";
+import { ensureError, log } from "./utils.js";
 import { installDependencyCheck } from "./installer.js";
-import { runDependencyCheck } from "./executor.js";
+import { executeDependencyCheck } from "./executor.js";
 import {
+  exitProcess,
   forceInstall,
   getBinDir,
   getGitHubToken,
@@ -57,8 +58,25 @@ export async function run() {
   }
 
   executable.ifJust(async (executable) => {
-    await runDependencyCheck(executable, getOutDir(), getProxyUrl());
+    await runDependencyCheck(executable);
   });
+}
+
+async function runDependencyCheck(executable: string) {
+  try {
+    const result = await executeDependencyCheck(
+      executable,
+      getOutDir(),
+      getProxyUrl(),
+    );
+    result.ifJust((status) => {
+      exitProcess(status);
+    });
+  } catch (e) {
+    const error = ensureError(e);
+    log(error.message);
+    exitProcess(1);
+  }
 }
 
 void run();
