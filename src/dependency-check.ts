@@ -44,12 +44,7 @@ export async function run() {
         "No Dependency-Check Core executable found. Downloading into:",
         binDir,
       );
-      await installDependencyCheck(
-        binDir,
-        getOdcVersion(),
-        getProxyUrl(),
-        getGitHubToken(),
-      );
+      await runInstaller(binDir);
       log("Download done.");
     }
     executable = Maybe.of(getExecutable());
@@ -75,6 +70,21 @@ async function runDependencyCheck(executable: string) {
   } catch (e) {
     const error = ensureError(e);
     log(error.message);
+    exitProcess(1);
+  }
+}
+
+async function runInstaller(installDir: string) {
+  try {
+    await installDependencyCheck(
+      installDir,
+      getOdcVersion(),
+      getProxyUrl(),
+      getGitHubToken(),
+    );
+  } catch (e) {
+    const error = ensureError(e);
+    console.error("Failed to download and install: ", error.message);
     exitProcess(1);
   }
 }

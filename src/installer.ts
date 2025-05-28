@@ -1,9 +1,8 @@
-import { cleanDir, ensureError } from "./utils.js";
+import { cleanDir } from "./utils.js";
 import fetch, { RequestInit } from "node-fetch";
 import { Downloader, DownloaderConfig } from "nodejs-file-downloader";
 import extract from "extract-zip";
 import { HttpsProxyAgent } from "https-proxy-agent";
-import { exitProcess } from "./cli.js";
 import { Maybe } from "purify-ts";
 
 const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
@@ -86,20 +85,14 @@ export async function installDependencyCheck(
   proxyUrl: Maybe<URL>,
   githubToken: Maybe<string>,
 ) {
-  try {
-    await cleanDir(installDir);
+  await cleanDir(installDir);
 
-    const asset = await findDownloadAsset(odcVersion, proxyUrl, githubToken);
-    const filePath = await downloadRelease(
-      asset.browser_download_url,
-      asset.name,
-      installDir,
-      proxyUrl,
-    );
-    await unzipRelease(filePath, installDir);
-  } catch (e) {
-    const error = ensureError(e);
-    console.error("Failed to download and install: ", error.message);
-    exitProcess(1);
-  }
+  const asset = await findDownloadAsset(odcVersion, proxyUrl, githubToken);
+  const filePath = await downloadRelease(
+    asset.browser_download_url,
+    asset.name,
+    installDir,
+    proxyUrl,
+  );
+  await unzipRelease(filePath, installDir);
 }
