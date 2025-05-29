@@ -37,7 +37,7 @@ export function ensureError(value: unknown): Error {
   );
 }
 
-const SECRET_REGEX = /(--\S*(?:key|token|pass)\S*(?:=| +))(\S*)/gi;
+const SECRET_REGEX = /(--\S*(?:key|token|pass)[^\s=]*(?:=| +))(\S*)/gi;
 
 export function hideSecrets(input: string) {
   return input.replace(SECRET_REGEX, "$1<secret value>");

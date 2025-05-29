@@ -25,6 +25,15 @@ void describe("utils.ts", () => {
       const result = hideSecrets("--nexusPass 1234567890");
       assert.equal(result, "--nexusPass <secret value>");
     });
+    void it("should filter correct entry", () => {
+      const result = hideSecrets(
+        "--out dependency-check-reports --nvdApiToken=12345 --scan package-lock.json",
+      );
+      assert.equal(
+        result,
+        "--out dependency-check-reports --nvdApiToken=<secret value> --scan package-lock.json",
+      );
+    });
   });
 
   void describe("ensureError", () => {
