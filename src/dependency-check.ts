@@ -7,6 +7,7 @@ import {
   exitProcess,
   forceInstall,
   getBinDir,
+  getCmdArguments,
   getGitHubToken,
   getOdcVersion,
   getOutDir,
@@ -61,6 +62,7 @@ async function runDependencyCheck(executable: string) {
   try {
     const result = await executeDependencyCheck(
       executable,
+      getCmdArguments(),
       getOutDir(),
       getProxyUrl(),
     );

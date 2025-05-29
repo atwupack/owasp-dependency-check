@@ -7,7 +7,6 @@ import {
 } from "child_process";
 import spawn from "cross-spawn";
 import colors from "@colors/colors/safe.js";
-import { getCmdArguments } from "./cli.js";
 import { Maybe } from "purify-ts";
 
 function executeVersionCheck(executable: string) {
@@ -46,7 +45,11 @@ function executeVersionCheck(executable: string) {
   );
 }
 
-function executeAnalysis(executable: string, proxyUrl: Maybe<URL>) {
+function executeAnalysis(
+  executable: string,
+  cmdArguments: string[],
+  proxyUrl: Maybe<URL>,
+) {
   const env = process.env;
   proxyUrl.ifJust((proxyUrl) => {
     env.JAVA_OPTS = buildJavaToolOptions(proxyUrl);
@@ -58,13 +61,12 @@ function executeAnalysis(executable: string, proxyUrl: Maybe<URL>) {
     stdio: "inherit",
   };
 
-  const dependencyCheckCmdArguments = getCmdArguments();
-  const dependencyCheckCmd = `${executable} ${hideSecrets(dependencyCheckCmdArguments.join(" "))}`;
+  const dependencyCheckCmd = `${executable} ${hideSecrets(cmdArguments.join(" "))}`;
 
   log("Running command:\n", dependencyCheckCmd);
   const dependencyCheckSpawn = spawn.sync(
     executable,
-    dependencyCheckCmdArguments,
+    cmdArguments,
     dependencyCheckSpawnOpts,
   );
 
@@ -78,6 +80,7 @@ function executeAnalysis(executable: string, proxyUrl: Maybe<URL>) {
 
 export async function executeDependencyCheck(
   executable: string,
+  cmdArguments: string[],
   outDir: string,
   proxyUrl: Maybe<URL>,
 ) {
@@ -85,7 +88,7 @@ export async function executeDependencyCheck(
   await cleanDir(path.resolve(process.cwd(), outDir));
 
   executeVersionCheck(executable);
-  return executeAnalysis(executable, proxyUrl);
+  return executeAnalysis(executable, cmdArguments, proxyUrl);
 }
 
 function buildJavaToolOptions(proxyUrl: URL) {
