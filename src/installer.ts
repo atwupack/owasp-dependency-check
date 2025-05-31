@@ -1,9 +1,10 @@
-import { cleanDir } from "./utils.js";
+import { cleanDir, findOwaspExecutable } from "./utils.js";
 import fetch, { RequestInit } from "node-fetch";
 import { Downloader, DownloaderConfig } from "nodejs-file-downloader";
 import extract from "extract-zip";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import { Maybe } from "purify-ts";
+import path from "path";
 
 const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
 const LATEST_RELEASE_URL =
@@ -80,14 +81,16 @@ async function unzipRelease(filePath: string, installDir: string) {
 }
 
 export async function installDependencyCheck(
-  installDir: string,
-  odcVersion: string,
+  binDir: string,
+  odcVersion: Maybe<string>,
   proxyUrl: Maybe<URL>,
   githubToken: Maybe<string>,
 ) {
+  const version = odcVersion.orDefault("latest");
+  const installDir = path.resolve(binDir, version);
   await cleanDir(installDir);
 
-  const asset = await findDownloadAsset(odcVersion, proxyUrl, githubToken);
+  const asset = await findDownloadAsset(version, proxyUrl, githubToken);
   const filePath = await downloadRelease(
     asset.browser_download_url,
     asset.name,
@@ -95,4 +98,9 @@ export async function installDependencyCheck(
     proxyUrl,
   );
   await unzipRelease(filePath, installDir);
+  return findOwaspExecutable(installDir).orDefaultLazy(() => {
+    throw new Error(
+      `Could not find Dependency-Check Core executable in ${installDir}`,
+    );
+  });
 }

@@ -28,8 +28,7 @@ const cli = program
   )
   .option(
     "--odc-version <version>",
-    'the version of the dependency-check CLI to install in format "v1.2.3" or "latest"',
-    "latest",
+    'the version of the dependency-check CLI to install in format "v1.2.3"',
   )
   .option(
     "-p, --proxy <url>",
@@ -116,11 +115,11 @@ export function forceInstall() {
 }
 
 export function getOdcVersion() {
-  return cli.opts().odcVersion;
+  return Maybe.fromNullable(cli.opts().odcVersion);
 }
 
 export function getBinDir() {
-  return path.resolve(cli.opts().bin, cli.opts().odcVersion);
+  return path.resolve(cli.opts().bin);
 }
 
 function getNvdApiKey() {
