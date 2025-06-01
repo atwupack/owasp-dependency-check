@@ -1,16 +1,29 @@
-import { cleanDir, findOwaspExecutable, log } from "./utils.js";
+import { cleanDir, log } from "./utils.js";
 import fetch, { RequestInit } from "node-fetch";
 import { Downloader, DownloaderConfig } from "nodejs-file-downloader";
 import extract from "extract-zip";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import { Maybe } from "purify-ts";
 import path from "path";
+import fs from "fs";
+import os from "os";
 
 const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
 const LATEST_RELEASE_URL =
   "https://api.github.com/repos/dependency-check/DependencyCheck/releases/latest";
 const TAG_RELEASE_URL =
   "https://api.github.com/repos/dependency-check/DependencyCheck/releases/tags/";
+const IS_WIN = os.platform() === "win32";
+
+function findOwaspExecutable(installDir: string) {
+  const executable = path.resolve(
+    installDir,
+    "dependency-check",
+    "bin",
+    `dependency-check.${IS_WIN ? "bat" : "sh"}`,
+  );
+  return Maybe.fromNullable(fs.existsSync(executable) ? executable : undefined);
+}
 
 interface GithubRelease {
   tag_name: string;
