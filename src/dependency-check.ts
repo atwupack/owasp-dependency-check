@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { ensureError, findOwaspExecutable, log } from "./utils.js";
+import { ensureError, log } from "./utils.js";
 import { installDependencyCheck } from "./installer.js";
 import { executeDependencyCheck } from "./executor.js";
 import {
@@ -18,24 +18,15 @@ import { Maybe } from "purify-ts";
 export async function run() {
   let executable = getOwaspBinary();
   if (executable.isNothing()) {
-    const binDir = getBinDir();
-    executable = findOwaspExecutable(binDir);
-
-    if (forceInstall() || executable.isNothing()) {
-      log(
-        "No Dependency-Check Core executable found. Downloading into:",
-        binDir,
-      );
-      executable = Maybe.of(
-        await installDependencyCheck(
-          binDir,
-          getOdcVersion(),
-          getProxyUrl(),
-          getGitHubToken(),
-        ),
-      );
-      log("Download done.");
-    }
+    executable = Maybe.of(
+      await installDependencyCheck(
+        getBinDir(),
+        getOdcVersion(),
+        getProxyUrl(),
+        getGitHubToken(),
+        forceInstall(),
+      ),
+    );
   } else {
     log("Locally preinstalled (OWASP_BIN) Dependency-Check Core found.");
   }

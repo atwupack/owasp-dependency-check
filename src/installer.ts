@@ -1,4 +1,4 @@
-import { cleanDir, findOwaspExecutable } from "./utils.js";
+import { cleanDir, findOwaspExecutable, log } from "./utils.js";
 import fetch, { RequestInit } from "node-fetch";
 import { Downloader, DownloaderConfig } from "nodejs-file-downloader";
 import extract from "extract-zip";
@@ -12,21 +12,22 @@ const LATEST_RELEASE_URL =
 const TAG_RELEASE_URL =
   "https://api.github.com/repos/dependency-check/DependencyCheck/releases/tags/";
 
-interface GithubReleases {
-  assets?: {
+interface GithubRelease {
+  tag_name: string;
+  assets: {
     name: string;
     browser_download_url: string;
   }[];
 }
 
-async function findDownloadAsset(
-  odcVersion: string,
+async function findReleaseInfo(
+  odcVersion: Maybe<string>,
   proxyUrl: Maybe<URL>,
   githubToken: Maybe<string>,
 ) {
-  // if the odc version is the latest, use the latest URL, otherwise use version URL
-  const url =
-    odcVersion === "latest" ? LATEST_RELEASE_URL : TAG_RELEASE_URL + odcVersion;
+  const url = odcVersion.mapOrDefault((value) => {
+    return TAG_RELEASE_URL + value;
+  }, LATEST_RELEASE_URL);
   const init: RequestInit = {};
   proxyUrl.ifJust((proxyUrl) => {
     init.agent = new HttpsProxyAgent(proxyUrl);
@@ -40,13 +41,13 @@ async function findDownloadAsset(
   if (!res.ok) {
     throw new Error(`Could not fetch release from GitHub: ${res.statusText}`);
   }
-  const json = (await res.json()) as GithubReleases;
-  if (!json.assets) {
-    throw new Error("Could not find assets in release");
-  }
-  const asset = json.assets.find((a) => NAME_RE.test(a.name));
+  return (await res.json()) as GithubRelease;
+}
+
+function findDownloadAsset(release: GithubRelease) {
+  const asset = release.assets.find((a) => NAME_RE.test(a.name));
   if (!asset) {
-    throw new Error(`Could not find asset for version ${odcVersion}`);
+    throw new Error(`Could not find asset for version ${release.tag_name}`);
   }
   return asset;
 }
@@ -68,6 +69,7 @@ async function downloadRelease(
   const downloader = new Downloader(config);
   const report = await downloader.download();
   if (report.downloadStatus === "COMPLETE" && report.filePath) {
+    log("Download done.");
     return report.filePath;
   } else {
     throw new Error(`Download failed from ${url}`);
@@ -80,17 +82,15 @@ async function unzipRelease(filePath: string, installDir: string) {
   });
 }
 
-export async function installDependencyCheck(
-  binDir: string,
-  odcVersion: Maybe<string>,
+async function installRelease(
+  release: GithubRelease,
+  installDir: string,
   proxyUrl: Maybe<URL>,
-  githubToken: Maybe<string>,
 ) {
-  const version = odcVersion.orDefault("latest");
-  const installDir = path.resolve(binDir, version);
   await cleanDir(installDir);
 
-  const asset = await findDownloadAsset(version, proxyUrl, githubToken);
+  const asset = findDownloadAsset(release);
+
   const filePath = await downloadRelease(
     asset.browser_download_url,
     asset.name,
@@ -103,4 +103,24 @@ export async function installDependencyCheck(
       `Could not find Dependency-Check Core executable in ${installDir}`,
     );
   });
+}
+
+export async function installDependencyCheck(
+  binDir: string,
+  odcVersion: Maybe<string>,
+  proxyUrl: Maybe<URL>,
+  githubToken: Maybe<string>,
+  forceInstall: boolean,
+) {
+  const release = await findReleaseInfo(odcVersion, proxyUrl, githubToken);
+
+  const installDir = path.resolve(binDir, release.tag_name);
+  const executable = findOwaspExecutable(installDir).filter(
+    () => !forceInstall,
+  );
+  if (executable.isJust()) {
+    return executable.unsafeCoerce();
+  }
+
+  return await installRelease(release, installDir, proxyUrl);
 }
