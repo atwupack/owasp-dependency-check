@@ -10,7 +10,7 @@ import os from "os";
 
 const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
 const LATEST_RELEASE_URL =
-  "https://api.github.com/repos/dependency-check/DependencyCheck/releases/latest";
+  "https://api.github.com/repos/dependency-check/DependencyCheck/releases/lates";
 const TAG_RELEASE_URL =
   "https://api.github.com/repos/dependency-check/DependencyCheck/releases/tags/";
 const IS_WIN = os.platform() === "win32";
@@ -50,9 +50,12 @@ async function findReleaseInfo(
       Authorization: `Bearer ${token}`,
     };
   });
+  log(`Fetching release information from ${url}`);
   const res = await fetch(url, init);
   if (!res.ok) {
-    throw new Error(`Could not fetch release from GitHub: ${res.statusText}`);
+    throw new Error(
+      `Could not fetch release from GitHub: URL:${url} Status:${res.statusText}`,
+    );
   }
   return (await res.json()) as GithubRelease;
 }
@@ -80,6 +83,7 @@ async function downloadRelease(
     config.proxy = proxyUrl.toString();
   });
   const downloader = new Downloader(config);
+  log(`Downloading dependency check from ${url}...`);
   const report = await downloader.download();
   if (report.downloadStatus === "COMPLETE" && report.filePath) {
     log("Download done.");
@@ -100,6 +104,7 @@ async function installRelease(
   installDir: string,
   proxyUrl: Maybe<URL>,
 ) {
+  log(`Installing dependency check ${release.tag_name}...`);
   await cleanDir(installDir);
 
   const asset = findDownloadAsset(release);
@@ -126,12 +131,16 @@ export async function installDependencyCheck(
   forceInstall: boolean,
 ) {
   const release = await findReleaseInfo(odcVersion, proxyUrl, githubToken);
+  log(`Found release ${release.tag_name} on GitHub.`);
 
   const installDir = path.resolve(binDir, release.tag_name);
   const executable = findOwaspExecutable(installDir).filter(
     () => !forceInstall,
   );
   if (executable.isJust()) {
+    log(
+      `Using already installed dependency check at "${executable.unsafeCoerce()}".`,
+    );
     return executable.unsafeCoerce();
   }
 

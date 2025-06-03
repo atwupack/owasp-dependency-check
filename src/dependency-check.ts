@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { ensureError, log } from "./utils.js";
+import { ensureError, log, logError } from "./utils.js";
 import { installDependencyCheck } from "./installer.js";
 import { executeDependencyCheck } from "./executor.js";
 import {
@@ -46,6 +46,6 @@ export async function run() {
 
 void run().catch((e: unknown) => {
   const error = ensureError(e);
-  console.error("An error occurred:", error.message);
+  logError("An error occurred:", error.message);
   exitProcess(1);
 });

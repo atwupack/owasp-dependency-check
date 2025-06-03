@@ -6,7 +6,7 @@ export async function cleanDir(dir: string) {
   const cleanResult = await rimraf.rimraf(dir);
 
   if (!cleanResult) {
-    console.error("Could not delete directory '%s'.", dir);
+    logError("Could not delete directory '%s'.", dir);
     return;
   }
 
@@ -20,6 +20,10 @@ export function log(...logData: string[]) {
       ...logData,
     ].join(" "),
   );
+}
+
+export function logError(...logData: string[]) {
+  console.log([colors.bgRed(colors.white(" ERROR: ")), ...logData].join(" "));
 }
 
 export function ensureError(value: unknown): Error {

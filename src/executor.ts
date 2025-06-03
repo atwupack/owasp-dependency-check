@@ -22,7 +22,7 @@ function executeVersionCheck(executable: string) {
     encoding: "utf-8",
   };
 
-  log("Running command:\n", versionCmd);
+  log("Running command:", versionCmd);
   const versionSpawn = spawn.sync(
     executable,
     versionCmdArguments,
@@ -63,7 +63,7 @@ function executeAnalysis(
 
   const dependencyCheckCmd = `${executable} ${hideSecrets(cmdArguments.join(" "))}`;
 
-  log("Running command:\n", dependencyCheckCmd);
+  log("Running command:", dependencyCheckCmd);
   const dependencyCheckSpawn = spawn.sync(
     executable,
     cmdArguments,

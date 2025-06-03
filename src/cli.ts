@@ -7,6 +7,7 @@ import path from "path";
 import os from "os";
 import fs, { readFileSync } from "fs";
 import { Maybe } from "purify-ts";
+import { ensureError, logError } from "./utils.js";
 
 const cli = program
   .allowExcessArguments()
@@ -161,7 +162,8 @@ function getProjectNameFromPackageJson() {
     const parsedJson = JSON.parse(packageJson) as { name: string };
     return parsedJson.name;
   } catch (e) {
-    console.error(e);
+    const error = ensureError(e);
+    logError(error.message);
   }
   return "Unknown Project";
 }
