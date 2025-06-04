@@ -2,7 +2,9 @@
 
 ## Version 0.6.0
 
-- Changed behaviour of the `--odc-version` parameter. If the version is not specified, the latest version of the OWASP Dependency Check tool will be used. The explicit value `latest` is no longer supported.
+- Changed behavior of the `--odc-version` parameter. If the version is not specified, the latest version of the OWASP Dependency Check tool will be used. The explicit value `latest` is no longer supported.
+- If no explicit version of the dependency-check-cli is specified, and the latest available version is not yet installed, it will be downloaded and used.
+- Added parameter `--hide-owasp-output` to not display logging from the dependency-check-cli during execution.
 
 ## Version 0.5.1
 

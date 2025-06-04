@@ -12,6 +12,7 @@ import {
   getOutDir,
   getOwaspBinary,
   getProxyUrl,
+  hideOwaspOutput,
 } from "./cli.js";
 import { Maybe } from "purify-ts";
 
@@ -37,6 +38,7 @@ export async function run() {
       getCmdArguments(),
       getOutDir(),
       getProxyUrl(),
+      hideOwaspOutput(),
     );
     result.ifJust((status) => {
       exitProcess(status);

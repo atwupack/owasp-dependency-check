@@ -10,7 +10,7 @@ import os from "os";
 
 const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
 const LATEST_RELEASE_URL =
-  "https://api.github.com/repos/dependency-check/DependencyCheck/releases/lates";
+  "https://api.github.com/repos/dependency-check/DependencyCheck/releases/latest";
 const TAG_RELEASE_URL =
   "https://api.github.com/repos/dependency-check/DependencyCheck/releases/tags/";
 const IS_WIN = os.platform() === "win32";

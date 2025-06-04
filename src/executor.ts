@@ -49,6 +49,7 @@ function executeAnalysis(
   executable: string,
   cmdArguments: string[],
   proxyUrl: Maybe<URL>,
+  hideOwaspOutput: boolean,
 ) {
   const env = process.env;
   proxyUrl.ifJust((proxyUrl) => {
@@ -58,7 +59,7 @@ function executeAnalysis(
   const dependencyCheckSpawnOpts: SpawnOptions = {
     cwd: path.resolve(process.cwd()),
     shell: false,
-    stdio: "inherit",
+    stdio: hideOwaspOutput ? "ignore" : "inherit",
   };
 
   const dependencyCheckCmd = `${executable} ${hideSecrets(cmdArguments.join(" "))}`;
@@ -83,12 +84,13 @@ export async function executeDependencyCheck(
   cmdArguments: string[],
   outDir: string,
   proxyUrl: Maybe<URL>,
+  hideOwaspOutput: boolean,
 ) {
   log("Dependency-Check Core path:", executable);
   await cleanDir(path.resolve(process.cwd(), outDir));
 
   executeVersionCheck(executable);
-  return executeAnalysis(executable, cmdArguments, proxyUrl);
+  return executeAnalysis(executable, cmdArguments, proxyUrl, hideOwaspOutput);
 }
 
 function buildJavaToolOptions(proxyUrl: URL) {

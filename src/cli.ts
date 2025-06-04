@@ -61,6 +61,11 @@ const cli = program
       .env("OWASP_BIN")
       .argParser(parseOwaspBinary),
   )
+  .option(
+    "--hide-owasp-output",
+    "do not display the output of the dependency-check-cli binary",
+    false,
+  )
   .option("--ignore-errors", "always exit with code 0", false)
   .option(
     "-d, --data <path>",
@@ -94,6 +99,10 @@ The following environment variables are supported:
 - GITHUB_TOKEN: personal GitHub token to authenticate against API`,
   )
   .parse();
+
+export function hideOwaspOutput() {
+  return cli.opts().hideOwaspOutput;
+}
 
 export function getOwaspBinary() {
   return Maybe.fromNullable(cli.opts().owaspBin);
