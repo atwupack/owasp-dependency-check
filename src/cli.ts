@@ -9,7 +9,7 @@ import fs, { readFileSync } from "fs";
 import { Maybe } from "purify-ts";
 import { ensureError, logError } from "./utils.js";
 
-const cli = program
+const command = program
   .allowExcessArguments()
   .allowUnknownOption()
   .option(
@@ -100,65 +100,50 @@ The following environment variables are supported:
   )
   .parse();
 
-export function hideOwaspOutput() {
-  return cli.opts().hideOwaspOutput;
-}
+const cli = {
+  hideOwaspOutput: command.opts().hideOwaspOutput,
+  owaspBinary: Maybe.fromNullable(command.opts().owaspBin),
+  proxyUrl: Maybe.fromNullable(command.opts().proxy),
+  githubToken: Maybe.fromNullable(command.opts().githubToken),
+  outDir: command.opts().out,
+  forceInstall: command.opts().forceInstall,
+  odcVersion: Maybe.fromNullable(command.opts().odcVersion),
+  binDir: path.resolve(command.opts().bin),
+  nvdApiKey: getNvdApiKey(),
+  projectName: getProjectName(),
+  cmdArguments: getCmdArguments(),
+  ignoreErrors: command.opts().ignoreErrors,
+};
 
-export function getOwaspBinary() {
-  return Maybe.fromNullable(cli.opts().owaspBin);
-}
+export default cli;
 
-export function getProxyUrl() {
-  return Maybe.fromNullable(cli.opts().proxy);
-}
-
-export function getGitHubToken() {
-  return Maybe.fromNullable(cli.opts().githubToken);
-}
-
-export function getOutDir() {
-  return cli.opts().out;
-}
-
-export function forceInstall() {
-  return cli.opts().forceInstall;
-}
-
-export function getOdcVersion() {
-  return Maybe.fromNullable(cli.opts().odcVersion);
-}
-
-export function getBinDir() {
-  return path.resolve(cli.opts().bin);
+function getProjectName() {
+  return Maybe.fromNullable(command.opts().project);
 }
 
 function getNvdApiKey() {
-  return Maybe.fromNullable(cli.opts().nvdApiKey);
+  return Maybe.fromNullable(command.opts().nvdApiKey);
 }
 
-function getProject() {
-  return Maybe.fromNullable(cli.opts().project);
-}
-
-export function getCmdArguments() {
-  const args = ["--out", cli.opts().out, ...cli.args];
+function getCmdArguments() {
+  const args = ["--out", command.opts().out, ...command.args];
 
   getNvdApiKey().ifJust((key) => {
     args.push("--nvdApiKey", key);
   });
 
-  cli.opts().scan.forEach((scan) => {
+  command.opts().scan.forEach((scan) => {
     args.push("--scan", scan);
   });
 
   args.push(
     "--project",
-    getProject().orDefaultLazy(getProjectNameFromPackageJson),
+    getProjectName().orDefaultLazy(getProjectNameFromPackageJson),
   );
 
-  args.push("--data", cli.opts().data);
+  args.push("--data", command.opts().data);
 
-  cli.opts().format.forEach((format) => {
+  command.opts().format.forEach((format) => {
     args.push("--format", format);
   });
 
@@ -194,12 +179,4 @@ function parseOwaspBinary(value: string) {
     throw new InvalidArgumentError("Invalid path to OWASP binary");
   }
   return binPath;
-}
-
-export function exitProcess(code: number | null) {
-  if (cli.opts().ignoreErrors) {
-    process.exit(0);
-  } else {
-    process.exit(code);
-  }
 }

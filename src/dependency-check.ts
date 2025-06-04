@@ -1,31 +1,20 @@
 #!/usr/bin/env node
-import { ensureError, log, logError } from "./utils.js";
+import { ensureError, exitProcess, log, logError } from "./utils.js";
 import { installDependencyCheck } from "./installer.js";
 import { executeDependencyCheck } from "./executor.js";
-import {
-  exitProcess,
-  forceInstall,
-  getBinDir,
-  getCmdArguments,
-  getGitHubToken,
-  getOdcVersion,
-  getOutDir,
-  getOwaspBinary,
-  getProxyUrl,
-  hideOwaspOutput,
-} from "./cli.js";
+import cli from "./cli.js";
 import { Maybe } from "purify-ts";
 
 export async function run() {
-  let executable = getOwaspBinary();
+  let executable = cli.owaspBinary;
   if (executable.isNothing()) {
     executable = Maybe.of(
       await installDependencyCheck(
-        getBinDir(),
-        getOdcVersion(),
-        getProxyUrl(),
-        getGitHubToken(),
-        forceInstall(),
+        cli.binDir,
+        cli.odcVersion,
+        cli.proxyUrl,
+        cli.githubToken,
+        cli.forceInstall,
       ),
     );
   } else {
@@ -35,13 +24,13 @@ export async function run() {
   executable.ifJust(async (executable) => {
     const result = await executeDependencyCheck(
       executable,
-      getCmdArguments(),
-      getOutDir(),
-      getProxyUrl(),
-      hideOwaspOutput(),
+      cli.cmdArguments,
+      cli.outDir,
+      cli.proxyUrl,
+      cli.hideOwaspOutput,
     );
     result.ifJust((status) => {
-      exitProcess(status);
+      exitProcess(status, cli.ignoreErrors);
     });
   });
 }
@@ -49,5 +38,5 @@ export async function run() {
 void run().catch((e: unknown) => {
   const error = ensureError(e);
   logError("An error occurred:", error.message);
-  exitProcess(1);
+  exitProcess(1, cli.ignoreErrors);
 });

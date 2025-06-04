@@ -46,3 +46,11 @@ const SECRET_REGEX = /(--\S*(?:key|token|pass)[^\s=]*(?:=| +))(\S*)/gi;
 export function hideSecrets(input: string) {
   return input.replace(SECRET_REGEX, "$1<secret value>");
 }
+
+export function exitProcess(code: number | null, ignoreErrors: boolean) {
+  if (ignoreErrors) {
+    process.exit(0);
+  } else {
+    process.exit(code);
+  }
+}

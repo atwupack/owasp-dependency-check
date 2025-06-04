@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import * as assert from "node:assert/strict";
-import { ensureError, hideSecrets, log } from "./utils.js";
+import { ensureError, exitProcess, hideSecrets, log } from "./utils.js";
 import sinon from "sinon";
 
 void describe("utils.ts", () => {
@@ -80,6 +80,33 @@ void describe("utils.ts", () => {
           assert.ok(input);
         });
       log("Test");
+      sinon.restore();
+    });
+  });
+
+  void describe("exitProcess", () => {
+    void it("should exit with code 0 when not ignoring errors and called with 0", () => {
+      const exitMock = sinon.mock(process);
+      exitMock.expects("exit").once().withExactArgs(0);
+      exitProcess(0, false);
+      sinon.restore();
+    });
+    void it("should exit with code 0 when ignoring errors and called with 0", () => {
+      const exitMock = sinon.mock(process);
+      exitMock.expects("exit").once().withExactArgs(0);
+      exitProcess(0, true);
+      sinon.restore();
+    });
+    void it("should exit with code 1 when not ignoring errors and called with 1", () => {
+      const exitMock = sinon.mock(process);
+      exitMock.expects("exit").once().withExactArgs(1);
+      exitProcess(1, false);
+      sinon.restore();
+    });
+    void it("should exit with code 0 when ignoring errors and called with 1", () => {
+      const exitMock = sinon.mock(process);
+      exitMock.expects("exit").once().withExactArgs(0);
+      exitProcess(1, true);
       sinon.restore();
     });
   });
