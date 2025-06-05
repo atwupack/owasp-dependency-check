@@ -21,9 +21,9 @@ export async function run() {
     log("Locally preinstalled (OWASP_BIN) Dependency-Check Core found.");
   }
 
-  executable.ifJust(async (executable) => {
+  if (executable.isJust()) {
     const result = await executeDependencyCheck(
-      executable,
+      executable.unsafeCoerce(),
       cli.cmdArguments,
       cli.outDir,
       cli.proxyUrl,
@@ -32,11 +32,11 @@ export async function run() {
     result.ifJust((status) => {
       exitProcess(status, cli.ignoreErrors);
     });
-  });
+  }
 }
 
 void run().catch((e: unknown) => {
   const error = ensureError(e);
-  logError("An error occurred:", error.message);
+  logError(error.message);
   exitProcess(1, cli.ignoreErrors);
 });
