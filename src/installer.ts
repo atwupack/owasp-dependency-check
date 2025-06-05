@@ -1,12 +1,11 @@
 import { cleanDir, log } from "./utils.js";
-import fetch, { RequestInit } from "node-fetch";
 import { Downloader, DownloaderConfig } from "nodejs-file-downloader";
 import extract from "extract-zip";
-import { HttpsProxyAgent } from "https-proxy-agent";
 import { Maybe } from "purify-ts";
 import path from "path";
 import fs from "fs";
 import os from "os";
+import { fetch, ProxyAgent, RequestInit } from "undici";
 
 const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
 const LATEST_RELEASE_URL =
@@ -43,7 +42,7 @@ async function findReleaseInfo(
   }, LATEST_RELEASE_URL);
   const init: RequestInit = {};
   proxyUrl.ifJust((proxyUrl) => {
-    init.agent = new HttpsProxyAgent(proxyUrl);
+    init.dispatcher = new ProxyAgent(proxyUrl.toString());
   });
   githubToken.ifJust((token) => {
     init.headers = {
