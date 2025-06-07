@@ -4,8 +4,8 @@
 [![npm-publish](https://github.com/atwupack/owasp-dependency-check/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/atwupack/owasp-dependency-check/actions/workflows/npm-publish.yml)
 [![npm version](https://badge.fury.io/js/owasp-dependency-check.svg)](https://badge.fury.io/js/owasp-dependency-check)
 
-> ⚠️ If you are a user of version 0.0.x, please note the following.
-> - From version 0.6 onwards, this package is maintained at [atwupack/owasp-dependency-check](https://github.com/atwupack/owasp-dependency-check).
+> ⚠️ If you are upgrading from version 0.0.x, please note the following.
+> - This package is maintained at [atwupack/owasp-dependency-check](https://github.com/atwupack/owasp-dependency-check).
 > - New features as proxy support and GitHub authentication have been added.
 > - There have been minor changes like the removal of `latest` and returning the result code from the dependency-check-cli which could cause problems after upgrading.
 > - Please check the [CHANGELOG](https://github.com/atwupack/owasp-dependency-check/blob/main/CHANGELOG.md) if you run into any problems.
