@@ -8,6 +8,7 @@ import os from "os";
 import fs, { readFileSync } from "fs";
 import { Maybe } from "purify-ts";
 import { ensureError, logError } from "./utils.js";
+import { version } from "./version.js";
 
 const command = program
   .allowExcessArguments()
@@ -77,11 +78,7 @@ const command = program
     "HTML",
     "JSON",
   ])
-  .version(
-    process.env.npm_package_version ?? "<unknown>",
-    undefined,
-    "print the version of the node module",
-  )
+  .version(version, undefined, "print the version of owasp-dependency-check")
   .addHelpText(
     "afterAll",
     `

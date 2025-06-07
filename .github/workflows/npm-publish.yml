@@ -16,6 +16,7 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
+      - run: npm run build
       - run: npm run eslint
       - run: npm run knip -- --strict
 
