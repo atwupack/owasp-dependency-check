@@ -22,10 +22,9 @@
     "build": "tsc",
     "test": "node --test dist/*.spec.js",
     "coverage": "node --experimental-test-coverage --test dist/*.spec.js",
-    "eslint": "eslint .",
-    "knip": "knip",
     "owasp": "node dist/dependency-check.js --data dependency-check-data",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "validate": "eslint . && knip && prettier . --check && knip"
   },
   "contributors": [
     {

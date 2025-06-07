@@ -16,8 +16,7 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
-      - run: npm run eslint
-      - run: npm run knip -- --strict
+      - run: npm run validate
 
   publish-npm:
     needs: validate

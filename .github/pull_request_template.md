@@ -4,10 +4,10 @@ Related issue:
 
 ### Validations
 
+- [ ] Run `npm run format` successfully
 - [ ] Run `npm run build` successfully
-- [ ] Run `npm run eslint` successfully
-- [ ] Run `npm run knip` successfully
-- [ ] Run `npx prettier . --write`
+- [ ] Run `npm run validate` successfully
+- [ ] Run `npm run test` successfully
 
 ### Additional notes
 
