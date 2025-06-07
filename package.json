@@ -19,7 +19,7 @@
     "owasp-dependency-check": "dist/dependency-check.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "genversion -d -s -e src/version.ts && tsc",
     "test": "node --test dist/*.spec.js",
     "coverage": "node --experimental-test-coverage --test dist/*.spec.js",
     "owasp": "node dist/dependency-check.js --data dependency-check-data",
@@ -65,6 +65,7 @@
     "eslint": "^9.26.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.0",
+    "genversion": "^3.2.0",
     "knip": "^5.55.1",
     "prettier": "3.5.3",
     "sinon": "^20.0.0",
