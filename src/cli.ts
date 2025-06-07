@@ -82,7 +82,7 @@ const command = program
   .addHelpText(
     "afterAll",
     `
-You can also use any arguments supported by the Owasp Dependency Check CLI tool, see: https://jeremylong.github.io/DependencyCheck/dependency-check-cli/arguments.html
+You can also use any arguments supported by the dependency-check-cli, see: https://jeremylong.github.io/DependencyCheck/dependency-check-cli/arguments.html
 
 Some defaults are provided:
 - project    Default: "name" from package.json in working directory
@@ -91,7 +91,7 @@ Some defaults are provided:
 - scan       Default: package-lock.json in working directory
 
 The following environment variables are supported:
-- OWASP_BIN: path to a local installation of the Owasp Dependency Check CLI tool
+- OWASP_BIN: path to a local installation of the dependency-check-cli
 - NVD_API_KET: personal NVD API key to authenticate against API
 - GITHUB_TOKEN: personal GitHub token to authenticate against API`,
   )

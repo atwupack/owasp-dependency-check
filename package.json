@@ -1,7 +1,7 @@
 {
   "name": "owasp-dependency-check",
   "version": "0.6.2",
-  "description": "A Node.js wrapper for the CLI version of OWASP dependency-check tool.",
+  "description": "A Node.js wrapper for the OWASP dependency-check-cli.",
   "keywords": [
     "owasp",
     "security"

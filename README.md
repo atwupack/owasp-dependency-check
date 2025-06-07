@@ -14,7 +14,13 @@
 
 > ⚠️ Requires **Node.js** version 18 or greater.
 
-Node.js wrapper for the [OWASP dependency-check CLI tool](https://dependency-check.github.io/DependencyCheck/).
+## Introduction
+
+This package is a Node.js wrapper for the [OWASP dependency-check-cli](https://dependency-check.github.io/DependencyCheck/).
+
+It is based on the work of [etnetera/owasp-dependency-check](https://github.com/etnetera/owasp-dependency-check).
+
+## Installation
 
 ```
 npm install -D owasp-dependency-check
