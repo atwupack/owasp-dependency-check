@@ -24,7 +24,8 @@
     "coverage": "node --experimental-test-coverage --test dist/*.spec.js",
     "owasp": "node dist/dependency-check.js --data dependency-check-data",
     "format": "prettier . --write",
-    "validate": "eslint . && knip && prettier . --check && knip"
+    "validate": "eslint . && knip && prettier . --check",
+    "validate-release": "eslint . && knip --strict && prettier . --check"
   },
   "contributors": [
     {
