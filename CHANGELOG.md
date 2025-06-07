@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased Changes
+
+- Fixed output of the `--version` parameter.
+
 ## Version 0.6.0
 
 - Changed behavior of the `--odc-version` parameter. If the version is not specified, the latest version of the OWASP Dependency Check tool will be used. The explicit value `latest` is no longer supported.

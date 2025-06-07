@@ -16,7 +16,8 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
-      - run: npm run validate
+      - run: npm run build
+      - run: npm run validate-release
 
   publish-npm:
     needs: validate
