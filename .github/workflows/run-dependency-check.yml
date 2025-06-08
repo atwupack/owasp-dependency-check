@@ -10,13 +10,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - id: cache-version
+        run: echo "cachedate=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
       - id: cache-odc-data-bin
         uses: actions/cache@v4
         with:
           path: |
             dependency-check-data
             dependency-check-bin
-          key: dependency-check-cache-${{ github.run_id }}
+          key: dependency-check-cache-${{ steps.cache-version.outputs.cachedate }}
           restore-keys: |
             dependency-check-cache-
       - run: npm ci
