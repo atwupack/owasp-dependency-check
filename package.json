@@ -49,11 +49,9 @@
     "@types/node": "^22.15.14",
     "cross-spawn": "^7.0.6",
     "extract-zip": "^2.0.1",
-    "https-proxy-agent": "^7.0.6n",
-    "node-fetch": "^3.3.2",
-    "nodejs-file-downloader": "^4.13.0",
     "purify-ts": "^2.1.0",
-    "rimraf": "^6.0.1"
+    "rimraf": "^6.0.1",
+    "undici": "^7.10.0"
   },
   "engines": {
     "node": ">=18"

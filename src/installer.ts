@@ -1,12 +1,11 @@
 import { cleanDir, log } from "./utils.js";
-import fetch, { RequestInit } from "node-fetch";
-import { Downloader, DownloaderConfig } from "nodejs-file-downloader";
 import extract from "extract-zip";
-import { HttpsProxyAgent } from "https-proxy-agent";
 import { Maybe } from "purify-ts";
 import path from "path";
 import fs from "fs";
 import os from "os";
+import { fetch, ProxyAgent, RequestInit } from "undici";
+import fsp from "node:fs/promises";
 
 const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
 const LATEST_RELEASE_URL =
@@ -41,17 +40,8 @@ async function findReleaseInfo(
   const url = odcVersion.mapOrDefault((value) => {
     return TAG_RELEASE_URL + value;
   }, LATEST_RELEASE_URL);
-  const init: RequestInit = {};
-  proxyUrl.ifJust((proxyUrl) => {
-    init.agent = new HttpsProxyAgent(proxyUrl);
-  });
-  githubToken.ifJust((token) => {
-    init.headers = {
-      Authorization: `Bearer ${token}`,
-    };
-  });
   log(`Fetching release information from ${url}`);
-  const res = await fetch(url, init);
+  const res = await fetch(url, createRequestInit(proxyUrl, githubToken));
   if (!res.ok) {
     throw new Error(
       `Could not fetch release from GitHub: URL:${url} Status:${res.statusText}`,
@@ -74,23 +64,29 @@ async function downloadRelease(
   installDir: string,
   proxyUrl: Maybe<URL>,
 ) {
-  const config: DownloaderConfig = {
-    url: url,
-    directory: installDir,
-    fileName: name,
-  };
-  proxyUrl.ifJust((proxyUrl) => {
-    config.proxy = proxyUrl.toString();
-  });
-  const downloader = new Downloader(config);
   log(`Downloading dependency check from ${url}...`);
-  const report = await downloader.download();
-  if (report.downloadStatus === "COMPLETE" && report.filePath) {
+  const response = await fetch(url, createRequestInit(proxyUrl, Maybe.empty()));
+  const filepath = path.resolve(installDir, name);
+  if (response.body) {
+    await fsp.writeFile(filepath, response.body);
     log("Download done.");
-    return report.filePath;
+    return filepath;
   } else {
     throw new Error(`Download failed from ${url}`);
   }
+}
+
+function createRequestInit(proxyUrl: Maybe<URL>, githubToken: Maybe<string>) {
+  const init: RequestInit = {};
+  proxyUrl.ifJust((proxyUrl) => {
+    init.dispatcher = new ProxyAgent(proxyUrl.toString());
+  });
+  githubToken.ifJust((token) => {
+    init.headers = {
+      Authorization: `Bearer ${token}`,
+    };
+  });
+  return init;
 }
 
 async function unzipRelease(filePath: string, installDir: string) {
