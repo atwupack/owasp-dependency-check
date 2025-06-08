@@ -1,0 +1,27 @@
+name: run-dependency-check
+
+on:
+  workflow_dispatch
+
+jobs:
+  run-depedency-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - id: cache-odc-data
+        uses: actions/cache@v4
+        with:
+          path: |
+            dependency-check-data
+            dependency-check-bin
+          key: ${{ runner.os }}-odc-data
+      - run: npm ci
+      - run: npm run build
+      - run: npm install -g .
+      - run: npx owasp-dependency-check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
