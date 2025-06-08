@@ -1,5 +1,5 @@
 import { rimraf } from "rimraf";
-import { mkdir } from "fs/promises";
+import fs from "fs/promises";
 import colors from "@colors/colors/safe.js";
 
 export async function cleanDir(dir: string) {
@@ -10,7 +10,7 @@ export async function cleanDir(dir: string) {
     return;
   }
 
-  await mkdir(dir, { recursive: true });
+  await fs.mkdir(dir, { recursive: true });
 }
 
 export function log(...logData: string[]) {

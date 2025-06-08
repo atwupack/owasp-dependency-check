@@ -1,9 +1,37 @@
 import { describe, it } from "node:test";
 import * as assert from "node:assert/strict";
-import { ensureError, exitProcess, hideSecrets, log } from "./utils.js";
+import {
+  cleanDir,
+  ensureError,
+  exitProcess,
+  hideSecrets,
+  log,
+} from "./utils.js";
 import sinon from "sinon";
+import { rimraf } from "rimraf";
+import fs from "fs/promises";
 
 void describe("utils.ts", () => {
+  void describe("cleanDir", () => {
+    void it("should log an error if directory could not be removed", async () => {
+      const rimrafMock = sinon.mock(rimraf);
+      rimrafMock.expects("rimraf").once().withExactArgs("test").resolves(false);
+      const consoleMock = sinon.mock(console);
+      consoleMock.expects("log").once();
+      await cleanDir("test");
+      rimrafMock.verify();
+      consoleMock.verify();
+    });
+    void it("should re-create the directory after successful removal", async () => {
+      const rimrafMock = sinon.mock(rimraf);
+      rimrafMock.expects("rimraf").once().withExactArgs("test").resolves(true);
+      const fsMock = sinon.mock(fs);
+      fsMock.expects("mkdir").once().withArgs("test");
+      await cleanDir("test");
+      rimrafMock.verify();
+      fsMock.verify();
+    });
+  });
   void describe("hideSecrets", () => {
     void it("should filter parameter with equal sign", () => {
       const result = hideSecrets("--nvdApiKey=1234567890");
@@ -72,15 +100,15 @@ void describe("utils.ts", () => {
 
   void describe("log", () => {
     void it("should log to console", () => {
-      sinon
-        .mock(console)
+      const consoleMock = sinon.mock(console);
+      consoleMock
         .expects("log")
         .once()
         .callsFake((input) => {
           assert.ok(input);
         });
       log("Test");
-      sinon.restore();
+      consoleMock.verify();
     });
   });
 
@@ -89,25 +117,25 @@ void describe("utils.ts", () => {
       const exitMock = sinon.mock(process);
       exitMock.expects("exit").once().withExactArgs(0);
       exitProcess(0, false);
-      sinon.restore();
+      exitMock.verify();
     });
     void it("should exit with code 0 when ignoring errors and called with 0", () => {
       const exitMock = sinon.mock(process);
       exitMock.expects("exit").once().withExactArgs(0);
       exitProcess(0, true);
-      sinon.restore();
+      exitMock.verify();
     });
     void it("should exit with code 1 when not ignoring errors and called with 1", () => {
       const exitMock = sinon.mock(process);
       exitMock.expects("exit").once().withExactArgs(1);
       exitProcess(1, false);
-      sinon.restore();
+      exitMock.verify();
     });
     void it("should exit with code 0 when ignoring errors and called with 1", () => {
       const exitMock = sinon.mock(process);
       exitMock.expects("exit").once().withExactArgs(0);
       exitProcess(1, true);
-      sinon.restore();
+      exitMock.verify();
     });
   });
 });
