@@ -31,6 +31,9 @@ jobs:
         with:
           path: dependency-check-reports
   deploy-report-on-gh-pages:
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
