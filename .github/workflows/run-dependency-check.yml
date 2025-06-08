@@ -20,7 +20,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm install -g .
-      - run: npx owasp-dependency-check
+      - run: npx owasp-dependency-check --data dependency-check-data
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
