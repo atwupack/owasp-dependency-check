@@ -10,17 +10,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - id: cache-odc-data
+      - id: cache-odc-data-bin
         uses: actions/cache@v4
         with:
           path: |
             dependency-check-data
             dependency-check-bin
-          key: ${{ runner.os }}-odc-data
+          key: dependency-check-cache-${{ github.run_id }}
+          restore-keys: |
+            dependency-check-cache-
       - run: npm ci
       - run: npm run build
       - run: npm install -g .
-      - run: npx owasp-dependency-check --data dependency-check-data
+      - run: npx owasp-dependency-check --data dependency-check-data -f HTML
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
