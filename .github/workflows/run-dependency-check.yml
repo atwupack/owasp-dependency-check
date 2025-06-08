@@ -1,7 +1,6 @@
 name: run-dependency-check
 
-on:
-  workflow_dispatch
+on: workflow_dispatch
 
 jobs:
   run-depedency-check:
@@ -24,4 +23,4 @@ jobs:
       - run: npx owasp-dependency-check
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
