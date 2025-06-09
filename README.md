@@ -16,7 +16,7 @@
 
 ## Introduction
 
-This package is a Node.js wrapper for the [OWASP dependency-check-cli](https://dependency-check.github.io/DependencyCheck/).
+This package is a Node.js wrapper for the [OWASP dependency-check-cli](https://dependency-check.github.io/DependencyCheck/dependency-check-cli/).
 
 It is based on the work of [etnetera/owasp-dependency-check](https://github.com/etnetera/owasp-dependency-check).
 
@@ -43,7 +43,7 @@ The easiest way is to add a new NPM script to your `package.json`, for example:
 
 ### Owasp Dependency Core options
 
-You can specify any options that the [OWASP dependency-check CLI tool](https://dependency-check.github.io/DependencyCheck/) provides. For example, to generate an HTML and JSON report, use:
+You can specify any arguments that the [OWASP dependency-check-cli](https://dependency-check.github.io/DependencyCheck/dependency-check-cli/arguments.html) provides. For example, to generate an HTML and JSON report, use:
 
 ```
 "scripts": {
