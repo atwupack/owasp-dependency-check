@@ -17,7 +17,7 @@ void describe("utils.ts", () => {
       const rimrafMock = sinon.mock(rimraf);
       rimrafMock.expects("rimraf").once().withExactArgs("test").resolves(false);
       const consoleMock = sinon.mock(console);
-      consoleMock.expects("log").once();
+      consoleMock.expects("error").once();
       await cleanDir("test");
       rimrafMock.verify();
       consoleMock.verify();
