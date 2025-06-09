@@ -23,7 +23,7 @@ export function log(...logData: string[]) {
 }
 
 export function logError(...logData: string[]) {
-  console.log([colors.bgRed(colors.white(" ERROR: ")), ...logData].join(" "));
+  console.error([colors.bgRed(colors.white(" ERROR: ")), ...logData].join(" "));
 }
 
 export function ensureError(value: unknown): Error {

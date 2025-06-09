@@ -108,7 +108,7 @@ const cli = {
   binDir: path.resolve(command.opts().bin),
   nvdApiKey: getNvdApiKey(),
   projectName: getProjectName(),
-  cmdArguments: getCmdArguments(),
+  cmdArguments: buildCmdArguments(),
   ignoreErrors: command.opts().ignoreErrors,
 };
 
@@ -122,7 +122,7 @@ function getNvdApiKey() {
   return Maybe.fromNullable(command.opts().nvdApiKey);
 }
 
-function getCmdArguments() {
+function buildCmdArguments() {
   const args = ["--out", command.opts().out, ...command.args];
 
   getNvdApiKey().ifJust((key) => {

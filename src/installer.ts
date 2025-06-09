@@ -44,7 +44,7 @@ async function findReleaseInfo(
   const res = await fetch(url, createRequestInit(proxyUrl, githubToken));
   if (!res.ok) {
     throw new Error(
-      `Could not fetch release from GitHub: URL:${url} Status:${res.statusText}`,
+      `Could not fetch release from GitHub: URL: ${url} Status: ${res.statusText}`,
     );
   }
   return (await res.json()) as GithubRelease;

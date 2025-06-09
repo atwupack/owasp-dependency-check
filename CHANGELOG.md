@@ -2,7 +2,8 @@
 
 ## Unreleased Changes
 
-- Fixed output of the `--version` parameter.
+- The output of the `--version` parameter was fixed. It now displays the version of owasp-dependency-check instead of the version of the analyzed project.
+- The dependencies `node-fetch` and `nodejs-file-downloader` have been replaced with `undici`.
 
 ## Version 0.6.0
 
