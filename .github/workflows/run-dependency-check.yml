@@ -1,9 +1,10 @@
-name: run-dependency-check
+name: Run dependency-check and deploy to GitHub pages
 
 on: workflow_dispatch
 
 jobs:
   run-dependency-check:
+    name: Analyze code with OWASP dependency-check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,6 +34,7 @@ jobs:
         with:
           path: dependency-check-reports
   deploy-report-on-gh-pages:
+    name: Deploy OWASP report on GitHub pages
     permissions:
       pages: write
       id-token: write

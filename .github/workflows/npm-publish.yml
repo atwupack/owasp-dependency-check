@@ -1,7 +1,4 @@
-# This workflow will run tests using node and then publish a package to NPM when a release is created
-# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
-
-name: npm-publish
+name: Publish new release to NPM registry
 
 on:
   release:
@@ -9,24 +6,26 @@ on:
 
 jobs:
   validate:
+    name: Validate release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 18
       - run: npm ci
       - run: npm run build
       - run: npm run validate-release
 
   publish-npm:
+    name: Publish to NPM
     needs: validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 18
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - run: npm run build
@@ -36,13 +35,14 @@ jobs:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
 
   check-published-package:
+    name: Check previously published package
     needs: publish-npm
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 18
       - run: npm install -g owasp-dependency-check
       - run: npx owasp-dependency-check --help
       - run: npx owasp-dependency-check --version
