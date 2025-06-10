@@ -45,8 +45,6 @@
   "dependencies": {
     "@colors/colors": "^1.6.0",
     "@commander-js/extra-typings": "^13.1.0",
-    "@types/cross-spawn": "^6.0.6",
-    "@types/node": "^22.15.14",
     "cross-spawn": "^7.0.6",
     "extract-zip": "^2.0.1",
     "purify-ts": "^2.1.0",
@@ -58,6 +56,8 @@
   },
   "main": "dist/dependency-check.js",
   "devDependencies": {
+    "@types/node": "^22.15.14",
+    "@types/cross-spawn": "^6.0.6",
     "@eslint/js": "^9.26.0",
     "@tsconfig/node18": "^18.2.4",
     "@types/sinon": "^17.0.4",
