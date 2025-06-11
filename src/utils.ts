@@ -1,5 +1,7 @@
 import fs from "fs/promises";
 import colors from "@colors/colors/safe.js";
+import extract from "extract-zip";
+import fsp from "node:fs/promises";
 
 export async function cleanDir(dir: string) {
   log(`Cleaning directory ${dir}`);
@@ -52,5 +54,18 @@ export function exitProcess(code: number | null, ignoreErrors: boolean) {
     process.exit(0);
   } else {
     process.exit(code);
+  }
+}
+
+export async function unzipFileIntoDirectory(
+  zipFile: string,
+  destDir: string,
+  deleteZip: boolean,
+) {
+  await extract(zipFile, {
+    dir: destDir,
+  });
+  if (deleteZip) {
+    await fsp.rm(zipFile);
   }
 }
