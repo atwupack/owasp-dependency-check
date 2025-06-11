@@ -5,9 +5,9 @@ import {
 } from "@commander-js/extra-typings";
 import path from "path";
 import os from "os";
-import fs, { readFileSync } from "fs";
+import fs from "fs";
 import { Maybe } from "purify-ts";
-import { ensureError, logError } from "./utils.js";
+import { ensureError, log, logError } from "./utils.js";
 import { version } from "./version.js";
 
 const command = program
@@ -148,15 +148,19 @@ function buildCmdArguments() {
 }
 
 function getProjectNameFromPackageJson() {
+  let projectName = "Unknown Project";
   try {
-    const packageJson = readFileSync(path.resolve("package.json")).toString();
+    const packageJson = fs
+      .readFileSync(path.resolve("package.json"))
+      .toString();
     const parsedJson = JSON.parse(packageJson) as { name: string };
-    return parsedJson.name;
+    projectName = parsedJson.name;
+    log(`Found project name "${projectName}" in package.json`);
   } catch (e) {
     const error = ensureError(e);
     logError(error.message);
   }
-  return "Unknown Project";
+  return projectName;
 }
 
 function parseProxyUrl(value: string) {

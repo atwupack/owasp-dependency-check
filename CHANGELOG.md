@@ -4,6 +4,8 @@
 
 - The output of the `--version` parameter was fixed. It now displays the version of owasp-dependency-check instead of the version of the analyzed project.
 - The dependencies `node-fetch` and `nodejs-file-downloader` have been replaced with `undici`.
+- The dependency `rimraf` has been replaced with `fsPromises.rm()`.
+- Remove the downloaded zip file after successfully unzipping it.
 
 ## Version 0.6.0
 

@@ -1,15 +1,17 @@
-import { rimraf } from "rimraf";
 import fs from "fs/promises";
 import colors from "@colors/colors/safe.js";
+import extract from "extract-zip";
+import fsp from "node:fs/promises";
 
 export async function cleanDir(dir: string) {
-  const cleanResult = await rimraf.rimraf(dir);
-
-  if (!cleanResult) {
-    logError("Could not delete directory '%s'.", dir);
+  log(`Cleaning directory ${dir}`);
+  try {
+    await fs.rm(dir, { recursive: true, force: true });
+  } catch (e) {
+    const error = ensureError(e);
+    logError(`Could not delete directory ${dir}. Error: ${error}`);
     return;
   }
-
   await fs.mkdir(dir, { recursive: true });
 }
 
@@ -52,5 +54,18 @@ export function exitProcess(code: number | null, ignoreErrors: boolean) {
     process.exit(0);
   } else {
     process.exit(code);
+  }
+}
+
+export async function unzipFileIntoDirectory(
+  zipFile: string,
+  destDir: string,
+  deleteZip: boolean,
+) {
+  await extract(zipFile, {
+    dir: destDir,
+  });
+  if (deleteZip) {
+    await fsp.rm(zipFile);
   }
 }

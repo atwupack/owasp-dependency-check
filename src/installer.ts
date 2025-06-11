@@ -1,5 +1,4 @@
-import { cleanDir, log } from "./utils.js";
-import extract from "extract-zip";
+import { cleanDir, log, unzipFileIntoDirectory } from "./utils.js";
 import { Maybe } from "purify-ts";
 import path from "path";
 import fs from "fs";
@@ -89,12 +88,6 @@ function createRequestInit(proxyUrl: Maybe<URL>, githubToken: Maybe<string>) {
   return init;
 }
 
-async function unzipRelease(filePath: string, installDir: string) {
-  await extract(filePath, {
-    dir: installDir,
-  });
-}
-
 async function installRelease(
   release: GithubRelease,
   installDir: string,
@@ -111,7 +104,7 @@ async function installRelease(
     installDir,
     proxyUrl,
   );
-  await unzipRelease(filePath, installDir);
+  await unzipFileIntoDirectory(filePath, installDir, true);
   return findOwaspExecutable(installDir).orDefaultLazy(() => {
     throw new Error(
       `Could not find Dependency-Check Core executable in ${installDir}`,

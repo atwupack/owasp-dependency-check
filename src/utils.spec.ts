@@ -8,27 +8,24 @@ import {
   log,
 } from "./utils.js";
 import sinon from "sinon";
-import { rimraf } from "rimraf";
 import fs from "fs/promises";
 
 void describe("utils.ts", () => {
   void describe("cleanDir", () => {
     void it("should log an error if directory could not be removed", async () => {
-      const rimrafMock = sinon.mock(rimraf);
-      rimrafMock.expects("rimraf").once().withExactArgs("test").resolves(false);
+      const fsMock = sinon.mock(fs);
+      fsMock.expects("rm").once().withArgs("test").rejects();
       const consoleMock = sinon.mock(console);
       consoleMock.expects("error").once();
       await cleanDir("test");
-      rimrafMock.verify();
+      fsMock.verify();
       consoleMock.verify();
     });
     void it("should re-create the directory after successful removal", async () => {
-      const rimrafMock = sinon.mock(rimraf);
-      rimrafMock.expects("rimraf").once().withExactArgs("test").resolves(true);
       const fsMock = sinon.mock(fs);
+      fsMock.expects("rm").once().withArgs("test").resolves(undefined);
       fsMock.expects("mkdir").once().withArgs("test");
       await cleanDir("test");
-      rimrafMock.verify();
       fsMock.verify();
     });
   });
