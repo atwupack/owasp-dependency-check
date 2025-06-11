@@ -1,15 +1,15 @@
-import { rimraf } from "rimraf";
 import fs from "fs/promises";
 import colors from "@colors/colors/safe.js";
 
 export async function cleanDir(dir: string) {
-  const cleanResult = await rimraf.rimraf(dir);
-
-  if (!cleanResult) {
-    logError("Could not delete directory '%s'.", dir);
+  log(`Cleaning directory ${dir}`);
+  try {
+    await fs.rm(dir, { recursive: true, force: true });
+  } catch (e) {
+    const error = ensureError(e);
+    logError(`Could not delete directory ${dir}. Error: ${error}`);
     return;
   }
-
   await fs.mkdir(dir, { recursive: true });
 }
 
