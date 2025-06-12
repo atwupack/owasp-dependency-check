@@ -48,7 +48,7 @@
     "cross-spawn": "^7.0.6",
     "extract-zip": "^2.0.1",
     "purify-ts": "^2.1.0",
-    "undici": "^6.21.3"
+    "undici": "^7.10.0"
   },
   "engines": {
     "node": ">=18"
