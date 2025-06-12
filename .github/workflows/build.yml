@@ -1,5 +1,6 @@
 name: Build app on main push/pr
-
+permissions:
+  contents: read
 on:
   push:
     branches: ["main"]

@@ -1,5 +1,6 @@
 name: Publish new release to NPM registry
-
+permissions:
+  contents: read
 on:
   release:
     types: [created]
