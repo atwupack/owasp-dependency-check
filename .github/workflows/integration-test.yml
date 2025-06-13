@@ -5,11 +5,12 @@ on: workflow_dispatch
 
 jobs:
   test:
-    name: Build and run for all supported Node.js versions
-    runs-on: ubuntu-latest
+    name: Run test
     strategy:
       matrix:
         node-version: [18, 20, 22, 23, 24]
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
