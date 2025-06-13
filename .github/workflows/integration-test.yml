@@ -1,0 +1,36 @@
+name: Integration Test
+permissions:
+  contents: read
+on: workflow_dispatch
+
+jobs:
+  test:
+    name: Build and run for all supported Node.js versions
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22, 23, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - id: cache-version
+        run: echo "cachedate=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+      - id: cache-odc-data-dir
+        uses: actions/cache@v4
+        with:
+          path: |
+            dependency-check-data
+          key: odc-data-cache-${{ steps.cache-version.outputs.cachedate }}
+          restore-keys: |
+            odc-data-cache-
+      - run: npm ci
+      - run: npm run build
+      - run: npm install -g .
+      - run: npx owasp-dependency-check --data dependency-check-data -f HTML
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
