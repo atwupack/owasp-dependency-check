@@ -13,11 +13,7 @@ import { version } from "./version.js";
 const command = program
   .allowExcessArguments()
   .allowUnknownOption()
-  .option(
-    "-o, --out <path>",
-    "the folder to write reports to",
-    "dependency-check-reports",
-  )
+  .optionsGroup("Installation options:")
   .option(
     "--bin <path>",
     "directory to which the dependency-check CLI will be installed",
@@ -48,28 +44,24 @@ const command = program
   )
   .addOption(
     new Option(
-      "--nvdApiKey <key>",
-      "NVD API key to authenticate against API",
-    ).env("NVD_API_KEY"),
-  )
-  .addOption(
-    new Option("--project <name>", "the name of the project being scanned").env(
-      "PROJECT_NAME",
-    ),
-  )
-  .addOption(
-    new Option(
       "--owasp-bin <path>",
       "the path to a preinstalled dependency-check-cli binary",
     )
       .env("OWASP_BIN")
       .argParser(parseOwaspBinary),
   )
+  .optionsGroup("Execution opations:")
   .option(
     "--hide-owasp-output",
     "do not display the output of the dependency-check-cli binary",
   )
   .option("--ignore-errors", "always exit with code 0")
+  .optionsGroup("OWASP dependency-check-cli options:")
+  .option(
+    "-o, --out <path>",
+    "the folder to write reports to",
+    "dependency-check-reports",
+  )
   .option(
     "-d, --data <path>",
     "the location of the data directory used to store persistent data",
@@ -80,7 +72,20 @@ const command = program
     "HTML",
     "JSON",
   ])
+  .addOption(
+    new Option(
+      "--nvdApiKey <key>",
+      "NVD API key to authenticate against API",
+    ).env("NVD_API_KEY"),
+  )
+  .addOption(
+    new Option("--project <name>", "the name of the project being scanned").env(
+      "PROJECT_NAME",
+    ),
+  )
+  .optionsGroup("General information:")
   .version(version, undefined, "print the version of owasp-dependency-check")
+  .helpOption("-h, --help", "display this help information")
   .addHelpText(
     "afterAll",
     `
