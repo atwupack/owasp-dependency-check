@@ -4,8 +4,17 @@ permissions:
 on: workflow_dispatch
 
 jobs:
+  current-date:
+    name: Get current date for cache
+    runs-on: ubuntu-latest
+    outputs:
+      date: ${{ steps.cache-version.outputs.cachedate }}
+    steps:
+      - id: cache-version
+        run: echo "cachedate=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
   test:
     name: Run test
+    needs: current-date
     strategy:
       max-parallel: 1
       matrix:
@@ -22,14 +31,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-      - id: cache-version
-        run: echo "cachedate=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
       - id: cache-odc-data-dir
         uses: actions/cache@v4
         with:
           path: |
             dependency-check-data
-          key: odc-data-cache-${{ steps.cache-version.outputs.cachedate }}
+          key: odc-data-cache-${{needs.current-date.outputs.date}}
           restore-keys: |
             odc-data-cache-
       - run: npm ci
