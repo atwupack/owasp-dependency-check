@@ -1,18 +1,20 @@
-import fs from "fs/promises";
 import colors from "@colors/colors/safe.js";
 import extract from "extract-zip";
-import fsp from "node:fs/promises";
+import fs from "node:fs/promises";
 
 export async function cleanDir(dir: string) {
   log(`Cleaning directory ${dir}`);
+  await deleteQuietly(dir, true);
+  await fs.mkdir(dir, { recursive: true });
+}
+
+async function deleteQuietly(path: string, recursive: boolean) {
   try {
-    await fs.rm(dir, { recursive: true, force: true });
+    await fs.rm(path, { force: true, recursive: recursive });
   } catch (e) {
     const error = ensureError(e);
-    logError(`Could not delete directory ${dir}. Error: ${error}`);
-    return;
+    logWarning(`Could not delete path "${path}. Reason: ${error}`);
   }
-  await fs.mkdir(dir, { recursive: true });
 }
 
 export function log(...logData: string[]) {
@@ -21,6 +23,12 @@ export function log(...logData: string[]) {
       colors.bgGreen(colors.white(" owasp-dependency-check: ")),
       ...logData,
     ].join(" "),
+  );
+}
+
+function logWarning(...logData: string[]) {
+  console.log(
+    [colors.bgYellow(colors.white(" WARNING: ")), ...logData].join(" "),
   );
 }
 
@@ -66,6 +74,6 @@ export async function unzipFileIntoDirectory(
     dir: destDir,
   });
   if (deleteZip) {
-    await fsp.rm(zipFile);
+    await deleteQuietly(zipFile, false);
   }
 }

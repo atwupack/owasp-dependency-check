@@ -1,4 +1,4 @@
-name: Build app on main push/pr
+name: Build main
 permissions:
   contents: read
 on:
@@ -8,34 +8,18 @@ on:
     branches: ["main"]
 
 jobs:
-  validate:
-    name: Validate code
+  build:
+    name: Build and test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - run: npm ci
-      - run: npm run build
-      - run: npm run validate
-
-  build:
-    name: Build and test for all supported Node.js versions
-    needs: validate
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18, 20, 22, 23, 24]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
           cache: "npm"
       - run: npm ci
       - run: npm run build
+      - run: npm run validate
       - run: npm test
       - run: npm install -g .
       - run: npx owasp-dependency-check --help

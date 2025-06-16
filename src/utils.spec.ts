@@ -12,11 +12,16 @@ import fs from "fs/promises";
 
 void describe("utils.ts", () => {
   void describe("cleanDir", () => {
-    void it("should log an error if directory could not be removed", async () => {
+    void it("should log a warning if directory could not be removed", async () => {
       const fsMock = sinon.mock(fs);
       fsMock.expects("rm").once().withArgs("test").rejects();
       const consoleMock = sinon.mock(console);
-      consoleMock.expects("error").once();
+      consoleMock
+        .expects("log")
+        .twice()
+        .callsFake((input) => {
+          assert.ok(input);
+        });
       await cleanDir("test");
       fsMock.verify();
       consoleMock.verify();
