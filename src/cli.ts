@@ -26,7 +26,6 @@ const command = program
   .option(
     "--force-install",
     "install the dependency-check CLI even if there already is one (will be overwritten)",
-    false,
   )
   .option(
     "--odc-version <version>",
@@ -65,9 +64,8 @@ const command = program
   .option(
     "--hide-owasp-output",
     "do not display the output of the dependency-check-cli binary",
-    false,
   )
-  .option("--ignore-errors", "always exit with code 0", false)
+  .option("--ignore-errors", "always exit with code 0")
   .option(
     "-d, --data <path>",
     "the location of the data directory used to store persistent data",
@@ -99,18 +97,18 @@ The following environment variables are supported:
   .parse();
 
 const cli = {
-  hideOwaspOutput: command.opts().hideOwaspOutput,
+  hideOwaspOutput: !!command.opts().hideOwaspOutput,
   owaspBinary: Maybe.fromNullable(command.opts().owaspBin),
   proxyUrl: Maybe.fromNullable(command.opts().proxy),
   githubToken: Maybe.fromNullable(command.opts().githubToken),
   outDir: command.opts().out,
-  forceInstall: command.opts().forceInstall,
+  forceInstall: !!command.opts().forceInstall,
   odcVersion: Maybe.fromNullable(command.opts().odcVersion),
   binDir: path.resolve(command.opts().bin),
   nvdApiKey: getNvdApiKey(),
   projectName: getProjectName(),
   cmdArguments: buildCmdArguments(),
-  ignoreErrors: command.opts().ignoreErrors,
+  ignoreErrors: !!command.opts().ignoreErrors,
 };
 
 export default cli;
