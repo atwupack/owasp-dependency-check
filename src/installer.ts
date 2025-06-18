@@ -133,5 +133,6 @@ export async function installDependencyCheck(
     return executable.unsafeCoerce();
   }
 
+  await cleanDir(binDir);
   return await installRelease(release, installDir, proxyUrl);
 }
