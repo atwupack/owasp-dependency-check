@@ -1,5 +1,9 @@
 # Changelog
 
+## Unrelease Changes
+
+- Clean `--bin` directory before installing a new version of the dependency-check-cli.
+
 ## Version 0.7.0
 
 - The output of the `--version` parameter was fixed. It now displays the version of owasp-dependency-check instead of the version of the analyzed project.
