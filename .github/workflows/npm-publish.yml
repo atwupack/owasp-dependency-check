@@ -1,4 +1,4 @@
-name: Publish new release to NPM registry
+name: Publish to NPM registry
 permissions:
   contents: read
 on:
