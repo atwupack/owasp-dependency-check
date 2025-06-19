@@ -8,7 +8,7 @@ import os from "os";
 import fs from "fs";
 import { Maybe } from "purify-ts";
 import { ensureError, log, logError } from "./utils.js";
-import { name, version } from "./version.js";
+import { name, version } from "./info.js";
 
 const command = program
   .allowExcessArguments()

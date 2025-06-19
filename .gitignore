@@ -6,4 +6,4 @@ out
 /.idea/
 /dependency-check-data/
 /dist/
-/src/version.ts
+/src/info.ts
