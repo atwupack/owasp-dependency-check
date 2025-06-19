@@ -50,7 +50,7 @@ const command = program
       .env("OWASP_BIN")
       .argParser(parseOwaspBinary),
   )
-  .optionsGroup("Execution opations:")
+  .optionsGroup("Execution options:")
   .option(
     "--hide-owasp-output",
     "do not display the output of the dependency-check-cli binary",
