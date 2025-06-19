@@ -8,11 +8,12 @@ import os from "os";
 import fs from "fs";
 import { Maybe } from "purify-ts";
 import { ensureError, log, logError } from "./utils.js";
-import { version } from "./version.js";
+import { name, version } from "./version.js";
 
 const command = program
   .allowExcessArguments()
   .allowUnknownOption()
+  .name(name)
   .option(
     "-o, --out <path>",
     "the folder to write reports to",
