@@ -1,6 +1,6 @@
 import extract from "extract-zip";
 import fs from "node:fs/promises";
-import { white} from "ansis";
+import { white } from "ansis";
 import { name } from "./info.js";
 
 export async function cleanDir(dir: string) {
@@ -28,9 +28,7 @@ export function log(...logData: string[]) {
 }
 
 function logWarning(...logData: string[]) {
-  console.log(
-    [white.bgYellow` WARNING: `, ...logData].join(" "),
-  );
+  console.log([white.bgYellow` WARNING: `, ...logData].join(" "));
 }
 
 export function logError(...logData: string[]) {
