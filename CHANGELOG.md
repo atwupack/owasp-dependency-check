@@ -3,6 +3,7 @@
 ## Unrelease Changes
 
 - Clean `--bin` directory before installing a new version of the dependency-check-cli.
+- Added parameter `--keep-old-versions` to prevent removal of other installations in `--bin` directory.
 
 ## Version 0.7.0
 
