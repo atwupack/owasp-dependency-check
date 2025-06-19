@@ -81,7 +81,7 @@ const command = program
     "HTML",
     "JSON",
   ])
-  .version(version, undefined, "print the version of owasp-dependency-check")
+  .version(version, undefined, `print the version of ${name}`)
   .addHelpText(
     "afterAll",
     `

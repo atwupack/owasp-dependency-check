@@ -1,6 +1,7 @@
 import colors from "@colors/colors/safe.js";
 import extract from "extract-zip";
 import fs from "node:fs/promises";
+import { name } from "./info.js";
 
 export async function cleanDir(dir: string) {
   log(`Cleaning directory ${dir}`);
@@ -19,10 +20,7 @@ async function deleteQuietly(path: string, recursive: boolean) {
 
 export function log(...logData: string[]) {
   console.log(
-    [
-      colors.bgGreen(colors.white(" owasp-dependency-check: ")),
-      ...logData,
-    ].join(" "),
+    [colors.bgGreen(colors.white(` ${name}: `)), ...logData].join(" "),
   );
 }
 
