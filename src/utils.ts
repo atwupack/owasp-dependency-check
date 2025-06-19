@@ -1,6 +1,6 @@
-import colors from "@colors/colors/safe.js";
 import extract from "extract-zip";
 import fs from "node:fs/promises";
+import { white } from "ansis";
 import { name } from "./info.js";
 
 export async function cleanDir(dir: string) {
@@ -19,19 +19,15 @@ async function deleteQuietly(path: string, recursive: boolean) {
 }
 
 export function log(...logData: string[]) {
-  console.log(
-    [colors.bgGreen(colors.white(` ${name}: `)), ...logData].join(" "),
-  );
+  console.log([white.bgGreen` ${name}: `, ...logData].join(" "));
 }
 
 function logWarning(...logData: string[]) {
-  console.log(
-    [colors.bgYellow(colors.white(" WARNING: ")), ...logData].join(" "),
-  );
+  console.log([white.bgYellow` WARNING: `, ...logData].join(" "));
 }
 
 export function logError(...logData: string[]) {
-  console.error([colors.bgRed(colors.white(" ERROR: ")), ...logData].join(" "));
+  console.error([white.bgRed` ERROR: `, ...logData].join(" "));
 }
 
 export function ensureError(value: unknown): Error {

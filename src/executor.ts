@@ -6,8 +6,8 @@ import {
   SpawnSyncOptionsWithStringEncoding,
 } from "child_process";
 import spawn from "cross-spawn";
-import colors from "@colors/colors/safe.js";
 import { Maybe } from "purify-ts";
+import { green } from "ansis";
 
 function executeVersionCheck(executable: string) {
   const versionCmdArguments = ["--version"];
@@ -75,7 +75,7 @@ function executeAnalysis(
     throw dependencyCheckSpawn.error;
   }
 
-  log(colors.green("Done."));
+  log(green`Done.`);
   return Maybe.fromNullable(dependencyCheckSpawn.status);
 }
 
