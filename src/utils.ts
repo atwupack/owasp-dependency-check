@@ -19,12 +19,7 @@ async function deleteQuietly(path: string, recursive: boolean) {
 }
 
 export function log(...logData: string[]) {
-  console.log(
-    [
-      white.bgGreen` ${name}: `,
-      ...logData,
-    ].join(" "),
-  );
+  console.log([white.bgGreen` ${name}: `, ...logData].join(" "));
 }
 
 function logWarning(...logData: string[]) {
