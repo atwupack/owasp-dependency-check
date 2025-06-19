@@ -28,6 +28,10 @@ const command = program
     "install the dependency-check CLI even if there already is one (will be overwritten)",
   )
   .option(
+    "--keep-old-versions",
+    "do not remove old versions of the dependency-check-cli",
+  )
+  .option(
     "--odc-version <version>",
     'the version of the dependency-check CLI to install in format "v1.2.3"',
   )
@@ -109,6 +113,7 @@ const cli = {
   projectName: getProjectName(),
   cmdArguments: buildCmdArguments(),
   ignoreErrors: !!command.opts().ignoreErrors,
+  keepOldVersions: !!command.opts().keepOldVersions,
 };
 
 export default cli;

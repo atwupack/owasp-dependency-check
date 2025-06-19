@@ -118,6 +118,7 @@ export async function installDependencyCheck(
   proxyUrl: Maybe<URL>,
   githubToken: Maybe<string>,
   forceInstall: boolean,
+  keepOldVersions: boolean,
 ) {
   const release = await findReleaseInfo(odcVersion, proxyUrl, githubToken);
   log(`Found release ${release.tag_name} on GitHub.`);
@@ -133,5 +134,8 @@ export async function installDependencyCheck(
     return executable.unsafeCoerce();
   }
 
+  if (!keepOldVersions) {
+    await cleanDir(binDir);
+  }
   return await installRelease(release, installDir, proxyUrl);
 }

@@ -15,6 +15,7 @@ export async function run() {
         cli.proxyUrl,
         cli.githubToken,
         cli.forceInstall,
+        cli.keepOldVersions,
       ),
     );
   } else {
