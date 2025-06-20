@@ -8,25 +8,29 @@ import os from "os";
 import fs from "fs";
 import { Maybe } from "purify-ts";
 import { ensureError, log, logError } from "./utils.js";
-import { name, version } from "./info.js";
+import { description, name, version } from "./info.js";
 
 const command = program
-  .allowExcessArguments()
   .allowUnknownOption()
   .name(name)
+  .description(description)
+  .argument(
+    "[args...]",
+    "additional arguments that will be passed to the dependency-check-cli",
+  )
   .option(
     "-o, --out <path>",
-    "the folder to write reports to",
+    "the directory the generated reports will be written into",
     "dependency-check-reports",
   )
   .option(
     "--bin <path>",
-    "directory to which the dependency-check CLI will be installed",
+    "the directory the dependency-check-cli will be installed into",
     "dependency-check-bin",
   )
   .option(
     "--force-install",
-    "install the dependency-check CLI even if there already is one (will be overwritten)",
+    "install the dependency-check-cli even if the version is already present (will be overwritten)",
   )
   .option(
     "--keep-old-versions",
@@ -34,11 +38,11 @@ const command = program
   )
   .option(
     "--odc-version <version>",
-    'the version of the dependency-check CLI to install in format "v1.2.3"',
+    "the version of the dependency-check-cli to install in the format: v1.2.3",
   )
   .option(
     "-p, --proxy <url>",
-    "the URL to a proxy server in the format http(s)://[user]:[password]@<server>:[port]",
+    "the URL of a proxy server in the format: http(s)://[user]:[password]@<server>:[port]",
     parseProxyUrl,
   )
   .addOption(
@@ -54,14 +58,14 @@ const command = program
     ).env("NVD_API_KEY"),
   )
   .addOption(
-    new Option("--project <name>", "the name of the project being scanned").env(
+    new Option("--project <name>", "the name of the project to be scanned").env(
       "PROJECT_NAME",
     ),
   )
   .addOption(
     new Option(
       "--owasp-bin <path>",
-      "the path to a preinstalled dependency-check-cli binary",
+      `the path to a preinstalled dependency-check-cli binary (.sh or .bat file)`,
     )
       .env("OWASP_BIN")
       .argParser(parseOwaspBinary),
@@ -77,7 +81,7 @@ const command = program
     path.join(os.tmpdir(), "dependency-check-data"),
   )
   .option("-s, --scan <path...>", "the paths to scan ", ["package-lock.json"])
-  .option("-f, --format <format...>", "the formats to generate", [
+  .option("-f, --format <format...>", "the formats of the report to generate", [
     "HTML",
     "JSON",
   ])

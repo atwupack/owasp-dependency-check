@@ -19,7 +19,7 @@
     "owasp-dependency-check": "dist/dependency-check.js"
   },
   "scripts": {
-    "build": "genversion -P name,version -d -s -e src/info.ts && tsc",
+    "build": "genversion -P name,version,description -d -s -e src/info.ts && tsc",
     "test": "node --test dist/*.spec.js",
     "coverage": "node --experimental-test-coverage --test dist/*.spec.js",
     "owasp": "node dist/dependency-check.js --data dependency-check-data",
