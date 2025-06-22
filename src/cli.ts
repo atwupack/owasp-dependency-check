@@ -7,7 +7,7 @@ import path from "path";
 import os from "os";
 import fs from "fs";
 import { Maybe } from "purify-ts";
-import { ensureError, log, logError } from "./utils.js";
+import { ensureError, log, logWarning } from "./utils.js";
 import { description, name, version } from "./info.js";
 
 const command = program
@@ -114,8 +114,6 @@ const cli = {
   forceInstall: !!command.opts().forceInstall,
   odcVersion: Maybe.fromNullable(command.opts().odcVersion),
   binDir: path.resolve(command.opts().bin),
-  nvdApiKey: getNvdApiKey(),
-  projectName: getProjectName(),
   cmdArguments: buildCmdArguments(),
   ignoreErrors: !!command.opts().ignoreErrors,
   keepOldVersions: !!command.opts().keepOldVersions,
@@ -123,18 +121,16 @@ const cli = {
 
 export default cli;
 
-function getProjectName() {
-  return Maybe.fromNullable(command.opts().project);
-}
-
-function getNvdApiKey() {
-  return Maybe.fromNullable(command.opts().nvdApiKey);
-}
-
 function buildCmdArguments() {
-  const args = ["--out", command.opts().out, ...command.args];
+  const args = [
+    "--out",
+    command.opts().out,
+    "--data",
+    command.opts().data,
+    ...command.args,
+  ];
 
-  getNvdApiKey().ifJust((key) => {
+  Maybe.fromNullable(command.opts().nvdApiKey).ifJust((key) => {
     args.push("--nvdApiKey", key);
   });
 
@@ -144,10 +140,8 @@ function buildCmdArguments() {
 
   args.push(
     "--project",
-    getProjectName().orDefaultLazy(getProjectNameFromPackageJson),
+    command.opts().project ?? getProjectNameFromPackageJson(),
   );
-
-  args.push("--data", command.opts().data);
 
   command.opts().format.forEach((format) => {
     args.push("--format", format);
@@ -167,7 +161,7 @@ function getProjectNameFromPackageJson() {
     log(`Found project name "${projectName}" in package.json`);
   } catch (e) {
     const error = ensureError(e);
-    logError(error.message);
+    logWarning(error.message);
   }
   return projectName;
 }
@@ -175,18 +169,27 @@ function getProjectNameFromPackageJson() {
 function parseProxyUrl(value: string) {
   const url = URL.parse(value);
   if (!url?.protocol || !url.hostname) {
-    throw new InvalidArgumentError("Invalid proxy URL");
+    throw new InvalidArgumentError("The proxy URL is invalid.");
   }
   if (url.protocol !== "http:" && url.protocol !== "https:") {
-    throw new InvalidArgumentError("Invalid HTTP(S) proxy URL");
+    throw new InvalidArgumentError("The proxy URL is not HTTP(S).");
   }
   return url;
 }
 
 function parseOwaspBinary(value: string) {
   const binPath = path.resolve(value);
-  if (!fs.existsSync(binPath)) {
-    throw new InvalidArgumentError("Invalid path to OWASP binary");
+  if (fs.existsSync(binPath)) {
+    const stat = fs.statSync(binPath);
+    if (!stat.isFile()) {
+      throw new InvalidArgumentError(
+        "The dependency-check-cli binary is not a file.",
+      );
+    }
+  } else {
+    throw new InvalidArgumentError(
+      "The dependency-check-cli binary does not exist.",
+    );
   }
   return binPath;
 }

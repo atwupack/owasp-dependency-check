@@ -22,7 +22,7 @@ export function log(...logData: string[]) {
   console.log([white.bgGreen` ${name}: `, ...logData].join(" "));
 }
 
-function logWarning(...logData: string[]) {
+export function logWarning(...logData: string[]) {
   console.log([white.bgYellow` WARNING: `, ...logData].join(" "));
 }
 
