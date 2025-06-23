@@ -43,7 +43,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@commander-js/extra-typings": "^13.1.0",
+    "@commander-js/extra-typings": "^14.0.0",
     "ansis": "^4.1.0",
     "cross-spawn": "^7.0.6",
     "extract-zip": "^2.0.1",

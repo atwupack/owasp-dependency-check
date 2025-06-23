@@ -5,6 +5,7 @@
 - Clean `--bin` directory before installing a new version of the dependency-check-cli.
 - Added parameter `--keep-old-versions` to prevent removal of other installations in `--bin` directory.
 - The dependency `@colors/colors` has been replaced with `ansis`.
+- The dependency `commander` has been upgraded to version 14.
 
 ## Version 0.7.0
 

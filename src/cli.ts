@@ -18,11 +18,7 @@ const command = program
     "[args...]",
     "additional arguments that will be passed to the dependency-check-cli",
   )
-  .option(
-    "-o, --out <path>",
-    "the directory the generated reports will be written into",
-    "dependency-check-reports",
-  )
+  .optionsGroup("Installation options:")
   .option(
     "--bin <path>",
     "the directory the dependency-check-cli will be installed into",
@@ -40,17 +36,48 @@ const command = program
     "--odc-version <version>",
     "the version of the dependency-check-cli to install in the format: v1.2.3",
   )
-  .option(
-    "-p, --proxy <url>",
-    "the URL of a proxy server in the format: http(s)://[user]:[password]@<server>:[port]",
-    parseProxyUrl,
-  )
   .addOption(
     new Option(
       "--github-token <token>",
       "GitHub token to authenticate against API",
     ).env("GITHUB_TOKEN"),
   )
+  .addOption(
+    new Option(
+      "--owasp-bin <path>",
+      `the path to a preinstalled dependency-check-cli binary (.sh or .bat file)`,
+    )
+      .env("OWASP_BIN")
+      .argParser(parseOwaspBinary),
+  )
+  .optionsGroup("Execution options:")
+  .option(
+    "--hide-owasp-output",
+    "do not display the output of the dependency-check-cli binary",
+  )
+  .option("--ignore-errors", "always exit with code 0")
+  .optionsGroup("Network options:")
+  .option(
+    "-p, --proxy <url>",
+    "the URL of a proxy server in the format: http(s)://[user]:[password]@<server>:[port]",
+    parseProxyUrl,
+  )
+  .optionsGroup("OWASP dependency-check-cli options:")
+  .option(
+    "-o, --out <path>",
+    "the directory the generated reports will be written into",
+    "dependency-check-reports",
+  )
+  .option(
+    "-d, --data <path>",
+    "the location of the data directory used to store persistent data",
+    path.join(os.tmpdir(), "dependency-check-data"),
+  )
+  .option("-s, --scan <path...>", "the paths to scan ", ["package-lock.json"])
+  .option("-f, --format <format...>", "the formats of the report to generate", [
+    "HTML",
+    "JSON",
+  ])
   .addOption(
     new Option(
       "--nvdApiKey <key>",
@@ -62,30 +89,9 @@ const command = program
       "PROJECT_NAME",
     ),
   )
-  .addOption(
-    new Option(
-      "--owasp-bin <path>",
-      `the path to a preinstalled dependency-check-cli binary (.sh or .bat file)`,
-    )
-      .env("OWASP_BIN")
-      .argParser(parseOwaspBinary),
-  )
-  .option(
-    "--hide-owasp-output",
-    "do not display the output of the dependency-check-cli binary",
-  )
-  .option("--ignore-errors", "always exit with code 0")
-  .option(
-    "-d, --data <path>",
-    "the location of the data directory used to store persistent data",
-    path.join(os.tmpdir(), "dependency-check-data"),
-  )
-  .option("-s, --scan <path...>", "the paths to scan ", ["package-lock.json"])
-  .option("-f, --format <format...>", "the formats of the report to generate", [
-    "HTML",
-    "JSON",
-  ])
+  .optionsGroup("General information:")
   .version(version, undefined, `print the version of ${name}`)
+  .helpOption("-h, --help", "display this help information")
   .addHelpText(
     "afterAll",
     `
