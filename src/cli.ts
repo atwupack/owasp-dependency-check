@@ -7,8 +7,11 @@ import path from "path";
 import os from "os";
 import fs from "fs";
 import { Maybe } from "purify-ts";
-import { ensureError, log, logWarning } from "./utils.js";
+import { ensureError } from "./utils.js";
 import { description, name, version } from "./info.js";
+import { createLogger } from "./log.js";
+
+const log = createLogger(name);
 
 const command = program
   .allowUnknownOption()
@@ -164,10 +167,10 @@ function getProjectNameFromPackageJson() {
       .toString();
     const parsedJson = JSON.parse(packageJson) as { name: string };
     projectName = parsedJson.name;
-    log(`Found project name "${projectName}" in package.json`);
+    log.info(`Found project name "${projectName}" in package.json`);
   } catch (e) {
     const error = ensureError(e);
-    logWarning(error.message);
+    log.warn(error.message);
   }
   return projectName;
 }

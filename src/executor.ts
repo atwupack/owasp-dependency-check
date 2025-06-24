@@ -1,4 +1,4 @@
-import { cleanDir, hideSecrets, log } from "./utils.js";
+import { cleanDir, hideSecrets } from "./utils.js";
 import path from "path";
 import {
   SpawnOptions,
@@ -8,6 +8,9 @@ import {
 import spawn from "cross-spawn";
 import { Maybe } from "purify-ts";
 import { green } from "ansis";
+import { createLogger } from "./log.js";
+
+const log = createLogger("Executor");
 
 function executeVersionCheck(executable: string) {
   const versionCmdArguments = ["--version"];
@@ -22,7 +25,7 @@ function executeVersionCheck(executable: string) {
     encoding: "utf-8",
   };
 
-  log("Running command:", versionCmd);
+  log.info("Running command:", versionCmd);
   const versionSpawn = spawn.sync(
     executable,
     versionCmdArguments,
@@ -39,7 +42,7 @@ function executeVersionCheck(executable: string) {
 
   const re = /\D* (\d+\.\d+\.\d+).*/;
   const versionMatch = re.exec(versionSpawnResult);
-  log(
+  log.info(
     "Dependency-Check Core version:",
     versionMatch ? versionMatch[1] : versionSpawnResult,
   );
@@ -64,7 +67,7 @@ function executeAnalysis(
 
   const dependencyCheckCmd = `${executable} ${hideSecrets(cmdArguments.join(" "))}`;
 
-  log("Running command:", dependencyCheckCmd);
+  log.info("Running command:", dependencyCheckCmd);
   const dependencyCheckSpawn = spawn.sync(
     executable,
     cmdArguments,
@@ -75,7 +78,7 @@ function executeAnalysis(
     throw dependencyCheckSpawn.error;
   }
 
-  log(green`Done.`);
+  log.info(green`Done.`);
   return Maybe.fromNullable(dependencyCheckSpawn.status);
 }
 
@@ -86,8 +89,8 @@ export async function executeDependencyCheck(
   proxyUrl: Maybe<URL>,
   hideOwaspOutput: boolean,
 ) {
-  log("Dependency-Check Core path:", executable);
-  await cleanDir(path.resolve(process.cwd(), outDir));
+  log.info("Dependency-Check Core path:", executable);
+  await cleanDir(path.resolve(process.cwd(), outDir), log);
 
   executeVersionCheck(executable);
   return executeAnalysis(executable, cmdArguments, proxyUrl, hideOwaspOutput);

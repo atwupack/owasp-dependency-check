@@ -1,10 +1,13 @@
-import { cleanDir, log, unzipFileIntoDirectory } from "./utils.js";
+import { cleanDir, unzipFileIntoDirectory } from "./utils.js";
 import { Maybe } from "purify-ts";
 import path from "path";
 import fs from "fs";
 import os from "os";
 import { fetch, ProxyAgent, RequestInit } from "undici";
 import fsp from "node:fs/promises";
+import { createLogger } from "./log.js";
+
+const log = createLogger("Installer");
 
 const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
 const LATEST_RELEASE_URL =
@@ -39,7 +42,7 @@ async function findReleaseInfo(
   const url = odcVersion.mapOrDefault((value) => {
     return TAG_RELEASE_URL + value;
   }, LATEST_RELEASE_URL);
-  log(`Fetching release information from ${url}`);
+  log.info(`Fetching release information from ${url}`);
   const res = await fetch(url, createRequestInit(proxyUrl, githubToken));
   if (!res.ok) {
     throw new Error(
@@ -63,12 +66,12 @@ async function downloadRelease(
   installDir: string,
   proxyUrl: Maybe<URL>,
 ) {
-  log(`Downloading dependency check from ${url}...`);
+  log.info(`Downloading dependency check from ${url}...`);
   const response = await fetch(url, createRequestInit(proxyUrl, Maybe.empty()));
   const filepath = path.resolve(installDir, name);
   if (response.body) {
     await fsp.writeFile(filepath, response.body);
-    log("Download done.");
+    log.info("Download done.");
     return filepath;
   } else {
     throw new Error(`Download failed from ${url}`);
@@ -93,8 +96,8 @@ async function installRelease(
   installDir: string,
   proxyUrl: Maybe<URL>,
 ) {
-  log(`Installing dependency check ${release.tag_name}...`);
-  await cleanDir(installDir);
+  log.info(`Installing dependency check ${release.tag_name}...`);
+  await cleanDir(installDir, log);
 
   const asset = findDownloadAsset(release);
 
@@ -104,7 +107,7 @@ async function installRelease(
     installDir,
     proxyUrl,
   );
-  await unzipFileIntoDirectory(filePath, installDir, true);
+  await unzipFileIntoDirectory(filePath, installDir, true, log);
   return findOwaspExecutable(installDir).orDefaultLazy(() => {
     throw new Error(
       `Could not find Dependency-Check Core executable in ${installDir}`,
@@ -121,21 +124,21 @@ export async function installDependencyCheck(
   keepOldVersions: boolean,
 ) {
   const release = await findReleaseInfo(odcVersion, proxyUrl, githubToken);
-  log(`Found release ${release.tag_name} on GitHub.`);
+  log.info(`Found release ${release.tag_name} on GitHub.`);
 
   const installDir = path.resolve(binDir, release.tag_name);
   const executable = findOwaspExecutable(installDir).filter(
     () => !forceInstall,
   );
   if (executable.isJust()) {
-    log(
+    log.info(
       `Using already installed dependency check at "${executable.unsafeCoerce()}".`,
     );
     return executable.unsafeCoerce();
   }
 
   if (!keepOldVersions) {
-    await cleanDir(binDir);
+    await cleanDir(binDir, log);
   }
   return await installRelease(release, installDir, proxyUrl);
 }

@@ -1,34 +1,29 @@
 import extract from "extract-zip";
 import fs from "node:fs/promises";
-import { white } from "ansis";
-import { name } from "./info.js";
+import { Logger } from "./log.js";
 
-export async function cleanDir(dir: string) {
-  log(`Cleaning directory ${dir}`);
-  await deleteQuietly(dir, true);
+export async function cleanDir(dir: string, log: Logger) {
+  log.info(`Cleaning directory ${dir}`);
+  await deleteQuietly(dir, true, log);
   await fs.mkdir(dir, { recursive: true });
 }
 
-async function deleteQuietly(path: string, recursive: boolean) {
+async function deleteQuietly(path: string, recursive: boolean, log: Logger) {
   try {
     await fs.rm(path, { force: true, recursive: recursive });
   } catch (e) {
     const error = ensureError(e);
-    logWarning(`Could not delete path "${path}. Reason: ${error}`);
+    log.warn(`Could not delete path "${path}. Reason: ${error}`);
   }
 }
 
-export function log(...logData: string[]) {
-  console.log([white.bgGreen` ${name}: `, ...logData].join(" "));
-}
-
-export function logWarning(...logData: string[]) {
-  console.log([white.bgYellow` WARNING: `, ...logData].join(" "));
-}
-
-export function logError(...logData: string[]) {
-  console.error([white.bgRed` ERROR: `, ...logData].join(" "));
-}
+// export function log(...logData: string[]) {
+//   console.log([white.bgGreen` ${name}: `, ...logData].join(" "));
+// }
+//
+// export function logWarning(...logData: string[]) {
+//   console.log([white.bgYellow` WARNING: `, ...logData].join(" "));
+// }
 
 export function ensureError(value: unknown): Error {
   if (value instanceof Error) return value;
@@ -63,11 +58,12 @@ export async function unzipFileIntoDirectory(
   zipFile: string,
   destDir: string,
   deleteZip: boolean,
+  log: Logger,
 ) {
   await extract(zipFile, {
     dir: destDir,
   });
   if (deleteZip) {
-    await deleteQuietly(zipFile, false);
+    await deleteQuietly(zipFile, false, log);
   }
 }
