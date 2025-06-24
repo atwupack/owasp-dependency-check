@@ -43,6 +43,7 @@ jobs:
             odc-data-cache-
       - run: npm ci
       - run: npm run build
+      - run: npm test
       - run: npm install -g .
       - run: npx owasp-dependency-check --data dependency-check-data -f HTML
         env:
