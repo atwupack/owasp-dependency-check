@@ -11,19 +11,12 @@ export async function cleanDir(dir: string, log: Logger) {
 async function deleteQuietly(path: string, recursive: boolean, log: Logger) {
   try {
     await fs.rm(path, { force: true, recursive: recursive });
+    log.info(`Deleted "${path}"`);
   } catch (e) {
     const error = ensureError(e);
-    log.warn(`Could not delete path "${path}. Reason: ${error}`);
+    log.warn(`Could not delete "${path}". Reason: ${error}`);
   }
 }
-
-// export function log(...logData: string[]) {
-//   console.log([white.bgGreen` ${name}: `, ...logData].join(" "));
-// }
-//
-// export function logWarning(...logData: string[]) {
-//   console.log([white.bgYellow` WARNING: `, ...logData].join(" "));
-// }
 
 export function ensureError(value: unknown): Error {
   if (value instanceof Error) return value;
