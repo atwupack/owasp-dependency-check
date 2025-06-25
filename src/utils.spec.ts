@@ -24,7 +24,7 @@ void describe("utils.ts", () => {
       fsMock.expects("rm").once().withArgs("test").resolves(undefined);
       fsMock.expects("mkdir").once().withArgs("test");
       const consoleMock = sinon.mock(console);
-      consoleMock.expects("log").once();
+      consoleMock.expects("log").twice();
 
       const log = createLogger("Test");
       await cleanDir("test", log);
