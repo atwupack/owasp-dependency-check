@@ -1,7 +1,9 @@
 .github
 node_modules
 src
+build
 eslint.config.mjs
+rollup.config.mjs
 tsconfig.json
-dist/*.spec.js
 .gitattributes
+CHANGELOG.md

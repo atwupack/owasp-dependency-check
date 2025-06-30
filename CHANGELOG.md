@@ -7,6 +7,11 @@
 - The dependency `@colors/colors` has been replaced with `ansis`.
 - The dependency `commander` has been upgraded to version 14.
 
+## Version 0.7.1
+
+- Use `rollup` and `terser` to create a single file compressed release version.
+- Removed `CHANGELOG.md` from release package.
+
 ## Version 0.7.0
 
 - The output of the `--version` parameter was fixed. It now displays the version of owasp-dependency-check instead of the version of the analyzed project.
