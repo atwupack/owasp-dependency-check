@@ -18,7 +18,7 @@
   "bin": {
     "owasp-dependency-check": "dist/dependency-check.js"
   },
-  "scripts": {    
+  "scripts": {
     "build": "genversion -P name,version,description -d -s -e src/info.ts && tsc && rollup -c",
     "test": "node --test build/*.spec.js",
     "coverage": "node --experimental-test-coverage --test build/*.spec.js",
