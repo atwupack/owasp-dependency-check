@@ -1,39 +1,21 @@
-import colors from "@colors/colors/safe.js";
 import extract from "extract-zip";
 import fs from "node:fs/promises";
+import { Logger } from "./log.js";
 
-export async function cleanDir(dir: string) {
-  log(`Cleaning directory ${dir}`);
-  await deleteQuietly(dir, true);
+export async function cleanDir(dir: string, log: Logger) {
+  log.info(`Cleaning directory ${dir}`);
+  await deleteQuietly(dir, true, log);
   await fs.mkdir(dir, { recursive: true });
 }
 
-async function deleteQuietly(path: string, recursive: boolean) {
+async function deleteQuietly(path: string, recursive: boolean, log: Logger) {
   try {
     await fs.rm(path, { force: true, recursive: recursive });
+    log.info(`Deleted "${path}"`);
   } catch (e) {
     const error = ensureError(e);
-    logWarning(`Could not delete path "${path}. Reason: ${error}`);
+    log.warn(`Could not delete "${path}". Reason: ${error}`);
   }
-}
-
-export function log(...logData: string[]) {
-  console.log(
-    [
-      colors.bgGreen(colors.white(" owasp-dependency-check: ")),
-      ...logData,
-    ].join(" "),
-  );
-}
-
-function logWarning(...logData: string[]) {
-  console.log(
-    [colors.bgYellow(colors.white(" WARNING: ")), ...logData].join(" "),
-  );
-}
-
-export function logError(...logData: string[]) {
-  console.error([colors.bgRed(colors.white(" ERROR: ")), ...logData].join(" "));
 }
 
 export function ensureError(value: unknown): Error {
@@ -69,11 +51,12 @@ export async function unzipFileIntoDirectory(
   zipFile: string,
   destDir: string,
   deleteZip: boolean,
+  log: Logger,
 ) {
   await extract(zipFile, {
     dir: destDir,
   });
   if (deleteZip) {
-    await deleteQuietly(zipFile, false);
+    await deleteQuietly(zipFile, false, log);
   }
 }

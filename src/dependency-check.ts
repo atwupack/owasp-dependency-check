@@ -1,9 +1,13 @@
 #!/usr/bin/env node
-import { ensureError, exitProcess, log, logError } from "./utils.js";
+import { ensureError, exitProcess } from "./utils.js";
 import { installDependencyCheck } from "./installer.js";
 import { executeDependencyCheck } from "./executor.js";
 import cli from "./cli.js";
 import { Maybe } from "purify-ts";
+import { createLogger } from "./log.js";
+import { name } from "./info.js";
+
+const log = createLogger(name);
 
 export async function run() {
   let executable = cli.owaspBinary;
@@ -15,10 +19,11 @@ export async function run() {
         cli.proxyUrl,
         cli.githubToken,
         cli.forceInstall,
+        cli.keepOldVersions,
       ),
     );
   } else {
-    log("Locally preinstalled (OWASP_BIN) Dependency-Check Core found.");
+    log.info("Locally preinstalled (OWASP_BIN) Dependency-Check Core found.");
   }
 
   if (executable.isJust()) {
@@ -37,6 +42,6 @@ export async function run() {
 
 void run().catch((e: unknown) => {
   const error = ensureError(e);
-  logError(error.message);
+  log.error(error.message);
   exitProcess(1, cli.ignoreErrors);
 });

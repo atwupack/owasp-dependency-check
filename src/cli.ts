@@ -7,35 +7,37 @@ import path from "path";
 import os from "os";
 import fs from "fs";
 import { Maybe } from "purify-ts";
-import { ensureError, log, logError } from "./utils.js";
-import { version } from "./version.js";
+import { ensureError } from "./utils.js";
+import { description, name, version } from "./info.js";
+import { createLogger } from "./log.js";
+
+const log = createLogger(name);
 
 const command = program
-  .allowExcessArguments()
   .allowUnknownOption()
-  .option(
-    "-o, --out <path>",
-    "the folder to write reports to",
-    "dependency-check-reports",
+  .name(name)
+  .description(description)
+  .argument(
+    "[args...]",
+    "additional arguments that will be passed to the dependency-check-cli",
   )
+  .optionsGroup("Installation options:")
   .option(
     "--bin <path>",
-    "directory to which the dependency-check CLI will be installed",
+    "the directory the dependency-check-cli will be installed into",
     "dependency-check-bin",
   )
   .option(
     "--force-install",
-    "install the dependency-check CLI even if there already is one (will be overwritten)",
-    false,
+    "install the dependency-check-cli even if the version is already present (will be overwritten)",
+  )
+  .option(
+    "--keep-old-versions",
+    "do not remove old versions of the dependency-check-cli",
   )
   .option(
     "--odc-version <version>",
-    'the version of the dependency-check CLI to install in format "v1.2.3"',
-  )
-  .option(
-    "-p, --proxy <url>",
-    "the URL to a proxy server in the format http(s)://[user]:[password]@<server>:[port]",
-    parseProxyUrl,
+    "the version of the dependency-check-cli to install in the format: v1.2.3",
   )
   .addOption(
     new Option(
@@ -45,40 +47,54 @@ const command = program
   )
   .addOption(
     new Option(
-      "--nvdApiKey <key>",
-      "NVD API key to authenticate against API",
-    ).env("NVD_API_KEY"),
-  )
-  .addOption(
-    new Option("--project <name>", "the name of the project being scanned").env(
-      "PROJECT_NAME",
-    ),
-  )
-  .addOption(
-    new Option(
       "--owasp-bin <path>",
-      "the path to a preinstalled dependency-check-cli binary",
+      `the path to a preinstalled dependency-check-cli binary (.sh or .bat file)`,
     )
       .env("OWASP_BIN")
       .argParser(parseOwaspBinary),
   )
+  .optionsGroup("Execution options:")
   .option(
     "--hide-owasp-output",
     "do not display the output of the dependency-check-cli binary",
-    false,
   )
-  .option("--ignore-errors", "always exit with code 0", false)
+  .option("--ignore-errors", "always exit with code 0")
+  .optionsGroup("Network options:")
+  .option(
+    "-p, --proxy <url>",
+    "the URL of a proxy server in the format: http(s)://[user]:[password]@<server>:[port]",
+    parseProxyUrl,
+  )
+  .optionsGroup("OWASP dependency-check-cli options:")
+  .option(
+    "-o, --out <path>",
+    "the directory the generated reports will be written into",
+    "dependency-check-reports",
+  )
   .option(
     "-d, --data <path>",
     "the location of the data directory used to store persistent data",
     path.join(os.tmpdir(), "dependency-check-data"),
   )
   .option("-s, --scan <path...>", "the paths to scan ", ["package-lock.json"])
-  .option("-f, --format <format...>", "the formats to generate", [
+  .option("-f, --format <format...>", "the formats of the report to generate", [
     "HTML",
     "JSON",
   ])
-  .version(version, undefined, "print the version of owasp-dependency-check")
+  .addOption(
+    new Option(
+      "--nvdApiKey <key>",
+      "NVD API key to authenticate against API",
+    ).env("NVD_API_KEY"),
+  )
+  .addOption(
+    new Option("--project <name>", "the name of the project to be scanned").env(
+      "PROJECT_NAME",
+    ),
+  )
+  .optionsGroup("General information:")
+  .version(version, undefined, `print the version of ${name}`)
+  .helpOption("-h, --help", "display this help information")
   .addHelpText(
     "afterAll",
     `
@@ -99,34 +115,31 @@ The following environment variables are supported:
   .parse();
 
 const cli = {
-  hideOwaspOutput: command.opts().hideOwaspOutput,
+  hideOwaspOutput: !!command.opts().hideOwaspOutput,
   owaspBinary: Maybe.fromNullable(command.opts().owaspBin),
   proxyUrl: Maybe.fromNullable(command.opts().proxy),
   githubToken: Maybe.fromNullable(command.opts().githubToken),
   outDir: command.opts().out,
-  forceInstall: command.opts().forceInstall,
+  forceInstall: !!command.opts().forceInstall,
   odcVersion: Maybe.fromNullable(command.opts().odcVersion),
   binDir: path.resolve(command.opts().bin),
-  nvdApiKey: getNvdApiKey(),
-  projectName: getProjectName(),
   cmdArguments: buildCmdArguments(),
-  ignoreErrors: command.opts().ignoreErrors,
+  ignoreErrors: !!command.opts().ignoreErrors,
+  keepOldVersions: !!command.opts().keepOldVersions,
 };
 
 export default cli;
 
-function getProjectName() {
-  return Maybe.fromNullable(command.opts().project);
-}
-
-function getNvdApiKey() {
-  return Maybe.fromNullable(command.opts().nvdApiKey);
-}
-
 function buildCmdArguments() {
-  const args = ["--out", command.opts().out, ...command.args];
+  const args = [
+    "--out",
+    command.opts().out,
+    "--data",
+    command.opts().data,
+    ...command.args,
+  ];
 
-  getNvdApiKey().ifJust((key) => {
+  Maybe.fromNullable(command.opts().nvdApiKey).ifJust((key) => {
     args.push("--nvdApiKey", key);
   });
 
@@ -136,10 +149,8 @@ function buildCmdArguments() {
 
   args.push(
     "--project",
-    getProjectName().orDefaultLazy(getProjectNameFromPackageJson),
+    command.opts().project ?? getProjectNameFromPackageJson(),
   );
-
-  args.push("--data", command.opts().data);
 
   command.opts().format.forEach((format) => {
     args.push("--format", format);
@@ -156,10 +167,10 @@ function getProjectNameFromPackageJson() {
       .toString();
     const parsedJson = JSON.parse(packageJson) as { name: string };
     projectName = parsedJson.name;
-    log(`Found project name "${projectName}" in package.json`);
+    log.info(`Found project name "${projectName}" in package.json`);
   } catch (e) {
     const error = ensureError(e);
-    logError(error.message);
+    log.warn(error.message);
   }
   return projectName;
 }
@@ -167,18 +178,27 @@ function getProjectNameFromPackageJson() {
 function parseProxyUrl(value: string) {
   const url = URL.parse(value);
   if (!url?.protocol || !url.hostname) {
-    throw new InvalidArgumentError("Invalid proxy URL");
+    throw new InvalidArgumentError("The proxy URL is invalid.");
   }
   if (url.protocol !== "http:" && url.protocol !== "https:") {
-    throw new InvalidArgumentError("Invalid HTTP(S) proxy URL");
+    throw new InvalidArgumentError("The proxy URL is not HTTP(S).");
   }
   return url;
 }
 
 function parseOwaspBinary(value: string) {
   const binPath = path.resolve(value);
-  if (!fs.existsSync(binPath)) {
-    throw new InvalidArgumentError("Invalid path to OWASP binary");
+  if (fs.existsSync(binPath)) {
+    const stat = fs.statSync(binPath);
+    if (!stat.isFile()) {
+      throw new InvalidArgumentError(
+        "The dependency-check-cli binary is not a file.",
+      );
+    }
+  } else {
+    throw new InvalidArgumentError(
+      "The dependency-check-cli binary does not exist.",
+    );
   }
   return binPath;
 }

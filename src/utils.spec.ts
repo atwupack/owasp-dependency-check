@@ -1,14 +1,9 @@
 import { describe, it } from "node:test";
 import * as assert from "node:assert/strict";
-import {
-  cleanDir,
-  ensureError,
-  exitProcess,
-  hideSecrets,
-  log,
-} from "./utils.js";
+import { cleanDir, ensureError, exitProcess, hideSecrets } from "./utils.js";
 import sinon from "sinon";
 import fs from "fs/promises";
+import { createLogger } from "./log.js";
 
 void describe("utils.ts", () => {
   void describe("cleanDir", () => {
@@ -16,13 +11,11 @@ void describe("utils.ts", () => {
       const fsMock = sinon.mock(fs);
       fsMock.expects("rm").once().withArgs("test").rejects();
       const consoleMock = sinon.mock(console);
-      consoleMock
-        .expects("log")
-        .twice()
-        .callsFake((input) => {
-          assert.ok(input);
-        });
-      await cleanDir("test");
+      consoleMock.expects("log").twice();
+
+      const log = createLogger("Test");
+      await cleanDir("test", log);
+
       fsMock.verify();
       consoleMock.verify();
     });
@@ -30,8 +23,14 @@ void describe("utils.ts", () => {
       const fsMock = sinon.mock(fs);
       fsMock.expects("rm").once().withArgs("test").resolves(undefined);
       fsMock.expects("mkdir").once().withArgs("test");
-      await cleanDir("test");
+      const consoleMock = sinon.mock(console);
+      consoleMock.expects("log").twice();
+
+      const log = createLogger("Test");
+      await cleanDir("test", log);
+
       fsMock.verify();
+      consoleMock.verify();
     });
   });
   void describe("hideSecrets", () => {
@@ -97,20 +96,6 @@ void describe("utils.ts", () => {
         error.message,
         'This value was thrown as is, not through an Error: {"message":"Test Error","stack":"Test Stack","name":"Test Name","code":"Test Code","errno":"Test Errno"}',
       );
-    });
-  });
-
-  void describe("log", () => {
-    void it("should log to console", () => {
-      const consoleMock = sinon.mock(console);
-      consoleMock
-        .expects("log")
-        .once()
-        .callsFake((input) => {
-          assert.ok(input);
-        });
-      log("Test");
-      consoleMock.verify();
     });
   });
 
