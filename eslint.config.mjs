@@ -4,7 +4,7 @@ import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
 
 export default tseslint.config(
   {
-    ignores: ["./dist/**"],
+    ignores: ["./dist/**", "./build/**"],
   },
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,

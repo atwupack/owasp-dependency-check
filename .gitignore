@@ -7,3 +7,4 @@ out
 /dependency-check-data/
 /dist/
 /src/version.ts
+/build/
