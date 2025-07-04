@@ -4,6 +4,7 @@ import { cleanDir, ensureError, exitProcess, hideSecrets } from "./utils.js";
 import sinon from "sinon";
 import fs from "fs/promises";
 import { createLogger } from "./log.js";
+import { Maybe } from "purify-ts";
 
 void describe("utils.ts", () => {
   void describe("cleanDir", () => {
@@ -103,26 +104,46 @@ void describe("utils.ts", () => {
     void it("should exit with code 0 when not ignoring errors and called with 0", () => {
       const exitMock = sinon.mock(process);
       exitMock.expects("exit").once().withExactArgs(0);
-      exitProcess(0, false);
+      const consoleMock = sinon.mock(console);
+      consoleMock.expects("log").once();
+
+      const log = createLogger("Test");
+      exitProcess(Maybe.of(0), false, log);
       exitMock.verify();
+      consoleMock.verify();
     });
     void it("should exit with code 0 when ignoring errors and called with 0", () => {
       const exitMock = sinon.mock(process);
       exitMock.expects("exit").once().withExactArgs(0);
-      exitProcess(0, true);
+      const consoleMock = sinon.mock(console);
+      consoleMock.expects("log").once();
+
+      const log = createLogger("Test");
+      exitProcess(Maybe.of(0), true, log);
       exitMock.verify();
+      consoleMock.verify();
     });
     void it("should exit with code 1 when not ignoring errors and called with 1", () => {
       const exitMock = sinon.mock(process);
       exitMock.expects("exit").once().withExactArgs(1);
-      exitProcess(1, false);
+      const consoleMock = sinon.mock(console);
+      consoleMock.expects("log").once();
+
+      const log = createLogger("Test");
+      exitProcess(Maybe.of(1), false, log);
       exitMock.verify();
+      consoleMock.verify();
     });
     void it("should exit with code 0 when ignoring errors and called with 1", () => {
       const exitMock = sinon.mock(process);
       exitMock.expects("exit").once().withExactArgs(0);
-      exitProcess(1, true);
+      const consoleMock = sinon.mock(console);
+      consoleMock.expects("log").twice();
+
+      const log = createLogger("Test");
+      exitProcess(Maybe.of(1), true, log);
       exitMock.verify();
+      consoleMock.verify();
     });
   });
 });

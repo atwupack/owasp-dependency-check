@@ -2,30 +2,31 @@ import { cleanDir, hideSecrets } from "./utils.js";
 import path from "path";
 import {
   SpawnOptions,
-  SpawnSyncOptionsWithBufferEncoding,
   SpawnSyncOptionsWithStringEncoding,
 } from "child_process";
 import spawn from "cross-spawn";
 import { Maybe } from "purify-ts";
 import { green } from "ansis";
 import { createLogger } from "./log.js";
+import { name } from "./info.js";
 
-const log = createLogger("Executor");
+const log = createLogger(`${name} Analysis`);
+
+function logCommandExecution(executable: string, cmdArguments: string[]) {
+  const command = `${executable} ${hideSecrets(cmdArguments.join(" "))}`;
+  log.info("Running command:", command);
+}
 
 function executeVersionCheck(executable: string) {
   const versionCmdArguments = ["--version"];
-  const versionCmd = `${executable} --version`;
 
-  const versionSpawnOpts:
-    | SpawnOptions
-    | SpawnSyncOptionsWithBufferEncoding
-    | SpawnSyncOptionsWithStringEncoding = {
+  const versionSpawnOpts: SpawnSyncOptionsWithStringEncoding = {
     cwd: path.resolve(process.cwd()),
     shell: false,
     encoding: "utf-8",
   };
 
-  log.info("Running command:", versionCmd);
+  logCommandExecution(executable, versionCmdArguments);
   const versionSpawn = spawn.sync(
     executable,
     versionCmdArguments,
@@ -65,9 +66,7 @@ function executeAnalysis(
     stdio: hideOwaspOutput ? "ignore" : "inherit",
   };
 
-  const dependencyCheckCmd = `${executable} ${hideSecrets(cmdArguments.join(" "))}`;
-
-  log.info("Running command:", dependencyCheckCmd);
+  logCommandExecution(executable, cmdArguments);
   const dependencyCheckSpawn = spawn.sync(
     executable,
     cmdArguments,

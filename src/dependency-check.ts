@@ -34,14 +34,12 @@ export async function run() {
       cli.proxyUrl,
       cli.hideOwaspOutput,
     );
-    result.ifJust((status) => {
-      exitProcess(status, cli.ignoreErrors);
-    });
+    exitProcess(result, cli.ignoreErrors, log);
   }
 }
 
 void run().catch((e: unknown) => {
   const error = ensureError(e);
   log.error(error.message);
-  exitProcess(1, cli.ignoreErrors);
+  exitProcess(Maybe.of(1), cli.ignoreErrors, log);
 });

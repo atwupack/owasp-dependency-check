@@ -6,8 +6,9 @@ import os from "os";
 import { fetch, ProxyAgent, RequestInit } from "undici";
 import fsp from "node:fs/promises";
 import { createLogger } from "./log.js";
+import { name } from "./info.js";
 
-const log = createLogger("Installer");
+const log = createLogger(`${name} Installation`);
 
 const NAME_RE = /^dependency-check-\d+\.\d+\.\d+-release\.zip$/;
 const LATEST_RELEASE_URL =
