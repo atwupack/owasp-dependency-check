@@ -1,7 +1,6 @@
 import extract from "extract-zip";
 import fs from "node:fs/promises";
 import { Logger } from "./log.js";
-import { Maybe } from "purify-ts";
 
 export async function cleanDir(dir: string, log: Logger) {
   log.info(`Cleaning directory ${dir}`);
@@ -40,24 +39,16 @@ export function hideSecrets(input: string) {
   return input.replace(SECRET_REGEX, "$1<secret value>");
 }
 
-export function exitProcess(
-  code: Maybe<number>,
-  ignoreErrors: boolean,
-  log: Logger,
-) {
-  let finalCode: number | undefined = 0;
+export function exitProcess(code: number, ignoreErrors: boolean, log: Logger) {
+  let finalCode = 0;
   if (ignoreErrors) {
-    code.ifJust((value) => {
-      if (value != 0) {
-        log.warn(`Ignoring error code ${value.toString()}`);
-      }
-    });
+    if (code != 0) {
+      log.warn(`Ignoring error code ${code.toString()}`);
+    }
   } else {
-    finalCode = code.extract();
+    finalCode = code;
   }
-  if (finalCode) {
-    log.info(`Exit with code ${finalCode.toString()}`);
-  }
+  log.info(`Exit with code ${finalCode.toString()}`);
   process.exitCode = finalCode;
 }
 

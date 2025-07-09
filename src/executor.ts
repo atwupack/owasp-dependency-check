@@ -1,7 +1,7 @@
 import { cleanDir, hideSecrets } from "./utils.js";
 import path from "path";
 import {
-  SpawnOptions,
+  SpawnSyncOptions,
   SpawnSyncOptionsWithStringEncoding,
 } from "child_process";
 import spawn from "cross-spawn";
@@ -35,7 +35,10 @@ function executeVersionCheck(executable: string) {
   if (versionSpawn.error) {
     throw versionSpawn.error;
   }
-  if (versionSpawn.status && versionSpawn.status !== 0) {
+  if (versionSpawn.status === null) {
+    throw new Error("Version check did not complete with status code.");
+  }
+  if (versionSpawn.status !== 0) {
     throw new Error(versionSpawn.stderr.toString());
   }
 
@@ -60,7 +63,7 @@ function executeAnalysis(
     env.JAVA_OPTS = buildJavaToolOptions(proxyUrl);
   });
 
-  const dependencyCheckSpawnOpts: SpawnOptions = {
+  const dependencyCheckSpawnOpts: SpawnSyncOptions = {
     cwd: path.resolve(process.cwd()),
     shell: false,
     stdio: hideOwaspOutput ? "ignore" : "inherit",
@@ -72,13 +75,15 @@ function executeAnalysis(
     cmdArguments,
     dependencyCheckSpawnOpts,
   );
-
   if (dependencyCheckSpawn.error) {
     throw dependencyCheckSpawn.error;
   }
+  if (dependencyCheckSpawn.status === null) {
+    throw new Error("Analysis did not complete with status code.");
+  }
 
   log.info(green`Done.`);
-  return Maybe.fromNullable(dependencyCheckSpawn.status);
+  return dependencyCheckSpawn.status;
 }
 
 export async function executeDependencyCheck(

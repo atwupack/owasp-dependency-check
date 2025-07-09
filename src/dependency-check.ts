@@ -41,5 +41,5 @@ export async function run() {
 void run().catch((e: unknown) => {
   const error = ensureError(e);
   log.error(error.message);
-  exitProcess(Maybe.of(1), cli.ignoreErrors, log);
+  exitProcess(1, cli.ignoreErrors, log);
 });
