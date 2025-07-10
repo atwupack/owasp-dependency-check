@@ -41,15 +41,7 @@ function executeVersionCheck(executable: string) {
   if (versionSpawn.status !== 0) {
     throw new Error(versionSpawn.stderr.toString());
   }
-
-  const versionSpawnResult = versionSpawn.stdout;
-
-  const re = /\D* (\d+\.\d+\.\d+).*/;
-  const versionMatch = re.exec(versionSpawnResult);
-  log.info(
-    "Dependency-Check Core version:",
-    versionMatch ? versionMatch[1] : versionSpawnResult,
-  );
+  log.info(versionSpawn.stdout.trimEnd());
 }
 
 function executeAnalysis(
