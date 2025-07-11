@@ -1,4 +1,4 @@
-import { cleanDir, hideSecrets } from "./utils.js";
+import { cleanDir, hideSecrets, setEnv } from "./utils.js";
 import path from "path";
 import {
   SpawnSyncOptions,
@@ -50,9 +50,7 @@ function executeAnalysis(
   proxyUrl: Maybe<URL>,
   hideOwaspOutput: boolean,
 ) {
-  proxyUrl.ifJust((proxyUrl) => {
-    process.env.JAVA_OPTS = buildJavaToolOptions(proxyUrl);
-  });
+  setEnv("JAVA_OPTS", proxyUrl.map(buildJavaToolOptions), log);
 
   const dependencyCheckSpawnOpts: SpawnSyncOptions = {
     cwd: path.resolve(process.cwd()),
@@ -88,10 +86,7 @@ export async function executeDependencyCheck(
   log.info("Dependency-Check Core path:", executable);
   await cleanDir(path.resolve(process.cwd(), outDir), log);
 
-  javaBinary.ifJust((javaBinary) => {
-    log.info("Using Java binary:", javaBinary);
-    process.env.JAVACMD = javaBinary;
-  });
+  setEnv("JAVACMD", javaBinary, log);
 
   executeVersionCheck(executable);
   return executeAnalysis(executable, cmdArguments, proxyUrl, hideOwaspOutput);

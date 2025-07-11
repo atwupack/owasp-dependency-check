@@ -1,6 +1,7 @@
 import extract from "extract-zip";
 import fs from "node:fs/promises";
 import { Logger } from "./log.js";
+import { Maybe } from "purify-ts";
 
 export async function cleanDir(dir: string, log: Logger) {
   log.info(`Cleaning directory ${dir}`);
@@ -33,13 +34,13 @@ export function ensureError(value: unknown): Error {
   );
 }
 
-const SECRET_REGEX = /(--\S*(?:key|token|pass)[^\s=]*(?:=| +))(\S*)/gi;
+const SECRET_REGEX = /(-\S*(?:key|token|pass)[^\s=]*(?:=| +))(\S*)/gi;
 
 export function hideSecrets(input: string) {
   return input.replace(SECRET_REGEX, "$1<secret value>");
 }
 
-export function exitProcess(code: number, ignoreErrors: boolean, log: Logger) {
+export function setExitCode(code: number, ignoreErrors: boolean, log: Logger) {
   let finalCode = 0;
   if (ignoreErrors) {
     if (code != 0) {
@@ -64,4 +65,11 @@ export async function unzipFileIntoDirectory(
   if (deleteZip) {
     await deleteQuietly(zipFile, false, log);
   }
+}
+
+export function setEnv(key: string, value: Maybe<string>, log: Logger) {
+  value.ifJust((value) => {
+    log.info(`Setting environment variable ${key} to "${hideSecrets(value)}"`);
+    process.env[key] = value;
+  });
 }

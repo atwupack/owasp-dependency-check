@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { ensureError, exitProcess } from "./utils.js";
+import { ensureError, setExitCode } from "./utils.js";
 import { installDependencyCheck } from "./installer.js";
 import { executeDependencyCheck } from "./executor.js";
 import cli from "./cli.js";
@@ -35,12 +35,12 @@ export async function run() {
       cli.hideOwaspOutput,
       cli.javaBinary,
     );
-    exitProcess(result, cli.ignoreErrors, log);
+    setExitCode(result, cli.ignoreErrors, log);
   }
 }
 
 void run().catch((e: unknown) => {
   const error = ensureError(e);
   log.error(error.message);
-  exitProcess(1, cli.ignoreErrors, log);
+  setExitCode(1, cli.ignoreErrors, log);
 });
