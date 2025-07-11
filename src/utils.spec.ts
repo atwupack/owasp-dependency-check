@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import * as assert from "node:assert/strict";
-import { cleanDir, ensureError, exitProcess, hideSecrets } from "./utils.js";
+import { cleanDir, ensureError, setExitCode, hideSecrets } from "./utils.js";
 import sinon from "sinon";
 import fs from "fs/promises";
 import { createLogger } from "./log.js";
@@ -105,7 +105,7 @@ void describe("utils.ts", () => {
       consoleMock.expects("log").once();
 
       const log = createLogger("Test");
-      exitProcess(0, false, log);
+      setExitCode(0, false, log);
       assert.equal(process.exitCode, 0);
       consoleMock.verify();
     });
@@ -114,7 +114,7 @@ void describe("utils.ts", () => {
       consoleMock.expects("log").once();
 
       const log = createLogger("Test");
-      exitProcess(0, true, log);
+      setExitCode(0, true, log);
       assert.equal(process.exitCode, 0);
       consoleMock.verify();
     });
@@ -123,7 +123,7 @@ void describe("utils.ts", () => {
       consoleMock.expects("log").once();
 
       const log = createLogger("Test");
-      exitProcess(1, false, log);
+      setExitCode(1, false, log);
       assert.equal(process.exitCode, 1);
       consoleMock.verify();
     });
@@ -132,7 +132,7 @@ void describe("utils.ts", () => {
       consoleMock.expects("log").twice();
 
       const log = createLogger("Test");
-      exitProcess(1, true, log);
+      setExitCode(1, true, log);
       assert.equal(process.exitCode, 0);
       consoleMock.verify();
     });
