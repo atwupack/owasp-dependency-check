@@ -6,6 +6,8 @@
 - Added parameter `--keep-old-versions` to prevent removal of other installations in `--bin` directory.
 - The dependency `@colors/colors` has been replaced with `ansis`.
 - The dependency `commander` has been upgraded to version 14.
+- Added parameter `--java-bin` to set Java binary.\
+  This sets the `JAVACMD` environment variable before calling the dependency-check-cli.
 
 ## Version 0.7.1
 
