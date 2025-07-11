@@ -19,6 +19,7 @@ function logCommandExecution(executable: string, cmdArguments: string[]) {
 
 function executeVersionCheck(executable: string) {
   const versionCmdArguments = ["--version"];
+  logCommandExecution(executable, versionCmdArguments);
 
   const versionSpawnOpts: SpawnSyncOptionsWithStringEncoding = {
     cwd: path.resolve(process.cwd()),
@@ -26,7 +27,6 @@ function executeVersionCheck(executable: string) {
     encoding: "utf-8",
   };
 
-  logCommandExecution(executable, versionCmdArguments);
   const versionSpawn = spawn.sync(
     executable,
     versionCmdArguments,
@@ -50,9 +50,8 @@ function executeAnalysis(
   proxyUrl: Maybe<URL>,
   hideOwaspOutput: boolean,
 ) {
-  const env = process.env;
   proxyUrl.ifJust((proxyUrl) => {
-    env.JAVA_OPTS = buildJavaToolOptions(proxyUrl);
+    process.env.JAVA_OPTS = buildJavaToolOptions(proxyUrl);
   });
 
   const dependencyCheckSpawnOpts: SpawnSyncOptions = {
@@ -84,9 +83,15 @@ export async function executeDependencyCheck(
   outDir: string,
   proxyUrl: Maybe<URL>,
   hideOwaspOutput: boolean,
+  javaBinary: Maybe<string>,
 ) {
   log.info("Dependency-Check Core path:", executable);
   await cleanDir(path.resolve(process.cwd(), outDir), log);
+
+  javaBinary.ifJust((javaBinary) => {
+    log.info("Using Java binary:", javaBinary);
+    process.env.JAVACMD = javaBinary;
+  });
 
   executeVersionCheck(executable);
   return executeAnalysis(executable, cmdArguments, proxyUrl, hideOwaspOutput);

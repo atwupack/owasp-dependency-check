@@ -23,7 +23,7 @@ const command = program
   )
   .optionsGroup("Installation options:")
   .option(
-    "--bin <path>",
+    "--bin <binary>",
     "the directory the dependency-check-cli will be installed into",
     "dependency-check-bin",
   )
@@ -45,20 +45,25 @@ const command = program
       "GitHub token to authenticate against API",
     ).env("GITHUB_TOKEN"),
   )
+  .optionsGroup("Execution options:")
   .addOption(
     new Option(
-      "--owasp-bin <path>",
+      "--owasp-bin <binary>",
       `the path to a preinstalled dependency-check-cli binary (.sh or .bat file)`,
     )
       .env("OWASP_BIN")
-      .argParser(parseOwaspBinary),
+      .argParser(parseBinaryFile),
   )
-  .optionsGroup("Execution options:")
   .option(
     "--hide-owasp-output",
     "do not display the output of the dependency-check-cli binary",
   )
   .option("--ignore-errors", "always exit with code 0")
+  .addOption(
+    new Option("--java-bin <binary>", "the path to the Java binary")
+      .env("JAVACMD")
+      .argParser(parseBinaryFile),
+  )
   .optionsGroup("Network options:")
   .option(
     "-p, --proxy <url>",
@@ -67,12 +72,12 @@ const command = program
   )
   .optionsGroup("OWASP dependency-check-cli options:")
   .option(
-    "-o, --out <path>",
+    "-o, --out <directory>",
     "the directory the generated reports will be written into",
     "dependency-check-reports",
   )
   .option(
-    "-d, --data <path>",
+    "-d, --data <directory>",
     "the location of the data directory used to store persistent data",
     path.join(os.tmpdir(), "dependency-check-data"),
   )
@@ -110,7 +115,8 @@ The following environment variables are supported:
 - OWASP_BIN: path to a local installation of the dependency-check-cli
 - NVD_API_KET: personal NVD API key to authenticate against API
 - GITHUB_TOKEN: personal GitHub token to authenticate against API
-- PROJECT_NAME: the name of the project being scanned`,
+- PROJECT_NAME: the name of the project being scanned
+- JAVACMD: path to a Java binary`,
   )
   .parse();
 
@@ -126,6 +132,7 @@ const cli = {
   cmdArguments: buildCmdArguments(),
   ignoreErrors: !!command.opts().ignoreErrors,
   keepOldVersions: !!command.opts().keepOldVersions,
+  javaBinary: Maybe.fromNullable(command.opts().javaBin),
 };
 
 export default cli;
@@ -186,19 +193,15 @@ function parseProxyUrl(value: string) {
   return url;
 }
 
-function parseOwaspBinary(value: string) {
+function parseBinaryFile(value: string) {
   const binPath = path.resolve(value);
   if (fs.existsSync(binPath)) {
     const stat = fs.statSync(binPath);
     if (!stat.isFile()) {
-      throw new InvalidArgumentError(
-        "The dependency-check-cli binary is not a file.",
-      );
+      throw new InvalidArgumentError("The binary is not a file.");
     }
   } else {
-    throw new InvalidArgumentError(
-      "The dependency-check-cli binary does not exist.",
-    );
+    throw new InvalidArgumentError("The binary does not exist.");
   }
   return binPath;
 }

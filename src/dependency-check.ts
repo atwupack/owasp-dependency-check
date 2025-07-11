@@ -33,6 +33,7 @@ export async function run() {
       cli.outDir,
       cli.proxyUrl,
       cli.hideOwaspOutput,
+      cli.javaBinary,
     );
     exitProcess(result, cli.ignoreErrors, log);
   }
