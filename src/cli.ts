@@ -14,6 +14,11 @@ import { createLogger } from "./log.js";
 const log = createLogger(name);
 
 const command = program
+  .configureOutput({
+    writeErr(str: string) {
+      log.error(str);
+    },
+  })
   .allowUnknownOption()
   .name(name)
   .description(description)
