@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.8.1
+
+- Added `commander` as dependency to fix problems with `yarn`.
+
 ## Version 0.8.0
 
 - Clean `--bin` directory before installing a new version of the dependency-check-cli.
