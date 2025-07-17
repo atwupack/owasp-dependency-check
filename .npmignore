@@ -7,3 +7,4 @@ rollup.config.mjs
 tsconfig.json
 .gitattributes
 CHANGELOG.md
+.prettierignore
