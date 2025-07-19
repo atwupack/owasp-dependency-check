@@ -1,17 +1,19 @@
 import extract from "extract-zip";
-import fs from "node:fs/promises";
+import fsp from "node:fs/promises";
 import { Logger } from "./log.js";
 import { Maybe } from "purify-ts";
+import path from "path";
+import fs from "fs";
 
 export async function cleanDir(dir: string, log: Logger) {
   log.info(`Cleaning directory ${dir}`);
   await deleteQuietly(dir, true, log);
-  await fs.mkdir(dir, { recursive: true });
+  await fsp.mkdir(dir, { recursive: true });
 }
 
 async function deleteQuietly(path: string, recursive: boolean, log: Logger) {
   try {
-    await fs.rm(path, { force: true, recursive: recursive });
+    await fsp.rm(path, { force: true, recursive: recursive });
     log.info(`Deleted "${path}"`);
   } catch (e) {
     const error = ensureError(e);
@@ -72,4 +74,15 @@ export function setEnv(key: string, value: Maybe<string>, log: Logger) {
     log.info(`Setting environment variable ${key} to "${hideSecrets(value)}"`);
     process.env[key] = value;
   });
+}
+
+export function resolveFile(file: string) {
+  const filePath = path.resolve(file);
+  if (fs.existsSync(filePath)) {
+    const stat = fs.statSync(filePath);
+    if (stat.isFile()) {
+      return Maybe.of(filePath);
+    }
+  }
+  return Maybe.empty();
 }

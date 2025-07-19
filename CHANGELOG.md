@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased Changes
+
+- Search for package managers' lock file if the `--scan` argument is not present.
+
 ## Version 0.8.1
 
 - Added `commander` as dependency to fix problems with `yarn`.
