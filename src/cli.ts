@@ -218,9 +218,9 @@ function parseProxyUrl(value: string) {
   return url;
 }
 
-function parseMultipleFiles(value: string, previous: string[]) {
+function parseMultipleFiles(value: string, previous: string[] | undefined) {
   const file = parseFile(value);
-  return [...(previous ? previous : []), file];
+  return [...(previous ?? []), file];
 }
 
 function parseFile(value: string) {
