@@ -57,7 +57,7 @@ const command = program
       `the path to a preinstalled dependency-check-cli binary (.sh or .bat file)`,
     )
       .env("OWASP_BIN")
-      .argParser(parseBinaryFile),
+      .argParser(parseFile),
   )
   .option(
     "--hide-owasp-output",
@@ -67,7 +67,7 @@ const command = program
   .addOption(
     new Option("--java-bin <binary>", "the path to the Java binary")
       .env("JAVACMD")
-      .argParser(parseBinaryFile),
+      .argParser(parseFile),
   )
   .optionsGroup("Network options:")
   .option(
@@ -86,7 +86,11 @@ const command = program
     "the location of the data directory used to store persistent data",
     path.join(os.tmpdir(), "dependency-check-data"),
   )
-  .option("-s, --scan <file...>", "the lock files of package managers to scan")
+  .option(
+    "-s, --scan <file...>",
+    "the lock files of package managers to scan",
+    parseMultipleFiles,
+  )
   .option("-f, --format <format...>", "the formats of the report to generate", [
     "HTML",
     "JSON",
@@ -144,7 +148,7 @@ export function parseCli() {
 
 function addScanArgument(args: string[], lockFile: string) {
   resolveFile(lockFile).ifJust((value) => {
-    log.info(`Found ${lockFile} and adding it to --scan argument.`);
+    log.info(`Found "${value}" and adding it to --scan argument.`);
     args.push("--scan", value);
   });
 }
@@ -214,11 +218,16 @@ function parseProxyUrl(value: string) {
   return url;
 }
 
-function parseBinaryFile(value: string) {
-  const binPath = resolveFile(value);
-  return binPath
+function parseMultipleFiles(value: string, previous: string[]) {
+  const file = parseFile(value);
+  return [...(previous ? previous : []), file];
+}
+
+function parseFile(value: string) {
+  const filePath = resolveFile(value);
+  return filePath
     .ifNothing(() => {
-      throw new InvalidArgumentError("The binary file does not exist.");
+      throw new InvalidArgumentError(`The file "${value}" does not exist.`);
     })
     .unsafeCoerce();
 }
