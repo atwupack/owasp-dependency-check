@@ -90,6 +90,7 @@ const command = program
     "-s, --scan <file...>",
     "the lock files of package managers to scan",
     parseMultipleFiles,
+    [],
   )
   .option("-f, --format <format...>", "the formats of the report to generate", [
     "HTML",
@@ -169,7 +170,7 @@ function buildCmdArguments() {
   });
 
   const scan = command.opts().scan;
-  if (scan) {
+  if (scan.length > 0) {
     scan.forEach((scan) => {
       args.push("--scan", scan);
     });
@@ -218,9 +219,9 @@ function parseProxyUrl(value: string) {
   return url;
 }
 
-function parseMultipleFiles(value: string, previous: string[] | undefined) {
+function parseMultipleFiles(value: string, previous: string[]) {
   const file = parseFile(value);
-  return [...(previous ?? []), file];
+  return [...previous, file];
 }
 
 function parseFile(value: string) {
