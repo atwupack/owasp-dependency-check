@@ -7,7 +7,7 @@ import path from "path";
 import os from "os";
 import fs from "fs";
 import { Maybe } from "purify-ts";
-import { ensureError } from "./utils.js";
+import { ensureError, resolveFile } from "./utils.js";
 import { description, name, version } from "./info.js";
 import { createLogger } from "./log.js";
 
@@ -57,7 +57,7 @@ const command = program
       `the path to a preinstalled dependency-check-cli binary (.sh or .bat file)`,
     )
       .env("OWASP_BIN")
-      .argParser(parseBinaryFile),
+      .argParser(parseFile),
   )
   .option(
     "--hide-owasp-output",
@@ -67,7 +67,7 @@ const command = program
   .addOption(
     new Option("--java-bin <binary>", "the path to the Java binary")
       .env("JAVACMD")
-      .argParser(parseBinaryFile),
+      .argParser(parseFile),
   )
   .optionsGroup("Network options:")
   .option(
@@ -86,7 +86,12 @@ const command = program
     "the location of the data directory used to store persistent data",
     path.join(os.tmpdir(), "dependency-check-data"),
   )
-  .option("-s, --scan <path...>", "the paths to scan ", ["package-lock.json"])
+  .option(
+    "-s, --scan <file...>",
+    "the lock files of package managers to scan",
+    parseMultipleFiles,
+    [],
+  )
   .option("-f, --format <format...>", "the formats of the report to generate", [
     "HTML",
     "JSON",
@@ -114,7 +119,7 @@ Some defaults are provided:
 - project    Default: "name" from package.json in working directory
 - data       Default: dependency-check-data directory in system temp folder
 - format     Default: HTML and JSON
-- scan       Default: package-lock.json in working directory
+- scan       Default: package managers' lock files in working directory (package-lock.json, yarn.lock, pnpm-lock.yaml) 
 
 The following environment variables are supported:
 - OWASP_BIN: path to a local installation of the dependency-check-cli
@@ -122,25 +127,34 @@ The following environment variables are supported:
 - GITHUB_TOKEN: personal GitHub token to authenticate against API
 - PROJECT_NAME: the name of the project being scanned
 - JAVACMD: path to a Java binary`,
-  )
-  .parse();
+  );
 
-const cli = {
-  hideOwaspOutput: !!command.opts().hideOwaspOutput,
-  owaspBinary: Maybe.fromNullable(command.opts().owaspBin),
-  proxyUrl: Maybe.fromNullable(command.opts().proxy),
-  githubToken: Maybe.fromNullable(command.opts().githubToken),
-  outDir: command.opts().out,
-  forceInstall: !!command.opts().forceInstall,
-  odcVersion: Maybe.fromNullable(command.opts().odcVersion),
-  binDir: path.resolve(command.opts().bin),
-  cmdArguments: buildCmdArguments(),
-  ignoreErrors: !!command.opts().ignoreErrors,
-  keepOldVersions: !!command.opts().keepOldVersions,
-  javaBinary: Maybe.fromNullable(command.opts().javaBin),
-};
+export function parseCli() {
+  command.parse();
+  return {
+    hideOwaspOutput: !!command.opts().hideOwaspOutput,
+    owaspBinary: Maybe.fromNullable(command.opts().owaspBin),
+    proxyUrl: Maybe.fromNullable(command.opts().proxy),
+    githubToken: Maybe.fromNullable(command.opts().githubToken),
+    outDir: command.opts().out,
+    forceInstall: !!command.opts().forceInstall,
+    odcVersion: Maybe.fromNullable(command.opts().odcVersion),
+    binDir: path.resolve(command.opts().bin),
+    cmdArguments: buildCmdArguments(),
+    ignoreErrors: !!command.opts().ignoreErrors,
+    keepOldVersions: !!command.opts().keepOldVersions,
+    javaBinary: Maybe.fromNullable(command.opts().javaBin),
+  };
+}
 
-export default cli;
+function addScanArgument(args: string[], lockFile: string) {
+  resolveFile(lockFile).ifJust((value) => {
+    log.info(`Found "${value}" and adding it to --scan argument.`);
+    args.push("--scan", value);
+  });
+}
+
+const LOCK_FILES = ["package-lock.json", "yarn.lock", "pnpm-lock.yaml"];
 
 function buildCmdArguments() {
   const args = [
@@ -155,9 +169,16 @@ function buildCmdArguments() {
     args.push("--nvdApiKey", key);
   });
 
-  command.opts().scan.forEach((scan) => {
-    args.push("--scan", scan);
-  });
+  const scan = command.opts().scan;
+  if (scan.length > 0) {
+    scan.forEach((scan) => {
+      args.push("--scan", scan);
+    });
+  } else {
+    LOCK_FILES.forEach((file) => {
+      addScanArgument(args, file);
+    });
+  }
 
   args.push(
     "--project",
@@ -198,15 +219,16 @@ function parseProxyUrl(value: string) {
   return url;
 }
 
-function parseBinaryFile(value: string) {
-  const binPath = path.resolve(value);
-  if (fs.existsSync(binPath)) {
-    const stat = fs.statSync(binPath);
-    if (!stat.isFile()) {
-      throw new InvalidArgumentError("The binary is not a file.");
-    }
-  } else {
-    throw new InvalidArgumentError("The binary does not exist.");
-  }
-  return binPath;
+function parseMultipleFiles(value: string, previous: string[]) {
+  const file = parseFile(value);
+  return [...previous, file];
+}
+
+function parseFile(value: string) {
+  const filePath = resolveFile(value);
+  return filePath
+    .ifNothing(() => {
+      throw new InvalidArgumentError(`The file "${value}" does not exist.`);
+    })
+    .unsafeCoerce();
 }
