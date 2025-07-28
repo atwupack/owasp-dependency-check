@@ -89,7 +89,6 @@ const command = program
   .option(
     "-s, --scan <file...>",
     "the lock files of package managers to scan",
-    parseMultipleFiles,
     [],
   )
   .option("-f, --format <format...>", "the formats of the report to generate", [
@@ -154,7 +153,12 @@ function addScanArgument(args: string[], lockFile: string) {
   });
 }
 
-const LOCK_FILES = ["package-lock.json", "yarn.lock", "pnpm-lock.yaml"];
+const LOCK_FILES = [
+  "package-lock.json",
+  "npm-shrinkwrap.json",
+  "yarn.lock",
+  "pnpm-lock.yaml",
+];
 
 function buildCmdArguments() {
   const args = [
@@ -217,11 +221,6 @@ function parseProxyUrl(value: string) {
     throw new InvalidArgumentError("The proxy URL is not HTTP(S).");
   }
   return url;
-}
-
-function parseMultipleFiles(value: string, previous: string[]) {
-  const file = parseFile(value);
-  return [...previous, file];
 }
 
 function parseFile(value: string) {
