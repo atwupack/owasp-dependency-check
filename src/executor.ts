@@ -1,5 +1,5 @@
 import { cleanDir, hideSecrets, setEnv } from "./utils.js";
-import path from "path";
+import path from "node:path";
 import {
   SpawnSyncOptions,
   SpawnSyncOptionsWithStringEncoding,

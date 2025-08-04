@@ -1,10 +1,9 @@
 import { cleanDir, unzipFileIntoDirectory } from "./utils.js";
 import { Maybe } from "purify-ts";
-import path from "path";
-import fs from "fs";
-import os from "os";
+import path from "node:path";
+import fs from "node:fs";
+import os from "node:os";
 import { fetch, ProxyAgent, RequestInit } from "undici";
-import fsp from "node:fs/promises";
 import { createLogger } from "./log.js";
 import { name } from "./info.js";
 
@@ -71,7 +70,7 @@ async function downloadRelease(
   const response = await fetch(url, createRequestInit(proxyUrl, Maybe.empty()));
   const filepath = path.resolve(installDir, name);
   if (response.body) {
-    await fsp.writeFile(filepath, response.body);
+    await fs.promises.writeFile(filepath, response.body);
     log.info("Download done.");
     return filepath;
   } else {

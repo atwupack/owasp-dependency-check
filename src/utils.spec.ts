@@ -2,13 +2,13 @@ import { describe, it } from "node:test";
 import * as assert from "node:assert/strict";
 import { cleanDir, ensureError, setExitCode, hideSecrets } from "./utils.js";
 import sinon from "sinon";
-import fs from "fs/promises";
+import fs from "node:fs";
 import { createLogger } from "./log.js";
 
 void describe("utils.ts", () => {
   void describe("cleanDir", () => {
     void it("should log a warning if directory could not be removed", async () => {
-      const fsMock = sinon.mock(fs);
+      const fsMock = sinon.mock(fs.promises);
       fsMock.expects("rm").once().withArgs("test").rejects();
       const consoleMock = sinon.mock(console);
       consoleMock.expects("log").twice();
@@ -20,7 +20,7 @@ void describe("utils.ts", () => {
       consoleMock.verify();
     });
     void it("should re-create the directory after successful removal", async () => {
-      const fsMock = sinon.mock(fs);
+      const fsMock = sinon.mock(fs.promises);
       fsMock.expects("rm").once().withArgs("test").resolves(undefined);
       fsMock.expects("mkdir").once().withArgs("test");
       const consoleMock = sinon.mock(console);

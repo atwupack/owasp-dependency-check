@@ -1,19 +1,18 @@
 import extract from "extract-zip";
-import fsp from "node:fs/promises";
 import { Logger } from "./log.js";
 import { Maybe } from "purify-ts";
-import path from "path";
-import fs from "fs";
+import path from "node:path";
+import fs from "node:fs";
 
 export async function cleanDir(dir: string, log: Logger) {
   log.info(`Cleaning directory ${dir}`);
   await deleteQuietly(dir, true, log);
-  await fsp.mkdir(dir, { recursive: true });
+  await fs.promises.mkdir(dir, { recursive: true });
 }
 
 async function deleteQuietly(path: string, recursive: boolean, log: Logger) {
   try {
-    await fsp.rm(path, { force: true, recursive: recursive });
+    await fs.promises.rm(path, { force: true, recursive: recursive });
     log.info(`Deleted "${path}"`);
   } catch (e) {
     const error = ensureError(e);

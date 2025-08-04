@@ -3,9 +3,9 @@ import {
   Option,
   InvalidArgumentError,
 } from "@commander-js/extra-typings";
-import path from "path";
-import os from "os";
-import fs from "fs";
+import path from "node:path";
+import os from "node:os";
+import fs from "node:fs";
 import { Maybe } from "purify-ts";
 import { ensureError, resolveFile } from "./utils.js";
 import { description, name, version } from "./info.js";
