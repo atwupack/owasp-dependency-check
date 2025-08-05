@@ -199,9 +199,7 @@ function buildCmdArguments() {
 function getProjectNameFromPackageJson() {
   let projectName = "Unknown Project";
   try {
-    const packageJson = fs
-      .readFileSync(path.resolve("package.json"))
-      .toString();
+    const packageJson = fs.readFileSync("package.json").toString();
     const parsedJson = JSON.parse(packageJson) as { name: string };
     projectName = parsedJson.name;
     log.info(`Found project name "${projectName}" in package.json`);

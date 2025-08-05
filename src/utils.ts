@@ -20,12 +20,12 @@ async function deleteQuietly(path: string, recursive: boolean, log: Logger) {
   }
 }
 
-export function ensureError(value: unknown): Error {
-  if (value instanceof Error) return value;
+export function ensureError(error: unknown): Error {
+  if (error instanceof Error) return error;
 
   let stringified: string;
   try {
-    stringified = JSON.stringify(value);
+    stringified = JSON.stringify(error);
   } catch {
     stringified = "[Unable to stringify the thrown value]";
   }

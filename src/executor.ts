@@ -1,5 +1,4 @@
 import { cleanDir, hideSecrets, setEnv } from "./utils.js";
-import path from "node:path";
 import {
   SpawnSyncOptions,
   SpawnSyncOptionsWithStringEncoding,
@@ -22,7 +21,6 @@ function executeVersionCheck(executable: string) {
   logCommandExecution(executable, versionCmdArguments);
 
   const versionSpawnOpts: SpawnSyncOptionsWithStringEncoding = {
-    cwd: path.resolve(process.cwd()),
     shell: false,
     encoding: "utf-8",
   };
@@ -53,7 +51,6 @@ function executeAnalysis(
   setEnv("JAVA_OPTS", proxyUrl.map(buildJavaToolOptions), log);
 
   const dependencyCheckSpawnOpts: SpawnSyncOptions = {
-    cwd: path.resolve(process.cwd()),
     shell: false,
     stdio: hideOwaspOutput ? "ignore" : "inherit",
   };
@@ -84,7 +81,7 @@ export async function executeDependencyCheck(
   javaBinary: Maybe<string>,
 ) {
   log.info("Dependency-Check Core path:", executable);
-  await cleanDir(path.resolve(process.cwd(), outDir), log);
+  await cleanDir(outDir, log);
 
   setEnv("JAVACMD", javaBinary, log);
 
