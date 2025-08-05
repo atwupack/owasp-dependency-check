@@ -37,7 +37,7 @@ function executeVersionCheck(executable: string) {
     throw new Error("Version check did not complete with status code.");
   }
   if (versionSpawn.status !== 0) {
-    throw new Error(versionSpawn.stderr.toString());
+    throw new Error(versionSpawn.stderr);
   }
   log.info(versionSpawn.stdout.trimEnd());
 }
