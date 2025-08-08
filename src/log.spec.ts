@@ -10,7 +10,7 @@ void describe("log.ts", () => {
       consoleMock
         .expects("log")
         .once()
-        .callsFake((input) => {
+        .callsFake(input => {
           assert.ok(input);
         });
       const log = createLogger("Test");
@@ -24,7 +24,7 @@ void describe("log.ts", () => {
       consoleMock
         .expects("log")
         .once()
-        .callsFake((input) => {
+        .callsFake(input => {
           assert.ok(input);
         });
       const log = createLogger("Test");
@@ -38,7 +38,7 @@ void describe("log.ts", () => {
       consoleMock
         .expects("error")
         .once()
-        .callsFake((input) => {
+        .callsFake(input => {
           assert.ok(input);
         });
       const log = createLogger("Test");

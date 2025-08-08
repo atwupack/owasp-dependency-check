@@ -1,8 +1,8 @@
 import extract from "extract-zip";
 import { Logger } from "./log.js";
 import { Maybe } from "purify-ts";
-import path from "node:path";
 import fs from "node:fs";
+import path from "node:path";
 
 export async function cleanDir(dir: string, log: Logger) {
   log.info(`Cleaning directory ${dir}`);
@@ -60,28 +60,21 @@ export async function unzipFileIntoDirectory(
   deleteZip: boolean,
   log: Logger,
 ) {
-  await extract(zipFile, {
-    dir: destDir,
-  });
+  await extract(zipFile, { dir: destDir });
   if (deleteZip) {
     await deleteQuietly(zipFile, false, log);
   }
 }
 
 export function setEnv(key: string, value: Maybe<string>, log: Logger) {
-  value.ifJust((value) => {
+  value.ifJust(value => {
     log.info(`Setting environment variable ${key} to "${hideSecrets(value)}"`);
     process.env[key] = value;
   });
 }
 
 export function resolveFile(file: string) {
-  const filePath = path.resolve(file);
-  if (fs.existsSync(filePath)) {
-    const stat = fs.statSync(filePath);
-    if (stat.isFile()) {
-      return Maybe.of(filePath);
-    }
-  }
-  return Maybe.empty();
+  return Maybe.encase(() => fs.statSync(file))
+    .filter(stat => stat.isFile())
+    .map(() => path.resolve(file));
 }

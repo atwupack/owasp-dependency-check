@@ -1,9 +1,11 @@
 import { describe, it } from "node:test";
 import * as assert from "node:assert/strict";
-import { cleanDir, ensureError, setExitCode, hideSecrets } from "./utils.js";
+import { cleanDir, ensureError, setExitCode, hideSecrets, resolveFile } from "./utils.js";
 import sinon from "sinon";
-import fs from "node:fs";
+import fs, { Stats } from "node:fs";
 import { createLogger } from "./log.js";
+import { Maybe } from "purify-ts";
+import path from "node:path";
 
 void describe("utils.ts", () => {
   void describe("cleanDir", () => {
@@ -137,4 +139,35 @@ void describe("utils.ts", () => {
       consoleMock.verify();
     });
   });
+  void describe("resolveFile", () => {
+    void it("should return Nothing if the file does not exist", () => {
+      const fsMock = sinon.mock(fs);
+      fsMock.expects("statSync").once().withArgs("test").throws();
+
+      const file = resolveFile("test");
+      assert.equal(file, Maybe.empty());
+      fsMock.verify();
+    });
+    void it("should return Nothing if the path is not a file", () => {
+      const statsMock = sinon.createStubInstance(Stats);
+      statsMock.isFile.returns(false);
+      const fsMock = sinon.mock(fs);
+      fsMock.expects("statSync").once().withArgs("test").returns(statsMock);
+
+      const file = resolveFile("test");
+      assert.equal(file, Maybe.empty());
+      fsMock.verify();
+    });
+    void it("should return the resolved path if the path is a file", () => {
+      const statsMock = sinon.createStubInstance(Stats);
+      statsMock.isFile.returns(true);
+      const fsMock = sinon.mock(fs);
+      fsMock.expects("statSync").once().withArgs("test").returns(statsMock);
+
+      const file = resolveFile("test");
+      assert.deepEqual(file, Maybe.of(path.resolve("test")));
+      fsMock.verify();
+    });
+  });
 });
+

@@ -28,10 +28,7 @@ function findOwaspExecutable(installDir: string) {
 
 interface GithubRelease {
   tag_name: string;
-  assets: {
-    name: string;
-    browser_download_url: string;
-  }[];
+  assets: { name: string; browser_download_url: string }[];
 }
 
 async function findReleaseInfo(
@@ -39,7 +36,7 @@ async function findReleaseInfo(
   proxyUrl: Maybe<URL>,
   githubToken: Maybe<string>,
 ) {
-  const url = odcVersion.mapOrDefault((value) => {
+  const url = odcVersion.mapOrDefault(value => {
     return TAG_RELEASE_URL + value;
   }, LATEST_RELEASE_URL);
   log.info(`Fetching release information from ${url}`);
@@ -53,7 +50,7 @@ async function findReleaseInfo(
 }
 
 function findDownloadAsset(release: GithubRelease) {
-  const asset = release.assets.find((a) => NAME_RE.test(a.name));
+  const asset = release.assets.find(a => NAME_RE.test(a.name));
   if (!asset) {
     throw new Error(`Could not find asset for version ${release.tag_name}`);
   }
@@ -80,13 +77,11 @@ async function downloadRelease(
 
 function createRequestInit(proxyUrl: Maybe<URL>, githubToken: Maybe<string>) {
   const init: RequestInit = {};
-  proxyUrl.ifJust((proxyUrl) => {
+  proxyUrl.ifJust(proxyUrl => {
     init.dispatcher = new ProxyAgent(proxyUrl.toString());
   });
-  githubToken.ifJust((token) => {
-    init.headers = {
-      Authorization: `Bearer ${token}`,
-    };
+  githubToken.ifJust(token => {
+    init.headers = { Authorization: `Bearer ${token}` };
   });
   return init;
 }

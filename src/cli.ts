@@ -147,7 +147,7 @@ export function parseCli() {
 }
 
 function addScanArgument(args: string[], lockFile: string) {
-  resolveFile(lockFile).ifJust((value) => {
+  resolveFile(lockFile).ifJust(value => {
     log.info(`Found "${value}" and adding it to --scan argument.`);
     args.push("--scan", value);
   });
@@ -169,17 +169,17 @@ function buildCmdArguments() {
     ...command.args,
   ];
 
-  Maybe.fromNullable(command.opts().nvdApiKey).ifJust((key) => {
+  Maybe.fromNullable(command.opts().nvdApiKey).ifJust(key => {
     args.push("--nvdApiKey", key);
   });
 
   const scan = command.opts().scan;
   if (scan.length > 0) {
-    scan.forEach((scan) => {
+    scan.forEach(scan => {
       args.push("--scan", scan);
     });
   } else {
-    LOCK_FILES.forEach((file) => {
+    LOCK_FILES.forEach(file => {
       addScanArgument(args, file);
     });
   }
@@ -189,7 +189,7 @@ function buildCmdArguments() {
     command.opts().project ?? getProjectNameFromPackageJson(),
   );
 
-  command.opts().format.forEach((format) => {
+  command.opts().format.forEach(format => {
     args.push("--format", format);
   });
 
@@ -221,11 +221,9 @@ function parseProxyUrl(value: string) {
   return url;
 }
 
-function parseFile(value: string) {
-  const filePath = resolveFile(value);
+function parseFile(path: string) {
+  const filePath = resolveFile(path);
   return filePath
-    .ifNothing(() => {
-      throw new InvalidArgumentError(`The file "${value}" does not exist.`);
-    })
+    .toEither(new InvalidArgumentError(`The file "${path}" does not exist.`))
     .unsafeCoerce();
 }
