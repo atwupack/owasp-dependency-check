@@ -1,6 +1,12 @@
 import { describe, it } from "node:test";
 import * as assert from "node:assert/strict";
-import { cleanDir, ensureError, setExitCode, hideSecrets, resolveFile } from "./utils.js";
+import {
+  cleanDir,
+  ensureError,
+  setExitCode,
+  hideSecrets,
+  resolveFile,
+} from "./utils.js";
 import sinon from "sinon";
 import fs, { Stats } from "node:fs";
 import { createLogger } from "./log.js";
@@ -170,4 +176,3 @@ void describe("utils.ts", () => {
     });
   });
 });
-
