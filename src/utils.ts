@@ -73,7 +73,8 @@ export function setEnv(key: string, value: Maybe<string>, log: Logger) {
   });
 }
 
-export function resolveFile(file: string) {
+export function resolveFile(...paths: string[]) {
+  const file = path.resolve(...paths);
   return Maybe.encase(() => fs.statSync(file))
     .filter(stat => stat.isFile())
     .map(() => path.resolve(file));

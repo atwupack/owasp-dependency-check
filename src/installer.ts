@@ -1,4 +1,4 @@
-import { cleanDir, unzipFileIntoDirectory } from "./utils.js";
+import { cleanDir, resolveFile, unzipFileIntoDirectory } from "./utils.js";
 import { Maybe } from "purify-ts";
 import path from "node:path";
 import fs from "node:fs";
@@ -17,13 +17,12 @@ const TAG_RELEASE_URL =
 const IS_WIN = os.platform() === "win32";
 
 function findOwaspExecutable(installDir: string) {
-  const executable = path.resolve(
+  return resolveFile(
     installDir,
     "dependency-check",
     "bin",
     `dependency-check.${IS_WIN ? "bat" : "sh"}`,
   );
-  return Maybe.fromNullable(fs.existsSync(executable) ? executable : undefined);
 }
 
 interface GithubRelease {

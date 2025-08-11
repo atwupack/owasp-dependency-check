@@ -147,8 +147,9 @@ void describe("utils.ts", () => {
   });
   void describe("resolveFile", () => {
     void it("should return Nothing if the file does not exist", () => {
+      const filePath = path.resolve("test");
       const fsMock = sinon.mock(fs);
-      fsMock.expects("statSync").once().withArgs("test").throws();
+      fsMock.expects("statSync").once().withArgs(filePath).throws();
 
       const file = resolveFile("test");
       assert.equal(file, Maybe.empty());
@@ -158,7 +159,8 @@ void describe("utils.ts", () => {
       const statsMock = sinon.createStubInstance(Stats);
       statsMock.isFile.returns(false);
       const fsMock = sinon.mock(fs);
-      fsMock.expects("statSync").once().withArgs("test").returns(statsMock);
+      const filePath = path.resolve("test");
+      fsMock.expects("statSync").once().withArgs(filePath).returns(statsMock);
 
       const file = resolveFile("test");
       assert.equal(file, Maybe.empty());
@@ -168,7 +170,8 @@ void describe("utils.ts", () => {
       const statsMock = sinon.createStubInstance(Stats);
       statsMock.isFile.returns(true);
       const fsMock = sinon.mock(fs);
-      fsMock.expects("statSync").once().withArgs("test").returns(statsMock);
+      const filePath = path.resolve("test");
+      fsMock.expects("statSync").once().withArgs(filePath).returns(statsMock);
 
       const file = resolveFile("test");
       assert.deepEqual(file, Maybe.of(path.resolve("test")));
