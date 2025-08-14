@@ -49,11 +49,7 @@ async function findReleaseInfo(
 }
 
 function findDownloadAsset(release: GithubRelease) {
-  const asset = release.assets.find(a => NAME_RE.test(a.name));
-  if (!asset) {
-    throw new Error(`Could not find asset for version ${release.tag_name}`);
-  }
-  return asset;
+  return Maybe.fromNullable(release.assets.find(a => NAME_RE.test(a.name)));
 }
 
 async function downloadRelease(
@@ -93,7 +89,9 @@ async function installRelease(
   log.info(`Installing dependency check ${release.tag_name}...`);
   await cleanDir(installDir, log);
 
-  const asset = findDownloadAsset(release);
+  const asset = findDownloadAsset(release)
+    .toEither(new Error(`Could not find asset for version ${release.tag_name}`))
+    .unsafeCoerce();
 
   const filePath = await downloadRelease(
     asset.browser_download_url,
