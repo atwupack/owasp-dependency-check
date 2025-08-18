@@ -1,4 +1,10 @@
-import { cleanDir, resolveFile, unzipFileIntoDirectory } from "./utils.js";
+import {
+  cleanDir,
+  fetchUrl,
+  orThrow,
+  resolveFile,
+  unzipFileIntoDirectory,
+} from "./utils.js";
 import { Maybe } from "purify-ts";
 import path from "node:path";
 import fs from "node:fs";
@@ -39,12 +45,11 @@ async function findReleaseInfo(
     return TAG_RELEASE_URL + value;
   }, LATEST_RELEASE_URL);
   log.info(`Fetching release information from ${url}`);
-  const res = await fetch(url, createRequestInit(proxyUrl, githubToken));
-  if (!res.ok) {
-    throw new Error(
-      `Could not fetch release from GitHub: URL: ${url} Status: ${res.statusText}`,
-    );
-  }
+
+  const res = orThrow(
+    await fetchUrl(url, createRequestInit(proxyUrl, githubToken)),
+    `Could not fetch release from GitHub URL: ${url}`,
+  );
   return (await res.json()) as GithubRelease;
 }
 
@@ -89,9 +94,10 @@ async function installRelease(
   log.info(`Installing dependency check ${release.tag_name}...`);
   await cleanDir(installDir, log);
 
-  const asset = findDownloadAsset(release)
-    .toEither(new Error(`Could not find asset for version ${release.tag_name}`))
-    .unsafeCoerce();
+  const asset = orThrow(
+    findDownloadAsset(release),
+    `Could not find asset for version ${release.tag_name}`,
+  );
 
   const filePath = await downloadRelease(
     asset.browser_download_url,
@@ -100,11 +106,10 @@ async function installRelease(
     proxyUrl,
   );
   await unzipFileIntoDirectory(filePath, installDir, true, log);
-  return findOwaspExecutable(installDir).orDefaultLazy(() => {
-    throw new Error(
-      `Could not find Dependency-Check Core executable in ${installDir}`,
-    );
-  });
+  return orThrow(
+    findOwaspExecutable(installDir),
+    `Could not find Dependency-Check Core executable in ${installDir}`,
+  );
 }
 
 export async function installDependencyCheck(
@@ -132,5 +137,5 @@ export async function installDependencyCheck(
   if (!keepOldVersions) {
     await cleanDir(binDir, log);
   }
-  return await installRelease(release, installDir, proxyUrl);
+  return installRelease(release, installDir, proxyUrl);
 }
