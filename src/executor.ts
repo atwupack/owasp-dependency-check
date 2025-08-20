@@ -48,7 +48,7 @@ function executeAnalysis(
   proxyUrl: Maybe<URL>,
   hideOwaspOutput: boolean,
 ) {
-  setEnv("JAVA_OPTS", proxyUrl.map(buildJavaToolOptions), log);
+  setEnv("JAVA_OPTS", proxyUrl.map(buildJavaToolOptions), true, log);
 
   const dependencyCheckSpawnOpts: SpawnSyncOptions = {
     shell: false,
@@ -83,7 +83,7 @@ export async function executeDependencyCheck(
   log.info("Dependency-Check Core path:", executable);
   await cleanDir(outDir, log);
 
-  setEnv("JAVACMD", javaBinary, log);
+  setEnv("JAVACMD", javaBinary, false, log);
 
   executeVersionCheck(executable);
   return executeAnalysis(executable, cmdArguments, proxyUrl, hideOwaspOutput);

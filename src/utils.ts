@@ -67,8 +67,16 @@ export async function unzipFileIntoDirectory(
   }
 }
 
-export function setEnv(key: string, value: Maybe<string>, log: Logger) {
+export function setEnv(
+  key: string,
+  value: Maybe<string>,
+  append: boolean,
+  log: Logger,
+) {
   value.ifJust(value => {
+    if (append && process.env[key]) {
+      value = `${process.env[key]} ${value}`;
+    }
     log.info(`Setting environment variable ${key} to "${hideSecrets(value)}"`);
     process.env[key] = value;
   });
