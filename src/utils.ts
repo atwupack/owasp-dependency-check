@@ -88,3 +88,7 @@ export function fetchUrl(url: RequestInfo, init: RequestInit) {
 export function orThrow<T>(value: Maybe<T>, error: string): T {
   return value.toEither(new Error(error)).unsafeCoerce();
 }
+
+export function parseUrl(url: string) {
+  return Maybe.encase(() => new URL(url));
+}

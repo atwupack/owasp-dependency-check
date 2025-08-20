@@ -2,7 +2,8 @@
 
 ## Unreleased Changes
 
-- Search for package managers' lock file if the `--scan` argument is not present.
+- Search for package managers' lock files if the `--scan` argument is not present.
+- Fixed incompatibility with Node 18/20 when using `--proxy` argument.
 
 ## Version 0.8.1
 
