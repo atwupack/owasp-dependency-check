@@ -7,7 +7,7 @@ import path from "node:path";
 import os from "node:os";
 import fs from "node:fs";
 import { Maybe } from "purify-ts";
-import { ensureError, resolveFile } from "./utils.js";
+import { ensureError, parseUrl, resolveFile } from "./utils.js";
 import { description, name, version } from "./info.js";
 import { createLogger } from "./log.js";
 
@@ -210,15 +210,11 @@ function getProjectNameFromPackageJson() {
   return projectName;
 }
 
-function parseProxyUrl(value: string) {
-  const url = URL.parse(value);
-  if (!url?.protocol || !url.hostname) {
-    throw new InvalidArgumentError("The proxy URL is invalid.");
-  }
-  if (url.protocol !== "http:" && url.protocol !== "https:") {
-    throw new InvalidArgumentError("The proxy URL is not HTTP(S).");
-  }
-  return url;
+export function parseProxyUrl(value: string) {
+  return parseUrl(value)
+    .filter(url => url.protocol === "http:" || url.protocol === "https:")
+    .toEither(new InvalidArgumentError("The proxy URL is invalid."))
+    .unsafeCoerce();
 }
 
 function parseFile(path: string) {

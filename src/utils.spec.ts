@@ -6,6 +6,7 @@ import {
   setExitCode,
   hideSecrets,
   resolveFile,
+  parseUrl,
 } from "./utils.js";
 import sinon from "sinon";
 import fs, { Stats } from "node:fs";
@@ -176,6 +177,23 @@ void describe("utils.ts", () => {
       const file = resolveFile("test");
       assert.deepEqual(file, Maybe.of(path.resolve("test")));
       fsMock.verify();
+    });
+  });
+  void describe("parseUrl", () => {
+    void it("should return Nothing if the url is not valid", () => {
+      const url = parseUrl("htt\\p://user:password@server:8080");
+      assert.equal(url, Maybe.empty());
+    });
+    void it("should return an URL if the url is valid", () => {
+      const url = parseUrl("http://user:password@server:8080");
+      assert.notEqual(url, Maybe.empty());
+      url.ifJust(url => {
+        assert.equal(url.protocol, "http:");
+        assert.equal(url.hostname, "server");
+        assert.equal(url.port, "8080");
+        assert.equal(url.username, "user");
+        assert.equal(url.password, "password");
+      });
     });
   });
 });
