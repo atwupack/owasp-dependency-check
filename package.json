@@ -60,7 +60,7 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@tsconfig/node18": "^18.2.4",
     "@types/cross-spawn": "^6.0.6",
-    "@types/node": "^18.19.123",
+    "@types/node": "^22.17.2",
     "@types/sinon": "^17.0.4",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
