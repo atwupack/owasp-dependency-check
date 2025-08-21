@@ -4,6 +4,8 @@
 
 - Search for package managers' lock files if the `--scan` argument is not present.
 - Fixed incompatibility with Node 18/20 when using `--proxy` argument.
+- Append proxy configuration to `JAVA_OPTS` instead of replacing it.\
+  This allows the caller to provide other Java options to the dependency-check-cli.
 
 ## Version 0.8.1
 
