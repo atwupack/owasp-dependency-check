@@ -7,6 +7,7 @@ import {
   hideSecrets,
   resolveFile,
   parseUrl,
+  setEnv,
 } from "./utils.js";
 import sinon from "sinon";
 import fs, { Stats } from "node:fs";
@@ -193,6 +194,29 @@ void describe("utils.ts", () => {
         assert.equal(url.port, "8080");
         assert.equal(url.username, "user");
         assert.equal(url.password, "password");
+      });
+    });
+    void describe("setEnv", () => {
+      void it("should set environment variable when value is present and append is false", () => {
+        const log = createLogger("Test");
+        const key = "TEST_ENV";
+        process.env[key] = undefined;
+        setEnv(key, Maybe.of("value"), false, log);
+        assert.equal(process.env[key], "value");
+      });
+      void it("should append to existing environment variable when append is true", () => {
+        const log = createLogger("Test");
+        const key = "TEST_ENV";
+        process.env[key] = "existing";
+        setEnv(key, Maybe.of("new"), true, log);
+        assert.equal(process.env[key], "existing new");
+      });
+      void it("should not set environment variable when value is empty", () => {
+        const log = createLogger("Test");
+        const key = "TEST_ENV";
+        process.env[key] = "existing";
+        setEnv(key, Maybe.empty(), false, log);
+        assert.equal(process.env[key], "existing");
       });
     });
   });
