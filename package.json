@@ -83,10 +83,9 @@
       "src/dependency-check.ts!",
       "src/*.spec.ts"
     ],
-    "project": [
-      "src/*.ts!",
-      "!src/*.spec.ts!"
-    ],
-    "github-actions": false
+    "ignoreExportsUsedInFile": true,
+    "ignoreBinaries": [
+      "owasp-dependency-check"
+    ]
   }
 }

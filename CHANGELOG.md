@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased Changes
+## Version 0.9.0
 
 - Search for package managers' lock files if the `--scan` argument is not present.
 - Fixed incompatibility with Node 18/20 when using `--proxy` argument.
