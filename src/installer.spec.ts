@@ -28,7 +28,7 @@ void describe("installer.ts", () => {
     });
   });
   void describe("findDownloadAsset", () => {
-    it("should return Maybe with asset when asset name matches regex", () => {
+    void it("should return Maybe with asset when asset name matches regex", () => {
       const release = {
         tag_name: "v1.0.0",
         assets: [
@@ -46,8 +46,7 @@ void describe("installer.ts", () => {
         "dependency-check-1.0.0-release.zip",
       );
     });
-
-    it("should return Nothing when no asset name matches regex", () => {
+    void it("should return Nothing when no asset name matches regex", () => {
       const release = {
         tag_name: "v1.0.0",
         assets: [{ name: "other.zip", browser_download_url: "url2" }],
@@ -55,8 +54,7 @@ void describe("installer.ts", () => {
       const result = findDownloadAsset(release);
       assert.ok(result.isNothing());
     });
-
-    it("should return Nothing when assets array is empty", () => {
+    void it("should return Nothing when assets array is empty", () => {
       const release = { tag_name: "v1.0.0", assets: [] };
       const result = findDownloadAsset(release);
       assert.ok(result.isNothing());
