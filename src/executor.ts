@@ -89,7 +89,7 @@ export async function executeDependencyCheck(
   return executeAnalysis(executable, cmdArguments, proxyUrl, hideOwaspOutput);
 }
 
-function buildJavaToolOptions(proxyUrl: URL) {
+export function buildJavaToolOptions(proxyUrl: URL) {
   let javaToolOptions = `-Dhttps.proxyHost=${proxyUrl.hostname}`;
   if (proxyUrl.port) {
     javaToolOptions += ` -Dhttps.proxyPort=${proxyUrl.port}`;

@@ -3,7 +3,7 @@ import { Logger } from "./log.js";
 import { Maybe, MaybeAsync } from "purify-ts";
 import fs from "node:fs";
 import path from "node:path";
-import { fetch, RequestInfo, RequestInit } from "undici";
+import undici, { RequestInfo, RequestInit } from "undici";
 
 export async function cleanDir(dir: string, log: Logger) {
   log.info(`Cleaning directory ${dir}`);
@@ -90,7 +90,9 @@ export function resolveFile(...paths: string[]) {
 }
 
 export function fetchUrl(url: RequestInfo, init: RequestInit) {
-  return MaybeAsync(() => fetch(url, init)).filter(response => response.ok);
+  return MaybeAsync(() => undici.fetch(url, init)).filter(
+    response => response.ok,
+  );
 }
 
 export function orThrow<T>(value: Maybe<T>, error: string): T {
