@@ -1,0 +1,65 @@
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+import { Maybe } from "purify-ts";
+import { createRequestInit, findDownloadAsset } from "./installer.js";
+
+void describe("installer.ts", () => {
+  void describe("createRequestInit", () => {
+    void it("should set dispatcher when proxyUrl is provided", () => {
+      const proxyUrl = Maybe.of(new URL("https://proxy.com"));
+      const result = createRequestInit(proxyUrl, Maybe.empty());
+      assert.ok(result.dispatcher);
+    });
+    void it("should set Authorization header when githubToken is provided", () => {
+      const githubToken = Maybe.of("token123");
+      const result = createRequestInit(Maybe.empty(), githubToken);
+      assert.deepEqual(result.headers, { Authorization: "Bearer token123" });
+    });
+    void it("should set both dispatcher and Authorization header when both are provided", () => {
+      const proxyUrl = Maybe.of(new URL("https://proxy.com"));
+      const githubToken = Maybe.of("token123");
+      const result = createRequestInit(proxyUrl, githubToken);
+      assert.ok(result.dispatcher);
+      assert.deepEqual(result.headers, { Authorization: "Bearer token123" });
+    });
+    void it("should return empty object when neither proxyUrl nor githubToken is provided", () => {
+      const result = createRequestInit(Maybe.empty(), Maybe.empty());
+      assert.deepEqual(result, {});
+    });
+  });
+  void describe("findDownloadAsset", () => {
+    it("should return Maybe with asset when asset name matches regex", () => {
+      const release = {
+        tag_name: "v1.0.0",
+        assets: [
+          {
+            name: "dependency-check-1.0.0-release.zip",
+            browser_download_url: "url1",
+          },
+          { name: "other.zip", browser_download_url: "url2" },
+        ],
+      };
+      const result = findDownloadAsset(release);
+      assert.ok(result.isJust());
+      assert.equal(
+        result.unsafeCoerce().name,
+        "dependency-check-1.0.0-release.zip",
+      );
+    });
+
+    it("should return Nothing when no asset name matches regex", () => {
+      const release = {
+        tag_name: "v1.0.0",
+        assets: [{ name: "other.zip", browser_download_url: "url2" }],
+      };
+      const result = findDownloadAsset(release);
+      assert.ok(result.isNothing());
+    });
+
+    it("should return Nothing when assets array is empty", () => {
+      const release = { tag_name: "v1.0.0", assets: [] };
+      const result = findDownloadAsset(release);
+      assert.ok(result.isNothing());
+    });
+  });
+});

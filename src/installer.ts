@@ -53,7 +53,7 @@ async function findReleaseInfo(
   return (await res.json()) as GithubRelease;
 }
 
-function findDownloadAsset(release: GithubRelease) {
+export function findDownloadAsset(release: GithubRelease) {
   return Maybe.fromNullable(release.assets.find(a => NAME_RE.test(a.name)));
 }
 
@@ -75,7 +75,10 @@ async function downloadRelease(
   }
 }
 
-function createRequestInit(proxyUrl: Maybe<URL>, githubToken: Maybe<string>) {
+export function createRequestInit(
+  proxyUrl: Maybe<URL>,
+  githubToken: Maybe<string>,
+) {
   const init: RequestInit = {};
   proxyUrl.ifJust(proxyUrl => {
     init.dispatcher = new ProxyAgent(proxyUrl.toString());
