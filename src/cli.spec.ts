@@ -1,5 +1,5 @@
 import { describe, it } from "node:test";
-import { parseProxyUrl } from "./cli.js";
+import { parseFile, parseProxyUrl } from "./cli.js";
 import assert from "node:assert/strict";
 import { InvalidArgumentError } from "@commander-js/extra-typings";
 
@@ -17,6 +17,16 @@ void describe("cli.ts", () => {
       assert.throws(
         () => parseProxyUrl("htt\\p://user:password@server:8080"),
         new InvalidArgumentError("The proxy URL is invalid."),
+      );
+    });
+  });
+  void describe("parseFile", () => {
+    void it("should throw an error if file cannot be found", () => {
+      assert.throws(
+        () => parseFile("non-existing-file.txt"),
+        new InvalidArgumentError(
+          'The file "non-existing-file.txt" does not exist.',
+        ),
       );
     });
   });

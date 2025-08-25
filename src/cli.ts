@@ -217,7 +217,7 @@ export function parseProxyUrl(value: string) {
     .unsafeCoerce();
 }
 
-function parseFile(path: string) {
+export function parseFile(path: string) {
   const filePath = resolveFile(path);
   return filePath
     .toEither(new InvalidArgumentError(`The file "${path}" does not exist.`))
