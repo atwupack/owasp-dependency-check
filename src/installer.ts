@@ -95,7 +95,7 @@ async function installRelease(
   proxyUrl: Maybe<URL>,
 ) {
   log.info(`Installing dependency check ${release.tag_name}...`);
-  await cleanDir(installDir, log);
+  cleanDir(installDir, log);
 
   const asset = orThrow(
     findDownloadAsset(release),
@@ -138,7 +138,7 @@ export async function installDependencyCheck(
   }
 
   if (!keepOldVersions) {
-    await cleanDir(binDir, log);
+    cleanDir(binDir, log);
   }
   return installRelease(release, installDir, proxyUrl);
 }

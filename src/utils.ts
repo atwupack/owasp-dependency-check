@@ -5,15 +5,15 @@ import fs from "node:fs";
 import path from "node:path";
 import undici, { RequestInfo, RequestInit } from "undici";
 
-export async function cleanDir(dir: string, log: Logger) {
+export function cleanDir(dir: string, log: Logger) {
   log.info(`Cleaning directory ${dir}`);
-  await deleteQuietly(dir, true, log);
-  await fs.promises.mkdir(dir, { recursive: true });
+  deleteQuietly(dir, true, log);
+  fs.mkdirSync(dir, { recursive: true });
 }
 
-async function deleteQuietly(path: string, recursive: boolean, log: Logger) {
+export function deleteQuietly(path: string, recursive: boolean, log: Logger) {
   try {
-    await fs.promises.rm(path, { force: true, recursive: recursive });
+    fs.rmSync(path, { force: true, recursive: recursive });
     log.info(`Deleted "${path}"`);
   } catch (e) {
     const error = ensureError(e);
@@ -63,7 +63,7 @@ export async function unzipFileIntoDirectory(
 ) {
   await extract(zipFile, { dir: destDir });
   if (deleteZip) {
-    await deleteQuietly(zipFile, false, log);
+    deleteQuietly(zipFile, false, log);
   }
 }
 

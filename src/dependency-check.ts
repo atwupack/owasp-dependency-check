@@ -32,7 +32,7 @@ export async function run() {
   }
 
   if (executable.isJust()) {
-    const result = await executeDependencyCheck(
+    const result = executeDependencyCheck(
       executable.unsafeCoerce(),
       cli.cmdArguments,
       cli.outDir,

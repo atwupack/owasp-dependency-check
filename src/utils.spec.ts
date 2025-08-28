@@ -10,6 +10,7 @@ import {
   setEnv,
   orThrow,
   fetchUrl,
+  deleteQuietly,
 } from "./utils.js";
 import sinon from "sinon";
 import fs, { Stats } from "node:fs";
@@ -19,28 +20,44 @@ import path from "node:path";
 import undici, { Response } from "undici";
 
 void describe("utils.ts", () => {
+  void describe("deleteQuietly", () => {
+    void it("should log a warning if directory could not be removed", () => {
+      const fsMock = sinon.mock(fs);
+      fsMock
+        .expects("rmSync")
+        .once()
+        .withArgs("test", { force: true, recursive: true })
+        .throws();
+      const consoleMock = sinon.mock(console);
+      consoleMock.expects("log").once();
+      const log = createLogger("Test");
+      deleteQuietly("test", true, log);
+      fsMock.verify();
+      consoleMock.verify();
+    });
+  });
   void describe("cleanDir", () => {
-    void it("should log a warning if directory could not be removed", async () => {
-      const fsMock = sinon.mock(fs.promises);
-      fsMock.expects("rm").once().withArgs("test").rejects();
+    void it("should log a warning if directory could not be removed", () => {
+      const fsMock = sinon.mock(fs);
+      fsMock.expects("rmSync").once().withArgs("test").throws();
       const consoleMock = sinon.mock(console);
       consoleMock.expects("log").twice();
 
       const log = createLogger("Test");
-      await cleanDir("test", log);
+      cleanDir("test", log);
 
       fsMock.verify();
       consoleMock.verify();
     });
-    void it("should re-create the directory after successful removal", async () => {
-      const fsMock = sinon.mock(fs.promises);
-      fsMock.expects("rm").once().withArgs("test").resolves(undefined);
-      fsMock.expects("mkdir").once().withArgs("test");
+    void it("should re-create the directory after successful removal", () => {
+      const fsMock = sinon.mock(fs);
+      fsMock.expects("rmSync").once().withArgs("test");
+      fsMock.expects("mkdirSync").once().withArgs("test");
       const consoleMock = sinon.mock(console);
       consoleMock.expects("log").twice();
 
       const log = createLogger("Test");
-      await cleanDir("test", log);
+      cleanDir("test", log);
 
       fsMock.verify();
       consoleMock.verify();

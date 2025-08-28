@@ -72,7 +72,7 @@ function executeAnalysis(
   return dependencyCheckSpawn.status;
 }
 
-export async function executeDependencyCheck(
+export function executeDependencyCheck(
   executable: string,
   cmdArguments: string[],
   outDir: string,
@@ -81,7 +81,7 @@ export async function executeDependencyCheck(
   javaBinary: Maybe<string>,
 ) {
   log.info("Dependency-Check Core path:", executable);
-  await cleanDir(outDir, log);
+  cleanDir(outDir, log);
 
   setEnv("JAVACMD", javaBinary, false, log);
 
