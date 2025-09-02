@@ -9,7 +9,7 @@ import { Maybe } from "purify-ts";
 import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
-import { fetch, ProxyAgent, RequestInit } from "undici";
+import { ProxyAgent, RequestInit } from "undici";
 import { createLogger } from "./log.js";
 import { name } from "./info.js";
 
@@ -64,10 +64,12 @@ async function downloadRelease(
   proxyUrl: Maybe<URL>,
 ) {
   log.info(`Downloading dependency check from ${url}...`);
-  const response = await fetch(url, createRequestInit(proxyUrl, Maybe.empty()));
-  const filepath = path.resolve(installDir, name);
-  if (response.body) {
-    await fs.promises.writeFile(filepath, response.body);
+  const body = (
+    await fetchUrl(url, createRequestInit(proxyUrl, Maybe.empty()))
+  ).chainNullable(resp => resp.body);
+  if (body.isJust()) {
+    const filepath = path.resolve(installDir, name);
+    await fs.promises.writeFile(filepath, body.unsafeCoerce());
     log.info("Download done.");
     return filepath;
   } else {
