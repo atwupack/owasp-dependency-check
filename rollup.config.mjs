@@ -13,6 +13,7 @@ export default {
     "node:os",
     "undici",
     "@commander-js/extra-typings",
+    "yup",
   ],
   plugins: [terser()],
 };

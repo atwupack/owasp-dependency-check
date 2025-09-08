@@ -1,7 +1,11 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { Maybe } from "purify-ts";
-import { createRequestInit, findDownloadAsset } from "./installer.js";
+import {
+  castGithubRelease,
+  createRequestInit,
+  findDownloadAsset,
+} from "./installer.js";
 
 void describe("installer.ts", () => {
   void describe("createRequestInit", () => {
@@ -57,6 +61,42 @@ void describe("installer.ts", () => {
     void it("should return Nothing when assets array is empty", () => {
       const release = { tag_name: "v1.0.0", assets: [] };
       const result = findDownloadAsset(release);
+      assert.ok(result.isNothing());
+    });
+  });
+  void describe("castGithubRelease", () => {
+    void it("returns validated GithubRelease object for valid input", async () => {
+      const data = {
+        tag_name: "v2.0.0",
+        assets: [
+          {
+            name: "dependency-check-2.0.0-release.zip",
+            browser_download_url: "https://example.com/asset.zip",
+          },
+        ],
+      };
+      const result = await castGithubRelease(data);
+      assert.ok(result.isJust());
+      assert.equal(result.unsafeCoerce().tag_name, "v2.0.0");
+      assert.equal(
+        result.unsafeCoerce().assets[0].name,
+        "dependency-check-2.0.0-release.zip",
+      );
+      assert.equal(
+        result.unsafeCoerce().assets[0].browser_download_url,
+        "https://example.com/asset.zip",
+      );
+    });
+    void it("throws error when tag_name is missing", async () => {
+      const data = {
+        assets: [
+          {
+            name: "dependency-check-2.0.0-release.zip",
+            browser_download_url: "https://example.com/asset.zip",
+          },
+        ],
+      };
+      const result = await castGithubRelease(data);
       assert.ok(result.isNothing());
     });
   });

@@ -44,12 +44,13 @@
   "license": "MIT",
   "dependencies": {
     "@commander-js/extra-typings": "^14.0.0",
-    "commander": "^14.0.0",
     "ansis": "^4.1.0",
+    "commander": "^14.0.0",
     "cross-spawn": "^7.0.6",
     "extract-zip": "^2.0.1",
     "purify-ts": "^2.1.0",
-    "undici": "^5.29.0"
+    "undici": "^5.29.0",
+    "yup": "^1.7.0"
   },
   "engines": {
     "node": ">=18"

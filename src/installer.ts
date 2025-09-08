@@ -5,13 +5,14 @@ import {
   resolveFile,
   unzipFileIntoDirectory,
 } from "./utils.js";
-import { Maybe } from "purify-ts";
+import { Maybe, MaybeAsync } from "purify-ts";
 import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
 import { ProxyAgent, RequestInit } from "undici";
 import { createLogger } from "./log.js";
 import { name } from "./info.js";
+import * as yup from "yup";
 
 const log = createLogger(`${name} Installation`);
 
@@ -31,12 +32,30 @@ function findOwaspExecutable(installDir: string) {
   );
 }
 
-interface GithubRelease {
-  tag_name: string;
-  assets: { name: string; browser_download_url: string }[];
+const githubReleaseSchema = yup.object({
+  tag_name: yup.string().required(),
+  assets: yup
+    .array()
+    .of(
+      yup.object({
+        name: yup.string().required(),
+        browser_download_url: yup.string().url().required(),
+      }),
+    )
+    .required(),
+});
+
+type GithubRelease = yup.InferType<typeof githubReleaseSchema>;
+
+export function castGithubRelease(data: unknown): MaybeAsync<GithubRelease> {
+  return MaybeAsync(() => githubReleaseSchema.validate(data, { strict: true }));
 }
 
-async function findReleaseInfo(
+function parseJson(response: Response) {
+  return MaybeAsync(() => response.json());
+}
+
+function findReleaseInfo(
   odcVersion: Maybe<string>,
   proxyUrl: Maybe<URL>,
   githubToken: Maybe<string>,
@@ -46,11 +65,9 @@ async function findReleaseInfo(
   }, LATEST_RELEASE_URL);
   log.info(`Fetching release information from ${url}`);
 
-  const res = orThrow(
-    await fetchUrl(url, createRequestInit(proxyUrl, githubToken)),
-    `Could not fetch release from GitHub URL: ${url}`,
-  );
-  return (await res.json()) as GithubRelease;
+  return fetchUrl(url, createRequestInit(proxyUrl, githubToken))
+    .chain(resp => parseJson(resp))
+    .chain(data => castGithubRelease(data));
 }
 
 export function findDownloadAsset(release: GithubRelease) {
@@ -125,7 +142,10 @@ export async function installDependencyCheck(
   forceInstall: boolean,
   keepOldVersions: boolean,
 ) {
-  const release = await findReleaseInfo(odcVersion, proxyUrl, githubToken);
+  const release = orThrow(
+    await findReleaseInfo(odcVersion, proxyUrl, githubToken),
+    `Could not fetch release from GitHub.`,
+  );
   log.info(`Found release ${release.tag_name} on GitHub.`);
 
   const installDir = path.resolve(binDir, release.tag_name);
