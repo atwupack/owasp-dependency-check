@@ -9,7 +9,7 @@ import { Maybe, MaybeAsync } from "purify-ts";
 import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
-import { ProxyAgent, RequestInit } from "undici";
+import { ProxyAgent, RequestInit, Response } from "undici";
 import { createLogger } from "./log.js";
 import { name } from "./info.js";
 import * as yup from "yup";

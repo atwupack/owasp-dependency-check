@@ -3,7 +3,8 @@
 ## Version 1.0.0
 
 - The support for Node 18 has been dropped. The minimum required Node version is now 20.
-  
+- Upgrade `undici` to version 7. This makes the program incompatible with Node 18.
+
 ## Version 0.9.0
 
 - Search for package managers' lock files if the `--scan` argument is not present.
