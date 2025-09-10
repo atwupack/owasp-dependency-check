@@ -3,7 +3,8 @@
 ## Version 1.0.0
 
 - The support for Node 18 has been dropped. The minimum required Node version is now 20.
-- Upgrade `undici` to version 7. This makes the program incompatible with Node 18.
+- Upgrade `undici` to version 7. This makes the program incompatible with Node 18.\
+  This also fixes CVE-2024-24750.
 
 ## Version 0.9.0
 
