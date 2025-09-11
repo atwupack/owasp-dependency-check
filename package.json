@@ -20,8 +20,8 @@
   },
   "scripts": {
     "build": "genversion -P name,version,description -d -s -e src/info.ts && tsc && rollup -c",
-    "test": "node --test build/*.spec.js",
-    "coverage": "node --experimental-test-coverage --test build/*.spec.js",
+    "test": "node --test build/*.spec.js build/util/*.spec.js",
+    "coverage": "node --experimental-test-coverage --test build/*.spec.js build/util/*.spec.js",
     "owasp": "node dist/dependency-check.js --data dependency-check-data",
     "format": "prettier . --write",
     "validate": "eslint . && knip && prettier . --check",

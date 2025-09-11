@@ -14,7 +14,7 @@ import {
 } from "./utils.js";
 import sinon from "sinon";
 import fs, { Stats } from "node:fs";
-import { createLogger } from "./log.js";
+import { createLogger } from "./util/log.js";
 import { Maybe } from "purify-ts";
 import path from "node:path";
 import undici, { Response } from "undici";

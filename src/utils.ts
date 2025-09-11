@@ -1,5 +1,5 @@
 import extract from "extract-zip";
-import { Logger } from "./log.js";
+import { Logger } from "./util/log.js";
 import { Maybe, MaybeAsync } from "purify-ts";
 import fs from "node:fs";
 import path from "node:path";

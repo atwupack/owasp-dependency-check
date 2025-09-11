@@ -9,7 +9,7 @@ import fs from "node:fs";
 import { Maybe } from "purify-ts";
 import { ensureError, parseUrl, resolveFile } from "./utils.js";
 import { description, name, version } from "./info.js";
-import { createLogger } from "./log.js";
+import { createLogger } from "./util/log.js";
 
 const log = createLogger(name);
 

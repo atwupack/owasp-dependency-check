@@ -4,7 +4,7 @@ import { installDependencyCheck } from "./installer.js";
 import { executeDependencyCheck } from "./executor.js";
 import { parseCli } from "./cli.js";
 import { Maybe } from "purify-ts";
-import { createLogger } from "./log.js";
+import { createLogger } from "./util/log.js";
 import { name } from "./info.js";
 
 const log = createLogger(name);

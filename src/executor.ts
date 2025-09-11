@@ -6,7 +6,7 @@ import {
 import spawn from "cross-spawn";
 import { Maybe } from "purify-ts";
 import { green } from "ansis";
-import { createLogger } from "./log.js";
+import { createLogger } from "./util/log.js";
 import { name } from "./info.js";
 
 const log = createLogger(`${name} Analysis`);

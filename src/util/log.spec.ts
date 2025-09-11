@@ -3,7 +3,7 @@ import sinon from "sinon";
 import assert from "node:assert/strict";
 import { createLogger } from "./log.js";
 
-void describe("log.ts", () => {
+void describe("util/log.ts", () => {
   void describe("log.info", () => {
     void it("should log to console", () => {
       const consoleMock = sinon.mock(console);
