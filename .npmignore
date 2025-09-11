@@ -8,3 +8,4 @@ tsconfig.json
 .gitattributes
 CHANGELOG.md
 .prettierignore
+.npmrc

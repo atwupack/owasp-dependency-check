@@ -12,7 +12,7 @@
 > - Please check the [CHANGELOG](https://github.com/atwupack/owasp-dependency-check/blob/main/CHANGELOG.md) if you run into any problems.
 > - Please report bug reports or feature requests [here](https://github.com/atwupack/owasp-dependency-check/issues).
 
-> ⚠️ Requires **Node.js** version 18 or greater.
+> ⚠️ Requires **Node.js** version 20 or greater.
 
 ## Introduction
 
