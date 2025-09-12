@@ -1,6 +1,5 @@
 import {
   cleanDir,
-  fetchUrl,
   orThrow,
   resolveFile,
   unzipFileIntoDirectory,
@@ -13,6 +12,7 @@ import { ProxyAgent, RequestInit, Response } from "undici";
 import { createLogger } from "./util/log.js";
 import { name } from "./info.js";
 import * as yup from "yup";
+import { fetchUrl } from "./util/net.js";
 
 const log = createLogger(`${name} Installation`);
 

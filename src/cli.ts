@@ -7,9 +7,10 @@ import path from "node:path";
 import os from "node:os";
 import fs from "node:fs";
 import { Maybe } from "purify-ts";
-import { ensureError, parseUrl, resolveFile } from "./utils.js";
+import { ensureError, resolveFile } from "./utils.js";
 import { description, name, version } from "./info.js";
 import { createLogger } from "./util/log.js";
+import { parseUrl } from "./util/net.js";
 
 const log = createLogger(name);
 

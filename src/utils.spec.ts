@@ -6,10 +6,8 @@ import {
   setExitCode,
   hideSecrets,
   resolveFile,
-  parseUrl,
   setEnv,
   orThrow,
-  fetchUrl,
   deleteQuietly,
 } from "./utils.js";
 import sinon from "sinon";
@@ -17,7 +15,6 @@ import fs, { Stats } from "node:fs";
 import { createLogger } from "./util/log.js";
 import { Maybe } from "purify-ts";
 import path from "node:path";
-import undici, { Response } from "undici";
 
 void describe("utils.ts", () => {
   void describe("deleteQuietly", () => {
@@ -200,46 +197,30 @@ void describe("utils.ts", () => {
       fsMock.verify();
     });
   });
-  void describe("parseUrl", () => {
-    void it("should return Nothing if the url is not valid", () => {
-      const url = parseUrl("htt\\p://user:password@server:8080");
-      assert.equal(url, Maybe.empty());
+  void describe("setEnv", () => {
+    void it("should set environment variable when value is present and append is false", () => {
+      const log = createLogger("Test");
+      const key = "TEST_ENV";
+      process.env[key] = undefined;
+      setEnv(key, Maybe.of("value"), false, log);
+      assert.equal(process.env[key], "value");
     });
-    void it("should return an URL if the url is valid", () => {
-      const url = parseUrl("http://user:password@server:8080");
-      assert.notEqual(url, Maybe.empty());
-      url.ifJust(url => {
-        assert.equal(url.protocol, "http:");
-        assert.equal(url.hostname, "server");
-        assert.equal(url.port, "8080");
-        assert.equal(url.username, "user");
-        assert.equal(url.password, "password");
-      });
+    void it("should append to existing environment variable when append is true", () => {
+      const log = createLogger("Test");
+      const key = "TEST_ENV";
+      process.env[key] = "existing";
+      setEnv(key, Maybe.of("new"), true, log);
+      assert.equal(process.env[key], "existing new");
     });
-    void describe("setEnv", () => {
-      void it("should set environment variable when value is present and append is false", () => {
-        const log = createLogger("Test");
-        const key = "TEST_ENV";
-        process.env[key] = undefined;
-        setEnv(key, Maybe.of("value"), false, log);
-        assert.equal(process.env[key], "value");
-      });
-      void it("should append to existing environment variable when append is true", () => {
-        const log = createLogger("Test");
-        const key = "TEST_ENV";
-        process.env[key] = "existing";
-        setEnv(key, Maybe.of("new"), true, log);
-        assert.equal(process.env[key], "existing new");
-      });
-      void it("should not set environment variable when value is empty", () => {
-        const log = createLogger("Test");
-        const key = "TEST_ENV";
-        process.env[key] = "existing";
-        setEnv(key, Maybe.empty(), false, log);
-        assert.equal(process.env[key], "existing");
-      });
+    void it("should not set environment variable when value is empty", () => {
+      const log = createLogger("Test");
+      const key = "TEST_ENV";
+      process.env[key] = "existing";
+      setEnv(key, Maybe.empty(), false, log);
+      assert.equal(process.env[key], "existing");
     });
   });
+
   void describe("orThrow", () => {
     void it("should return the value when Maybe contains a value", () => {
       const value = orThrow(Maybe.of("data"), "Error message");
@@ -251,39 +232,6 @@ void describe("utils.ts", () => {
         () => orThrow(Maybe.empty(), "Custom error"),
         error => error instanceof Error && error.message === "Custom error",
       );
-    });
-  });
-  void describe("fetchUrl", () => {
-    void it("should return MaybeAsync with response when fetch is successful", async () => {
-      const undiciMock = sinon.mock(undici);
-      const response = { ok: true } as Response;
-      undiciMock.expects("fetch").once().resolves(response);
-      const url = "https://example.com";
-      const init = {};
-      const result = await fetchUrl(url, init).run();
-      assert.ok(result.isJust());
-      undiciMock.verify();
-    });
-
-    void it("should return MaybeAsync with Nothing when fetch response is not ok", async () => {
-      const undiciMock = sinon.mock(undici);
-      const response = { ok: false } as Response;
-      undiciMock.expects("fetch").once().resolves(response);
-      const url = "https://example.com";
-      const init = {};
-      const result = await fetchUrl(url, init).run();
-      assert.ok(result.isNothing());
-      undiciMock.verify();
-    });
-
-    void it("should return MaybeAsync with Nothing when fetch throws an error", async () => {
-      const undiciMock = sinon.mock(undici);
-      undiciMock.expects("fetch").once().rejects(new Error("Network error"));
-      const url = "https://example.com";
-      const init = {};
-      const result = await fetchUrl(url, init).run();
-      assert.ok(result.isNothing());
-      undiciMock.verify();
     });
   });
 });

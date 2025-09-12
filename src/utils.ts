@@ -1,9 +1,8 @@
 import extract from "extract-zip";
 import { Logger } from "./util/log.js";
-import { Maybe, MaybeAsync } from "purify-ts";
+import { Maybe } from "purify-ts";
 import fs from "node:fs";
 import path from "node:path";
-import undici, { RequestInfo, RequestInit } from "undici";
 
 export function cleanDir(dir: string, log: Logger) {
   log.info(`Cleaning directory ${dir}`);
@@ -89,16 +88,6 @@ export function resolveFile(...paths: string[]) {
     .map(() => path.resolve(file));
 }
 
-export function fetchUrl(url: RequestInfo, init: RequestInit) {
-  return MaybeAsync(() => undici.fetch(url, init)).filter(
-    response => response.ok,
-  );
-}
-
 export function orThrow<T>(value: Maybe<T>, error: string): T {
   return value.toEither(new Error(error)).unsafeCoerce();
-}
-
-export function parseUrl(url: string) {
-  return Maybe.encase(() => new URL(url));
 }
