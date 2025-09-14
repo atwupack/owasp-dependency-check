@@ -1,9 +1,4 @@
-import {
-  cleanDir,
-  orThrow,
-  resolveFile,
-  unzipFileIntoDirectory,
-} from "./utils.js";
+import { orThrow } from "./utils.js";
 import { Maybe, MaybeAsync } from "purify-ts";
 import path from "node:path";
 import os from "node:os";
@@ -11,6 +6,7 @@ import { createLogger } from "./util/log.js";
 import { name } from "./info.js";
 import * as yup from "yup";
 import { buildRequestInit, downloadFile, fetchJson } from "./util/net.js";
+import { cleanDir, resolveFile, unzipFileIntoDirectory } from "./util/fs.js";
 
 const log = createLogger(`${name} Installation`);
 

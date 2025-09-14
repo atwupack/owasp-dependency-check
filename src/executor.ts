@@ -1,4 +1,4 @@
-import { cleanDir, hideSecrets, setEnv } from "./utils.js";
+import { hideSecrets, setEnv } from "./utils.js";
 import {
   SpawnSyncOptions,
   SpawnSyncOptionsWithStringEncoding,
@@ -8,6 +8,7 @@ import { Maybe } from "purify-ts";
 import { green } from "ansis";
 import { createLogger } from "./util/log.js";
 import { name } from "./info.js";
+import { cleanDir } from "./util/fs.js";
 
 const log = createLogger(`${name} Analysis`);
 

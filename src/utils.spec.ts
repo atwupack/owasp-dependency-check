@@ -1,65 +1,17 @@
 import { describe, it } from "node:test";
 import * as assert from "node:assert/strict";
 import {
-  cleanDir,
   ensureError,
   setExitCode,
   hideSecrets,
-  resolveFile,
   setEnv,
   orThrow,
-  deleteQuietly,
 } from "./utils.js";
 import sinon from "sinon";
-import fs, { Stats } from "node:fs";
 import { createLogger } from "./util/log.js";
 import { Maybe } from "purify-ts";
-import path from "node:path";
 
 void describe("utils.ts", () => {
-  void describe("deleteQuietly", () => {
-    void it("should log a warning if directory could not be removed", () => {
-      const fsMock = sinon.mock(fs);
-      fsMock
-        .expects("rmSync")
-        .once()
-        .withArgs("test", { force: true, recursive: true })
-        .throws();
-      const consoleMock = sinon.mock(console);
-      consoleMock.expects("log").once();
-      const log = createLogger("Test");
-      deleteQuietly("test", true, log);
-      fsMock.verify();
-      consoleMock.verify();
-    });
-  });
-  void describe("cleanDir", () => {
-    void it("should log a warning if directory could not be removed", () => {
-      const fsMock = sinon.mock(fs);
-      fsMock.expects("rmSync").once().withArgs("test").throws();
-      const consoleMock = sinon.mock(console);
-      consoleMock.expects("log").twice();
-
-      const log = createLogger("Test");
-      cleanDir("test", log);
-
-      fsMock.verify();
-      consoleMock.verify();
-    });
-    void it("should re-create the directory after successful removal", () => {
-      const fsMock = sinon.mock(fs);
-      fsMock.expects("rmSync").once().withArgs("test");
-      fsMock.expects("mkdirSync").once().withArgs("test");
-      const consoleMock = sinon.mock(console);
-      consoleMock.expects("log").twice();
-
-      const log = createLogger("Test");
-      cleanDir("test", log);
-
-      fsMock.verify();
-      consoleMock.verify();
-    });
-  });
   void describe("hideSecrets", () => {
     void it("should filter parameter with equal sign", () => {
       const result = hideSecrets("--nvdApiKey=1234567890");
@@ -162,39 +114,6 @@ void describe("utils.ts", () => {
       setExitCode(1, true, log);
       assert.equal(process.exitCode, 0);
       consoleMock.verify();
-    });
-  });
-  void describe("resolveFile", () => {
-    void it("should return Nothing if the file does not exist", () => {
-      const filePath = path.resolve("test");
-      const fsMock = sinon.mock(fs);
-      fsMock.expects("statSync").once().withArgs(filePath).throws();
-
-      const file = resolveFile("test");
-      assert.equal(file, Maybe.empty());
-      fsMock.verify();
-    });
-    void it("should return Nothing if the path is not a file", () => {
-      const statsMock = sinon.createStubInstance(Stats);
-      statsMock.isFile.returns(false);
-      const fsMock = sinon.mock(fs);
-      const filePath = path.resolve("test");
-      fsMock.expects("statSync").once().withArgs(filePath).returns(statsMock);
-
-      const file = resolveFile("test");
-      assert.equal(file, Maybe.empty());
-      fsMock.verify();
-    });
-    void it("should return the resolved path if the path is a file", () => {
-      const statsMock = sinon.createStubInstance(Stats);
-      statsMock.isFile.returns(true);
-      const fsMock = sinon.mock(fs);
-      const filePath = path.resolve("test");
-      fsMock.expects("statSync").once().withArgs(filePath).returns(statsMock);
-
-      const file = resolveFile("test");
-      assert.deepEqual(file, Maybe.of(path.resolve("test")));
-      fsMock.verify();
     });
   });
   void describe("setEnv", () => {

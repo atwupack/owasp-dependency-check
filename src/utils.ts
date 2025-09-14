@@ -1,24 +1,5 @@
-import extract from "extract-zip";
 import { Logger } from "./util/log.js";
 import { Maybe } from "purify-ts";
-import fs from "node:fs";
-import path from "node:path";
-
-export function cleanDir(dir: string, log: Logger) {
-  log.info(`Cleaning directory ${dir}`);
-  deleteQuietly(dir, true, log);
-  fs.mkdirSync(dir, { recursive: true });
-}
-
-export function deleteQuietly(path: string, recursive: boolean, log: Logger) {
-  try {
-    fs.rmSync(path, { force: true, recursive: recursive });
-    log.info(`Deleted "${path}"`);
-  } catch (e) {
-    const error = ensureError(e);
-    log.warn(`Could not delete "${path}". Reason: ${error}`);
-  }
-}
 
 export function ensureError(error: unknown): Error {
   if (error instanceof Error) return error;
@@ -54,18 +35,6 @@ export function setExitCode(code: number, ignoreErrors: boolean, log: Logger) {
   process.exitCode = finalCode;
 }
 
-export async function unzipFileIntoDirectory(
-  zipFile: string,
-  destDir: string,
-  deleteZip: boolean,
-  log: Logger,
-) {
-  await extract(zipFile, { dir: destDir });
-  if (deleteZip) {
-    deleteQuietly(zipFile, false, log);
-  }
-}
-
 export function setEnv(
   key: string,
   value: Maybe<string>,
@@ -79,13 +48,6 @@ export function setEnv(
     log.info(`Setting environment variable ${key} to "${hideSecrets(value)}"`);
     process.env[key] = value;
   });
-}
-
-export function resolveFile(...paths: string[]) {
-  const file = path.resolve(...paths);
-  return Maybe.encase(() => fs.statSync(file))
-    .filter(stat => stat.isFile())
-    .map(() => path.resolve(file));
 }
 
 export function orThrow<T>(value: Maybe<T>, error: string): T {
