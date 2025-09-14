@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import { Maybe } from "purify-ts";
 import assert from "node:assert/strict";
-import { fetchUrl, parseUrl } from "./net.js";
+import { fetchJson, fetchUrl, parseUrl } from "./net.js";
 import sinon from "sinon";
 import undici, { Response } from "undici";
 
@@ -46,12 +46,60 @@ void describe("util/net.ts", () => {
       undiciMock.verify();
     });
 
-    void it("should return MaybeAsync with Nothing when fetch throws an error", async () => {
+    void it("should return MaybeAsync with Nothing when rejects with an error", async () => {
       const undiciMock = sinon.mock(undici);
       undiciMock.expects("fetch").once().rejects(new Error("Network error"));
       const url = "https://example.com";
       const init = {};
       const result = await fetchUrl(url, init).run();
+      assert.ok(result.isNothing());
+      undiciMock.verify();
+    });
+    void it("should return MaybeAsync with Nothing when rejects throws an error", async () => {
+      const undiciMock = sinon.mock(undici);
+      undiciMock.expects("fetch").once().throws(new Error("Network error"));
+      const url = "https://example.com";
+      const init = {};
+      const result = await fetchUrl(url, init).run();
+      assert.ok(result.isNothing());
+      undiciMock.verify();
+    });
+  });
+
+  void describe("fetchJson", () => {
+    void it("should return MaybeAsync with parsed JSON when fetch is successful and response is ok", async () => {
+      const undiciMock = sinon.mock(undici);
+      const jsonData = { foo: "bar" };
+      const response = {
+        ok: true,
+        json: sinon.stub().resolves(jsonData),
+      } as unknown as Response;
+      undiciMock.expects("fetch").once().resolves(response);
+      const url = "https://example.com";
+      const init = {};
+      const result = await fetchJson(url, init).run();
+      assert.ok(result.isJust());
+      assert.deepEqual(result.extract(), jsonData);
+      undiciMock.verify();
+    });
+
+    void it("should return MaybeAsync with Nothing when fetch response is not ok", async () => {
+      const undiciMock = sinon.mock(undici);
+      const response = { ok: false, json: sinon.stub() } as unknown as Response;
+      undiciMock.expects("fetch").once().resolves(response);
+      const url = "https://example.com";
+      const init = {};
+      const result = await fetchJson(url, init).run();
+      assert.ok(result.isNothing());
+      undiciMock.verify();
+    });
+
+    void it("should return MaybeAsync with Nothing when fetch reject with an error", async () => {
+      const undiciMock = sinon.mock(undici);
+      undiciMock.expects("fetch").once().rejects(new Error("Network error"));
+      const url = "https://example.com";
+      const init = {};
+      const result = await fetchJson(url, init).run();
       assert.ok(result.isNothing());
       undiciMock.verify();
     });

@@ -6,13 +6,11 @@ import {
 } from "./utils.js";
 import { Maybe, MaybeAsync } from "purify-ts";
 import path from "node:path";
-import fs from "node:fs";
 import os from "node:os";
-import { ProxyAgent, RequestInit, Response } from "undici";
 import { createLogger } from "./util/log.js";
 import { name } from "./info.js";
 import * as yup from "yup";
-import { fetchUrl } from "./util/net.js";
+import { buildRequestInit, downloadFile, fetchJson } from "./util/net.js";
 
 const log = createLogger(`${name} Installation`);
 
@@ -51,10 +49,6 @@ export function castGithubRelease(data: unknown): MaybeAsync<GithubRelease> {
   return MaybeAsync(() => githubReleaseSchema.validate(data, { strict: true }));
 }
 
-function parseJson(response: Response) {
-  return MaybeAsync(() => response.json());
-}
-
 function findReleaseInfo(
   odcVersion: Maybe<string>,
   proxyUrl: Maybe<URL>,
@@ -64,10 +58,9 @@ function findReleaseInfo(
     return TAG_RELEASE_URL + value;
   }, LATEST_RELEASE_URL);
   log.info(`Fetching release information from ${url}`);
-
-  return fetchUrl(url, createRequestInit(proxyUrl, githubToken))
-    .chain(resp => parseJson(resp))
-    .chain(data => castGithubRelease(data));
+  return fetchJson(url, createRequestInit(proxyUrl, githubToken)).chain(data =>
+    castGithubRelease(data),
+  );
 }
 
 export function findDownloadAsset(release: GithubRelease) {
@@ -81,31 +74,25 @@ async function downloadRelease(
   proxyUrl: Maybe<URL>,
 ) {
   log.info(`Downloading dependency check from ${url}...`);
-  const body = (
-    await fetchUrl(url, createRequestInit(proxyUrl, Maybe.empty()))
-  ).chainNullable(resp => resp.body);
-  if (body.isJust()) {
-    const filepath = path.resolve(installDir, name);
-    await fs.promises.writeFile(filepath, body.unsafeCoerce());
-    log.info("Download done.");
-    return filepath;
-  } else {
-    throw new Error(`Download failed from ${url}`);
-  }
+  const filepath = path.resolve(installDir, name);
+  const result = await downloadFile(
+    url,
+    createRequestInit(proxyUrl, Maybe.empty()),
+    filepath,
+  );
+  return orThrow(result, `Download failed from ${url}`);
 }
 
 export function createRequestInit(
   proxyUrl: Maybe<URL>,
   githubToken: Maybe<string>,
 ) {
-  const init: RequestInit = {};
-  proxyUrl.ifJust(proxyUrl => {
-    init.dispatcher = new ProxyAgent(proxyUrl.toString());
-  });
-  githubToken.ifJust(token => {
-    init.headers = { Authorization: `Bearer ${token}` };
-  });
-  return init;
+  return buildRequestInit(
+    proxyUrl,
+    githubToken.map(token => {
+      return { Authorization: `Bearer ${token}` };
+    }),
+  );
 }
 
 async function installRelease(
