@@ -1,4 +1,4 @@
-import { hideSecrets, setEnv } from "./utils.js";
+import { hideSecrets } from "./util/misc.js";
 import {
   SpawnSyncOptions,
   SpawnSyncOptionsWithStringEncoding,
@@ -9,6 +9,7 @@ import { green } from "ansis";
 import { createLogger } from "./util/log.js";
 import { name } from "./info.js";
 import { cleanDir } from "./util/fs.js";
+import { setEnv } from "./util/proc.js";
 
 const log = createLogger(`${name} Analysis`);
 

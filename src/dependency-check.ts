@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-import { ensureError, setExitCode } from "./utils.js";
+import { ensureError } from "./util/misc.js";
 import { installDependencyCheck } from "./installer.js";
 import { executeDependencyCheck } from "./executor.js";
 import { parseCli } from "./cli.js";
 import { Maybe } from "purify-ts";
 import { createLogger } from "./util/log.js";
 import { name } from "./info.js";
+import { setExitCode } from "./util/proc.js";
 
 const log = createLogger(name);
 

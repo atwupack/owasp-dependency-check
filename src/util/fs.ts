@@ -1,9 +1,9 @@
 import { Logger } from "./log.js";
 import fs from "node:fs";
-import { ensureError } from "../utils.js";
 import extract from "extract-zip";
 import path from "node:path";
 import { Maybe } from "purify-ts";
+import { ensureError } from "./misc.js";
 
 export function cleanDir(dir: string, log: Logger) {
   log.info(`Cleaning directory ${dir}`);

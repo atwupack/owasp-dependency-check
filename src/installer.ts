@@ -1,4 +1,4 @@
-import { orThrow } from "./utils.js";
+import { orThrow } from "./util/misc.js";
 import { Maybe, MaybeAsync } from "purify-ts";
 import path from "node:path";
 import os from "node:os";
