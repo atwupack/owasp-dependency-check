@@ -32,39 +32,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-      - id: owasp-report
+      - id: reports
         uses: actions/upload-pages-artifact@v4
         with:
-          path: dependency-check-reports
-      - id: coverage-report
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: coverage
-  deploy-owasp-report-on-gh-pages:
-    name: Deploy OWASP report on GitHub pages
+          path: |
+            dependency-check-reports
+            coverage
+  deploy-reports-on-gh-pages:
+    name: Deploy reports on GitHub pages
     permissions:
       pages: write
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.owasp-report.outputs.page_url }}
+      url: ${{ steps.reports.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: run-reports
     steps:
       - name: Deploy OWASP report to GitHub Pages
-        id: owasp-report
-        uses: actions/deploy-pages@v4
-  deploy-coverage-report-on-gh-pages:
-    name: Deploy coverage report on GitHub pages
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.coverage-report.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: run-reports
-    steps:
-      - name: Deploy coverage report to GitHub Pages
-        id: coverage-report
+        id: reports
         uses: actions/deploy-pages@v4
