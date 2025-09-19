@@ -1,10 +1,10 @@
 dependency-check-bin
 dependency-check-reports
-dependency-check.log
 node_modules
-out
 /.idea/
 /dependency-check-data/
 /dist/
 /build/
 /src/info.ts
+/coverage/
+/.c8/

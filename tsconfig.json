@@ -6,7 +6,8 @@
     "noEmitOnError": true,
     "alwaysStrict": true,
     "allowUnreachableCode": false,
-    "allowUnusedLabels": false
+    "allowUnusedLabels": false,
+    "sourceMap": true
   },
   "include": ["src"]
 }
