@@ -1,10 +1,10 @@
-name: Run dependency-check and deploy to GitHub pages
+name: Create and deploy reports
 permissions:
   contents: read
 on: workflow_dispatch
 
 jobs:
-  run-dependency-check:
+  run-reports:
     name: Analyze code with OWASP dependency-check
     runs-on: ubuntu-latest
     steps:
@@ -26,26 +26,45 @@ jobs:
             dependency-check-cache-
       - run: npm ci
       - run: npm run build
+      - run: npm run coverage
       - run: npm install -g .
-      - run: npx owasp-dependency-check --data dependency-check-data -f HTML
+      - run: npx owasp-dependency-check -f HTML
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-      - id: deployment
+      - id: owasp-report
         uses: actions/upload-pages-artifact@v4
         with:
           path: dependency-check-reports
-  deploy-report-on-gh-pages:
+      - id: coverage-report
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: coverage
+  deploy-owasp-report-on-gh-pages:
     name: Deploy OWASP report on GitHub pages
     permissions:
       pages: write
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.owasp-report.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: run-dependency-check
+    needs: run-reports
     steps:
       - name: Deploy OWASP report to GitHub Pages
-        id: deployment
+        id: owasp-report
+        uses: actions/deploy-pages@v4
+  deploy-coverage-report-on-gh-pages:
+    name: Deploy coverage report on GitHub pages
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.coverage-report.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: run-reports
+    steps:
+      - name: Deploy coverage report to GitHub Pages
+        id: coverage-report
         uses: actions/deploy-pages@v4
