@@ -20,7 +20,9 @@ This package is a Node.js wrapper for the [OWASP dependency-check-cli](https://d
 
 It is based on the work of [etnetera/owasp-dependency-check](https://github.com/etnetera/owasp-dependency-check).
 
-You can see the current report for this project [here](https://atwupack.github.io/owasp-dependency-check/dependency-check-report.html).
+You can see the current OWASP report [here](https://atwupack.github.io/owasp-dependency-check/owasp/dependency-check-report.html).
+
+You can see the current code coverage report [here](https://atwupack.github.io/owasp-dependency-check/coverage/).
 
 ## Installation
 
