@@ -1,11 +1,11 @@
-name: Create and deploy reports
+name: Generate and deploy reports
 permissions:
   contents: read
 on: workflow_dispatch
 
 jobs:
   run-reports:
-    name: Analyze code with OWASP dependency-check
+    name: Generate reports
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -24,7 +24,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run coverage      .
-      - run: npm run owasp -- -f HTML
+      - run: npm run owasp -- -f HTML --ossIndexUsername atwupack@mailbox.org --ossIndexPassword ${{ secrets.OSS_INDEX_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
