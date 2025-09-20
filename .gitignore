@@ -1,10 +1,7 @@
-dependency-check-bin
-dependency-check-reports
-node_modules
+/node_modules/
 /.idea/
-/dependency-check-data/
 /dist/
 /build/
 /src/info.ts
-/coverage/
-/.c8/
+/tmp/
+/reports/

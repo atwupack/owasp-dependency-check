@@ -4,7 +4,7 @@ import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
 import { defineConfig } from "eslint/config";
 
 export default defineConfig(
-  { ignores: ["./dist/**", "./build/**", "./coverage/**"] },
+  { ignores: ["./dist/**", "./build/**", "./reports/**"] },
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
