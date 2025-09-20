@@ -18,12 +18,13 @@ jobs:
       - id: cache-odc-data
         uses: actions/cache@v4
         with:
+          enableCrossOsArchive: true
           path: tmp/owasp/data
-          key: dependency-check-cache-${{ steps.cache-version.outputs.cachedate }}
-          restore-keys: dependency-check-cache-
+          key: odc-data-cache-${{ steps.cache-version.outputs.cachedate }}
+          restore-keys: odc-data-cache-
       - run: npm ci
       - run: npm run build
-      - run: npm run coverage      .
+      - run: npm run coverage
       - run: npm run owasp -- -f HTML --ossIndexUsername atwupack@mailbox.org --ossIndexPassword ${{ secrets.OSS_INDEX_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

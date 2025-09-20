@@ -21,6 +21,5 @@ jobs:
       - run: npm run build
       - run: npm run validate
       - run: npm test
-      - run: npm install -g .
-      - run: npx owasp-dependency-check --help
-      - run: npx owasp-dependency-check --version
+      - run: npm run owasp -- --help
+      - run: npm run owasp -- --version

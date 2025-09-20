@@ -36,15 +36,12 @@ jobs:
         uses: actions/cache@v4
         with:
           enableCrossOsArchive: true
-          path: |
-            dependency-check-data
+          path: tmp/owasp/data
           key: odc-data-cache-${{needs.current-date.outputs.date}}
-          restore-keys: |
-            odc-data-cache-
+          restore-keys: odc-data-cache-
       - run: npm ci
       - run: npm run build
-      - run: npm install -g .
-      - run: npx owasp-dependency-check --data dependency-check-data -f HTML
+      - run: npm run owasp -- -f HTML --ossIndexUsername atwupack@mailbox.org --ossIndexPassword ${{ secrets.OSS_INDEX_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
