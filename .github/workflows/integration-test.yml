@@ -41,7 +41,9 @@ jobs:
           restore-keys: odc-data-cache-
       - run: npm ci
       - run: npm run build
-      - run: npm run owasp -- -f HTML --ossIndexUsername atwupack@mailbox.org --ossIndexPassword ${{ secrets.OSS_INDEX_TOKEN }}
+      - run: npm run owasp -- -f HTML
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+          OSS_INDEX_USERNAME: ${{ secrets.OSS_INDEX_USERNAME }}
+          OSS_INDEX_PASSWORD: ${{ secrets.OSS_INDEX_PASSWORD }}
