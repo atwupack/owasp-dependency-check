@@ -104,6 +104,18 @@ const command = program
     ).env("NVD_API_KEY"),
   )
   .addOption(
+    new Option(
+      "--ossIndexUsername <user>",
+      "Sonatype OSS Index username to authenticate against API",
+    ).env("OSS_INDEX_USERNAME"),
+  )
+  .addOption(
+    new Option(
+      "--ossIndexPassword <pass>",
+      "Sonatype OSS Index password to authenticate against API",
+    ).env("OSS_INDEX_PASSWORD"),
+  )
+  .addOption(
     new Option("--project <name>", "the name of the project to be scanned").env(
       "PROJECT_NAME",
     ),
@@ -125,6 +137,8 @@ Some defaults are provided:
 The following environment variables are supported:
 - OWASP_BIN: path to a local installation of the dependency-check-cli
 - NVD_API_KET: personal NVD API key to authenticate against API
+- OSS_INDEX_USERNAME: Sonatype OSS Index username to authenticate against API
+- OSS_INDEX_PASSWORD: Sonatype OSS Index password to authenticate against API
 - GITHUB_TOKEN: personal GitHub token to authenticate against API
 - PROJECT_NAME: the name of the project being scanned
 - JAVACMD: path to a Java binary`,
@@ -173,6 +187,14 @@ function buildCmdArguments() {
 
   Maybe.fromNullable(command.opts().nvdApiKey).ifJust(key => {
     args.push("--nvdApiKey", key);
+  });
+
+  Maybe.fromNullable(command.opts().ossIndexUsername).ifJust(user => {
+    args.push("--ossIndexUsername", user);
+  });
+
+  Maybe.fromNullable(command.opts().ossIndexPassword).ifJust(pass => {
+    args.push("--ossIndexPassword", pass);
   });
 
   const scan = command.opts().scan;
