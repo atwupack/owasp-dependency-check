@@ -40,7 +40,7 @@ export async function run() {
       cli.proxyUrl,
       cli.hideOwaspOutput,
       cli.javaBinary,
-    );
+    ).unsafeCoerce();
     setExitCode(result, ignoreErrors, log);
   }
 }

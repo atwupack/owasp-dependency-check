@@ -1,15 +1,10 @@
 import { hideSecrets } from "./util/misc.js";
-import {
-  SpawnSyncOptions,
-  SpawnSyncOptionsWithStringEncoding,
-} from "child_process";
-import spawn from "cross-spawn";
-import { Maybe } from "purify-ts";
+import { Maybe, Nothing } from "purify-ts";
 import { green } from "ansis";
 import { createLogger } from "./util/log.js";
 import { name } from "./info.js";
 import { cleanDir } from "./util/fs.js";
-import { setEnv } from "./util/proc.js";
+import { setEnv, spawnSync } from "./util/proc.js";
 
 const log = createLogger(`${name} Analysis`);
 
@@ -21,27 +16,9 @@ function logCommandExecution(executable: string, cmdArguments: string[]) {
 function executeVersionCheck(executable: string) {
   const versionCmdArguments = ["--version"];
   logCommandExecution(executable, versionCmdArguments);
-
-  const versionSpawnOpts: SpawnSyncOptionsWithStringEncoding = {
-    shell: false,
-    encoding: "utf-8",
-  };
-
-  const versionSpawn = spawn.sync(
-    executable,
-    versionCmdArguments,
-    versionSpawnOpts,
+  return spawnSync(executable, versionCmdArguments, Nothing).map(result =>
+    result.stdout.trimEnd(),
   );
-  if (versionSpawn.error) {
-    throw versionSpawn.error;
-  }
-  if (versionSpawn.status === null) {
-    throw new Error("Version check did not complete with status code.");
-  }
-  if (versionSpawn.status !== 0) {
-    throw new Error(versionSpawn.stderr);
-  }
-  log.info(versionSpawn.stdout.trimEnd());
 }
 
 function executeAnalysis(
@@ -51,27 +28,15 @@ function executeAnalysis(
   hideOwaspOutput: boolean,
 ) {
   setEnv("JAVA_OPTS", proxyUrl.map(buildJavaToolOptions), true, log);
-
-  const dependencyCheckSpawnOpts: SpawnSyncOptions = {
-    shell: false,
-    stdio: hideOwaspOutput ? "ignore" : "inherit",
-  };
-
   logCommandExecution(executable, cmdArguments);
-  const dependencyCheckSpawn = spawn.sync(
+  return spawnSync(
     executable,
     cmdArguments,
-    dependencyCheckSpawnOpts,
-  );
-  if (dependencyCheckSpawn.error) {
-    throw dependencyCheckSpawn.error;
-  }
-  if (dependencyCheckSpawn.status === null) {
-    throw new Error("Analysis did not complete with status code.");
-  }
-
-  log.info(green`Done.`);
-  return dependencyCheckSpawn.status;
+    Maybe.of(hideOwaspOutput ? "ignore" : "inherit"),
+  ).map(result => {
+    log.info(green`Done.`);
+    return result.status;
+  });
 }
 
 export function executeDependencyCheck(
@@ -87,8 +52,10 @@ export function executeDependencyCheck(
 
   setEnv("JAVACMD", javaBinary, false, log);
 
-  executeVersionCheck(executable);
-  return executeAnalysis(executable, cmdArguments, proxyUrl, hideOwaspOutput);
+  return executeVersionCheck(executable).chain(version => {
+    log.info(version);
+    return executeAnalysis(executable, cmdArguments, proxyUrl, hideOwaspOutput);
+  });
 }
 
 export function buildJavaToolOptions(proxyUrl: URL) {
