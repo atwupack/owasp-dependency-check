@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.1.0
+
+- Added project's version to the `--project` argument.
+
 ## Version 1.0.0
 
 - The support for Node 18 has been dropped. The minimum required Node version is now 20.

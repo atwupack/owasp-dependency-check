@@ -1,4 +1,6 @@
 import { Maybe } from "purify-ts";
+import fs from "node:fs";
+import * as yup from "yup";
 
 export function ensureError(error: unknown): Error {
   if (error instanceof Error) return error;
@@ -23,4 +25,18 @@ export function hideSecrets(input: string) {
 
 export function orThrow<T>(value: Maybe<T>, error: string): T {
   return value.toEither(new Error(error)).unsafeCoerce();
+}
+
+const packageInfoSchema = yup.object({
+  name: yup.string().required(),
+  version: yup.string().required(),
+});
+
+export function readPackageJson() {
+  return Maybe.encase(() => {
+    const packageJson = fs.readFileSync("package.json").toString();
+    return packageInfoSchema.validateSync(JSON.parse(packageJson), {
+      strict: true,
+    });
+  });
 }

@@ -5,9 +5,8 @@ import {
 } from "@commander-js/extra-typings";
 import path from "node:path";
 import os from "node:os";
-import fs from "node:fs";
 import { Maybe } from "purify-ts";
-import { ensureError } from "./util/misc.js";
+import { readPackageJson } from "./util/misc.js";
 import { description, name, version } from "./info.js";
 import { createLogger } from "./util/log.js";
 import { parseUrl } from "./util/net.js";
@@ -129,7 +128,7 @@ const command = program
 You can also use any arguments supported by the dependency-check-cli, see: https://jeremylong.github.io/DependencyCheck/dependency-check-cli/arguments.html
 
 Some defaults are provided:
-- project    Default: "name" from package.json in working directory
+- project    Default: "<name> (<version>)" from package.json in working directory
 - data       Default: dependency-check-data directory in system temp folder
 - format     Default: HTML and JSON
 - scan       Default: package managers' lock files in working directory (package-lock.json, yarn.lock, pnpm-lock.yaml) 
@@ -208,10 +207,7 @@ function buildCmdArguments() {
     });
   }
 
-  args.push(
-    "--project",
-    command.opts().project ?? getProjectNameFromPackageJson(),
-  );
+  args.push("--project", command.opts().project ?? buildProjectLabel());
 
   command.opts().format.forEach(format => {
     args.push("--format", format);
@@ -220,18 +216,10 @@ function buildCmdArguments() {
   return args;
 }
 
-function getProjectNameFromPackageJson() {
-  let projectName = "Unknown Project";
-  try {
-    const packageJson = fs.readFileSync("package.json").toString();
-    const parsedJson = JSON.parse(packageJson) as { name: string };
-    projectName = parsedJson.name;
-    log.info(`Found project name "${projectName}" in package.json`);
-  } catch (e) {
-    const error = ensureError(e);
-    log.warn(error.message);
-  }
-  return projectName;
+function buildProjectLabel() {
+  return readPackageJson()
+    .map(packageJson => `${packageJson.name} (${packageJson.version})`)
+    .orDefault("Unknown Project");
 }
 
 export function parseProxyUrl(value: string) {
