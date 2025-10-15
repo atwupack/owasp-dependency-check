@@ -53,30 +53,28 @@ function findReleaseInfo(
   const url = odcVersion.mapOrDefault(value => {
     return TAG_RELEASE_URL + value;
   }, LATEST_RELEASE_URL);
-  log.info(`Fetching release information from ${url}`);
-  return fetchJson(url, createRequestInit(proxyUrl, githubToken)).chain(data =>
-    castGithubRelease(data),
-  );
+  return fetchJson(url, createRequestInit(proxyUrl, githubToken))
+    .chain(data => castGithubRelease(data))
+    .ifJust(() => log.info(`Fetched release information from ${url}`));
 }
 
 export function findDownloadAsset(release: GithubRelease) {
   return Maybe.fromNullable(release.assets.find(a => NAME_RE.test(a.name)));
 }
 
-async function downloadRelease(
+function downloadRelease(
   url: string,
   name: string,
   installDir: string,
   proxyUrl: Maybe<URL>,
 ) {
-  log.info(`Downloading dependency check from ${url}...`);
-  const filepath = path.resolve(installDir, name);
-  const result = await downloadFile(
+  return downloadFile(
     url,
     createRequestInit(proxyUrl, Maybe.empty()),
-    filepath,
-  );
-  return orThrow(result, `Download failed from ${url}`);
+    path.resolve(installDir, name),
+  )
+    .ifJust(() => log.info(`Downloaded dependency check from ${url}`))
+    .toEitherAsync(new Error(`Download failed from ${url}`));
 }
 
 export function createRequestInit(
@@ -110,7 +108,7 @@ async function installRelease(
     installDir,
     proxyUrl,
   );
-  await unzipFileIntoDirectory(filePath, installDir, true, log);
+  await unzipFileIntoDirectory(filePath.unsafeCoerce(), installDir, true, log);
   return orThrow(
     findOwaspExecutable(installDir),
     `Could not find Dependency-Check Core executable in ${installDir}`,
