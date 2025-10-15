@@ -55,7 +55,9 @@ function findReleaseInfo(
   }, LATEST_RELEASE_URL);
   return fetchJson(url, createRequestInit(proxyUrl, githubToken))
     .chain(data => castGithubRelease(data))
-    .ifJust(() => log.info(`Fetched release information from ${url}`));
+    .ifJust(() => {
+      log.info(`Fetched release information from ${url}`);
+    });
 }
 
 export function findDownloadAsset(release: GithubRelease) {
@@ -73,7 +75,9 @@ function downloadRelease(
     createRequestInit(proxyUrl, Maybe.empty()),
     path.resolve(installDir, name),
   )
-    .ifJust(() => log.info(`Downloaded dependency check from ${url}`))
+    .ifJust(() => {
+      log.info(`Downloaded dependency check from ${url}`);
+    })
     .toEitherAsync(new Error(`Download failed from ${url}`));
 }
 
