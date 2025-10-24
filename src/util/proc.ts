@@ -49,7 +49,7 @@ export function spawnSync(
         return Left(spawn.error);
       }
       if (spawn.status === null) {
-        return Left(new Error("Spawn did not complete with status code."));
+        return Left(Error("Spawn did not complete with status code."));
       }
       return Right({ status: spawn.status, stdout: spawn.stdout });
     },

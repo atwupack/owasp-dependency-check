@@ -12,7 +12,7 @@ export function ensureError(error: unknown): Error {
     stringified = "[Unable to stringify the thrown value]";
   }
 
-  return new Error(
+  return Error(
     `This value was thrown as is, not through an Error: ${stringified}`,
   );
 }
@@ -24,7 +24,7 @@ export function hideSecrets(input: string) {
 }
 
 export function orThrow<T>(value: Maybe<T>, error: string): T {
-  return value.toEither(new Error(error)).unsafeCoerce();
+  return value.toEither(Error(error)).unsafeCoerce();
 }
 
 const packageInfoSchema = yup.object({

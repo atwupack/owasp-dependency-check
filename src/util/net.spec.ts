@@ -48,7 +48,7 @@ void describe("util/net.ts", () => {
 
     void it("should return MaybeAsync with Nothing when rejects with an error", async () => {
       const undiciMock = sinon.mock(undici);
-      undiciMock.expects("fetch").once().rejects(new Error("Network error"));
+      undiciMock.expects("fetch").once().rejects(Error("Network error"));
       const url = "https://example.com";
       const init = {};
       const result = await fetchUrl(url, init).run();
@@ -57,7 +57,7 @@ void describe("util/net.ts", () => {
     });
     void it("should return MaybeAsync with Nothing when rejects throws an error", async () => {
       const undiciMock = sinon.mock(undici);
-      undiciMock.expects("fetch").once().throws(new Error("Network error"));
+      undiciMock.expects("fetch").once().throws(Error("Network error"));
       const url = "https://example.com";
       const init = {};
       const result = await fetchUrl(url, init).run();
@@ -96,7 +96,7 @@ void describe("util/net.ts", () => {
 
     void it("should return MaybeAsync with Nothing when fetch reject with an error", async () => {
       const undiciMock = sinon.mock(undici);
-      undiciMock.expects("fetch").once().rejects(new Error("Network error"));
+      undiciMock.expects("fetch").once().rejects(Error("Network error"));
       const url = "https://example.com";
       const init = {};
       const result = await fetchJson(url, init).run();
