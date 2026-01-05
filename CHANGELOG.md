@@ -4,6 +4,10 @@
 
 - Added project's version to the `--project` argument.
 
+## Version 1.0.1
+
+- Upgrade `purify-ts` to version 2.1.4 to avoid broken versions.
+
 ## Version 1.0.0
 
 - The support for Node 18 has been dropped. The minimum required Node version is now 20.

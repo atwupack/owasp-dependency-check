@@ -1,6 +1,6 @@
 {
   "name": "owasp-dependency-check",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Node.js wrapper for the OWASP dependency-check-cli.",
   "keywords": [
     "owasp",
@@ -48,7 +48,7 @@
     "commander": "^14.0.0",
     "cross-spawn": "^7.0.6",
     "extract-zip": "^2.0.1",
-    "purify-ts": "^2.1.0",
+    "purify-ts": "^2.1.4",
     "undici": "^7.16.0",
     "yup": "^1.7.0"
   },
