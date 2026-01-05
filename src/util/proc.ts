@@ -1,6 +1,9 @@
 import { Logger } from "./log.js";
-import { Maybe } from "purify-ts";
+import { Either, Left, Maybe, Right } from "purify-ts";
 import { hideSecrets } from "./misc.js";
+import spawn from "cross-spawn";
+import { StdioOptions } from "node:child_process";
+import { SpawnSyncOptionsWithStringEncoding } from "child_process";
 
 export function setExitCode(code: number, ignoreErrors: boolean, log: Logger) {
   let finalCode = 0;
@@ -28,4 +31,27 @@ export function setEnv(
     log.info(`Setting environment variable ${key} to "${hideSecrets(value)}"`);
     process.env[key] = value;
   });
+}
+
+export function spawnSync(
+  command: string,
+  args: string[],
+  stdio: Maybe<StdioOptions>,
+) {
+  const spawnOpts: SpawnSyncOptionsWithStringEncoding = {
+    shell: false,
+    encoding: "utf-8",
+    stdio: stdio.extract(),
+  };
+  return Either.encase(() => spawn.sync(command, args, spawnOpts)).chain(
+    spawn => {
+      if (spawn.error) {
+        return Left(spawn.error);
+      }
+      if (spawn.status === null) {
+        return Left(Error("Spawn did not complete with status code."));
+      }
+      return Right({ status: spawn.status, stdout: spawn.stdout });
+    },
+  );
 }

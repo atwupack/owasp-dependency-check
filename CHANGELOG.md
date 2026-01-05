@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.1.0
+
+- Added project's version to the `--project` argument.
+
 ## Version 1.0.1
 
 - Upgrade `purify-ts` to version 2.1.4 to avoid broken versions.

@@ -1,5 +1,5 @@
 import { orThrow } from "./util/misc.js";
-import { Maybe, MaybeAsync } from "purify-ts";
+import { EitherAsync, Maybe, MaybeAsync } from "purify-ts";
 import path from "node:path";
 import os from "node:os";
 import { createLogger } from "./util/log.js";
@@ -53,30 +53,32 @@ function findReleaseInfo(
   const url = odcVersion.mapOrDefault(value => {
     return TAG_RELEASE_URL + value;
   }, LATEST_RELEASE_URL);
-  log.info(`Fetching release information from ${url}`);
-  return fetchJson(url, createRequestInit(proxyUrl, githubToken)).chain(data =>
-    castGithubRelease(data),
-  );
+  return fetchJson(url, createRequestInit(proxyUrl, githubToken))
+    .chain(data => castGithubRelease(data))
+    .ifJust(() => {
+      log.info(`Fetched release information from ${url}`);
+    });
 }
 
 export function findDownloadAsset(release: GithubRelease) {
   return Maybe.fromNullable(release.assets.find(a => NAME_RE.test(a.name)));
 }
 
-async function downloadRelease(
+function downloadRelease(
   url: string,
   name: string,
   installDir: string,
   proxyUrl: Maybe<URL>,
 ) {
-  log.info(`Downloading dependency check from ${url}...`);
-  const filepath = path.resolve(installDir, name);
-  const result = await downloadFile(
+  return downloadFile(
     url,
     createRequestInit(proxyUrl, Maybe.empty()),
-    filepath,
-  );
-  return orThrow(result, `Download failed from ${url}`);
+    path.resolve(installDir, name),
+  )
+    .ifJust(() => {
+      log.info(`Downloaded dependency check from ${url}`);
+    })
+    .toEitherAsync(Error(`Download failed from ${url}`));
 }
 
 export function createRequestInit(
@@ -91,7 +93,7 @@ export function createRequestInit(
   );
 }
 
-async function installRelease(
+function installRelease(
   release: GithubRelease,
   installDir: string,
   proxyUrl: Maybe<URL>,
@@ -99,22 +101,30 @@ async function installRelease(
   log.info(`Installing dependency check ${release.tag_name}...`);
   cleanDir(installDir, log);
 
-  const asset = orThrow(
-    findDownloadAsset(release),
-    `Could not find asset for version ${release.tag_name}`,
-  );
-
-  const filePath = await downloadRelease(
-    asset.browser_download_url,
-    asset.name,
-    installDir,
-    proxyUrl,
-  );
-  await unzipFileIntoDirectory(filePath, installDir, true, log);
-  return orThrow(
-    findOwaspExecutable(installDir),
-    `Could not find Dependency-Check Core executable in ${installDir}`,
-  );
+  return EitherAsync.liftEither(
+    findDownloadAsset(release).toEither(
+      Error(`Could not find asset for version ${release.tag_name}`),
+    ),
+  )
+    .chain(asset =>
+      downloadRelease(
+        asset.browser_download_url,
+        asset.name,
+        installDir,
+        proxyUrl,
+      ),
+    )
+    .chain(filePath => unzipFileIntoDirectory(filePath, installDir, true, log))
+    .mapLeft(() => Error("Could not unzip files"))
+    .chain(() =>
+      EitherAsync.liftEither(
+        findOwaspExecutable(installDir).toEither(
+          Error(
+            `Could not find Dependency-Check Core executable in ${installDir}`,
+          ),
+        ),
+      ),
+    );
 }
 
 export async function installDependencyCheck(
@@ -145,5 +155,5 @@ export async function installDependencyCheck(
   if (!keepOldVersions) {
     cleanDir(binDir, log);
   }
-  return installRelease(release, installDir, proxyUrl);
+  return (await installRelease(release, installDir, proxyUrl)).unsafeCoerce();
 }

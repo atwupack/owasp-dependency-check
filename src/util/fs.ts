@@ -2,7 +2,7 @@ import { Logger } from "./log.js";
 import fs from "node:fs";
 import extract from "extract-zip";
 import path from "node:path";
-import { Maybe } from "purify-ts";
+import { EitherAsync, Maybe } from "purify-ts";
 import { ensureError } from "./misc.js";
 
 export function cleanDir(dir: string, log: Logger) {
@@ -21,16 +21,19 @@ export function deleteQuietly(path: string, recursive: boolean, log: Logger) {
   }
 }
 
-export async function unzipFileIntoDirectory(
+export function unzipFileIntoDirectory(
   zipFile: string,
   destDir: string,
   deleteZip: boolean,
   log: Logger,
 ) {
-  await extract(zipFile, { dir: destDir });
-  if (deleteZip) {
-    deleteQuietly(zipFile, false, log);
-  }
+  return EitherAsync(() => extract(zipFile, { dir: destDir }))
+    .map(() => {
+      if (deleteZip) {
+        deleteQuietly(zipFile, false, log);
+      }
+    })
+    .mapLeft(ensureError);
 }
 
 export function resolveFile(...paths: string[]) {

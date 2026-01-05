@@ -44,7 +44,7 @@ void describe("utils.ts", () => {
       );
     });
     void it("should return the error", () => {
-      const error = new Error("Test Error");
+      const error = Error("Test Error");
       assert.equal(ensureError(error), error);
     });
     void it("should convert a string to an error with the string in the message", () => {
