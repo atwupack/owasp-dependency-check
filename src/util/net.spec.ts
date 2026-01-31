@@ -31,7 +31,7 @@ void describe("util/net.ts", () => {
       const url = "https://example.com";
       const init = {};
       const result = await fetchUrl(url, init).run();
-      assert.ok(result.isJust());
+      assert.ok(result.isRight());
       undiciMock.verify();
     });
 
@@ -42,7 +42,7 @@ void describe("util/net.ts", () => {
       const url = "https://example.com";
       const init = {};
       const result = await fetchUrl(url, init).run();
-      assert.ok(result.isNothing());
+      assert.ok(result.isLeft());
       undiciMock.verify();
     });
 
@@ -52,7 +52,7 @@ void describe("util/net.ts", () => {
       const url = "https://example.com";
       const init = {};
       const result = await fetchUrl(url, init).run();
-      assert.ok(result.isNothing());
+      assert.ok(result.isLeft());
       undiciMock.verify();
     });
     void it("should return MaybeAsync with Nothing when rejects throws an error", async () => {
@@ -61,7 +61,7 @@ void describe("util/net.ts", () => {
       const url = "https://example.com";
       const init = {};
       const result = await fetchUrl(url, init).run();
-      assert.ok(result.isNothing());
+      assert.ok(result.isLeft());
       undiciMock.verify();
     });
   });
@@ -78,7 +78,7 @@ void describe("util/net.ts", () => {
       const url = "https://example.com";
       const init = {};
       const result = await fetchJson(url, init).run();
-      assert.ok(result.isJust());
+      assert.ok(result.isRight());
       assert.deepEqual(result.extract(), jsonData);
       undiciMock.verify();
     });
@@ -90,7 +90,7 @@ void describe("util/net.ts", () => {
       const url = "https://example.com";
       const init = {};
       const result = await fetchJson(url, init).run();
-      assert.ok(result.isNothing());
+      assert.ok(result.isLeft());
       undiciMock.verify();
     });
 
@@ -100,7 +100,7 @@ void describe("util/net.ts", () => {
       const url = "https://example.com";
       const init = {};
       const result = await fetchJson(url, init).run();
-      assert.ok(result.isNothing());
+      assert.ok(result.isLeft());
       undiciMock.verify();
     });
   });

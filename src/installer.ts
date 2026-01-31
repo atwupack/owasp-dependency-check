@@ -1,5 +1,5 @@
-import { orThrow } from "./util/misc.js";
-import { EitherAsync, Maybe, MaybeAsync } from "purify-ts";
+import { ensureError } from "./util/misc.js";
+import { EitherAsync, Maybe } from "purify-ts";
 import path from "node:path";
 import os from "node:os";
 import { createLogger } from "./util/log.js";
@@ -41,8 +41,12 @@ const githubReleaseSchema = yup.object({
 
 type GithubRelease = yup.InferType<typeof githubReleaseSchema>;
 
-export function castGithubRelease(data: unknown): MaybeAsync<GithubRelease> {
-  return MaybeAsync(() => githubReleaseSchema.validate(data, { strict: true }));
+export function castGithubRelease(
+  data: unknown,
+): EitherAsync<Error, GithubRelease> {
+  return EitherAsync(() =>
+    githubReleaseSchema.validate(data, { strict: true }),
+  ).mapLeft(ensureError);
 }
 
 function findReleaseInfo(
@@ -55,7 +59,7 @@ function findReleaseInfo(
   }, LATEST_RELEASE_URL);
   return fetchJson(url, createRequestInit(proxyUrl, githubToken))
     .chain(data => castGithubRelease(data))
-    .ifJust(() => {
+    .ifRight(() => {
       log.info(`Fetched release information from ${url}`);
     });
 }
@@ -75,10 +79,10 @@ function downloadRelease(
     createRequestInit(proxyUrl, Maybe.empty()),
     path.resolve(installDir, name),
   )
-    .ifJust(() => {
+    .ifRight(() => {
       log.info(`Downloaded dependency check from ${url}`);
     })
-    .toEitherAsync(Error(`Download failed from ${url}`));
+    .mapLeft(() => Error(`Download failed from ${url}`));
 }
 
 export function createRequestInit(
@@ -135,10 +139,11 @@ export async function installDependencyCheck(
   forceInstall: boolean,
   keepOldVersions: boolean,
 ) {
-  const release = orThrow(
-    await findReleaseInfo(odcVersion, proxyUrl, githubToken),
-    `Could not fetch release from GitHub.`,
-  );
+  const release = (
+    await findReleaseInfo(odcVersion, proxyUrl, githubToken).mapLeft(error =>
+      Error(`Could not fetch release from GitHub. Reason: ${error.message}`),
+    )
+  ).unsafeCoerce();
   log.info(`Found release ${release.tag_name} on GitHub.`);
 
   const installDir = path.resolve(binDir, release.tag_name);
