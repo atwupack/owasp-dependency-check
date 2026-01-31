@@ -76,7 +76,7 @@ void describe("installer.ts", () => {
         ],
       };
       const result = await castGithubRelease(data);
-      assert.ok(result.isJust());
+      assert.ok(result.isRight());
       assert.equal(result.unsafeCoerce().tag_name, "v2.0.0");
       assert.equal(
         result.unsafeCoerce().assets[0].name,
@@ -97,7 +97,7 @@ void describe("installer.ts", () => {
         ],
       };
       const result = await castGithubRelease(data);
-      assert.ok(result.isNothing());
+      assert.ok(result.isLeft());
     });
   });
 });

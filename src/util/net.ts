@@ -1,4 +1,4 @@
-import { Maybe, MaybeAsync } from "purify-ts";
+import { Either, EitherAsync, Left, Maybe, Right } from "purify-ts";
 import undici, {
   HeadersInit,
   ProxyAgent,
@@ -6,21 +6,29 @@ import undici, {
   RequestInit,
 } from "undici";
 import fs from "node:fs";
+import { ensureError } from "./misc.js";
 
 export function parseUrl(url: string) {
   return Maybe.encase(() => new URL(url));
 }
 
+function validateResponse(response: Response): Either<Error, Response> {
+  if (!response.ok) {
+    return Left(new Error(`HTTP error: ${response.status.toString()}`));
+  }
+  return Right(response);
+}
+
 export function fetchUrl(url: RequestInfo, init: RequestInit) {
-  return MaybeAsync(() => undici.fetch(url, init)).filter(
-    response => response.ok,
-  );
+  return EitherAsync(() => undici.fetch(url, init))
+    .chain(response => EitherAsync.liftEither(validateResponse(response)))
+    .mapLeft(ensureError);
 }
 
 export function fetchJson(url: RequestInfo, init: RequestInit) {
-  return fetchUrl(url, init).chain(response =>
-    MaybeAsync(() => response.json()),
-  );
+  return fetchUrl(url, init)
+    .chain(response => EitherAsync(() => response.json()))
+    .mapLeft(ensureError);
 }
 
 export function downloadFile(
@@ -29,8 +37,11 @@ export function downloadFile(
   filepath: string,
 ) {
   return fetchUrl(url, init)
-    .chain(response => MaybeAsync.liftMaybe(Maybe.fromNullable(response.body)))
-    .chain(body => MaybeAsync(() => fs.promises.writeFile(filepath, body)))
+    .map(response => Maybe.fromNullable(response.body))
+    .chain(body =>
+      EitherAsync(() => fs.promises.writeFile(filepath, body.unsafeCoerce())),
+    )
+    .mapLeft(ensureError)
     .map(() => filepath);
 }
 
