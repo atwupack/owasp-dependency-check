@@ -14,7 +14,11 @@ export function parseUrl(url: string) {
 
 function validateResponse(response: Response): Either<Error, Response> {
   if (!response.ok) {
-    return Left(new Error(`HTTP error: ${response.status.toString()}`));
+    return Left(
+      new Error(
+        `HTTP error: ${response.statusText} (${response.status.toString()})`,
+      ),
+    );
   }
   return Right(response);
 }
