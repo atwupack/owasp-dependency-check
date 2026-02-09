@@ -57,7 +57,7 @@
   },
   "main": "dist/dependency-check.js",
   "devDependencies": {
-    "@eslint/js": "^9.26.0",
+    "@eslint/js": "^10.0.1",
     "@rollup/plugin-terser": "^0.4.4",
     "@tsconfig/node20": "^20.1.6",
     "@types/cross-spawn": "^6.0.6",
