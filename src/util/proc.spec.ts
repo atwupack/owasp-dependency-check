@@ -1,9 +1,11 @@
 import { describe, it } from "node:test";
-import { Maybe } from "purify-ts";
+import { Maybe, Nothing } from "purify-ts";
 import assert from "node:assert/strict";
 import { createLogger } from "./log.js";
-import { setEnv, setExitCode } from "./proc.js";
+import { setEnv, setExitCode, spawnSync } from "./proc.js";
 import sinon from "sinon";
+import spawn from "cross-spawn";
+import { ensureError } from "./misc.js";
 
 void describe("util/proc.ts", () => {
   void describe("exitProcess", () => {
@@ -65,6 +67,59 @@ void describe("util/proc.ts", () => {
       process.env[key] = "existing";
       setEnv(key, Maybe.empty(), false, log);
       assert.equal(process.env[key], "existing");
+    });
+  });
+  void describe("spawnSync", () => {
+    void it("should return the spawned process result", () => {
+      const spawnMock = sinon.mock(spawn);
+      spawnMock.expects("sync").once().returns({ status: 0, stdout: "test" });
+      const result = spawnSync("test", [], Nothing);
+      assert.ok(result.isRight());
+      assert.equal(result.unsafeCoerce().status, 0);
+      assert.equal(result.unsafeCoerce().stdout, "test");
+      spawnMock.verify();
+    });
+    void it("should return the error from the process", () => {
+      const spawnMock = sinon.mock(spawn);
+      spawnMock
+        .expects("sync")
+        .once()
+        .returns({ error: Error("test") });
+      const result = spawnSync("test", [], Nothing);
+      assert.ok(result.isLeft());
+      try {
+        result.unsafeCoerce();
+      } catch (e) {
+        assert.equal(ensureError(e).message, "test");
+      }
+      spawnMock.verify();
+    });
+    void it("should return an error if the process did not complete", () => {
+      const spawnMock = sinon.mock(spawn);
+      spawnMock.expects("sync").once().returns({ status: null });
+      const result = spawnSync("test", [], Nothing);
+      assert.ok(result.isLeft());
+      try {
+        result.unsafeCoerce();
+      } catch (e) {
+        assert.equal(
+          ensureError(e).message,
+          "Spawn did not complete with status code.",
+        );
+      }
+      spawnMock.verify();
+    });
+    void it("should return the error thrown by spawn", () => {
+      const spawnMock = sinon.mock(spawn);
+      spawnMock.expects("sync").once().throws(Error("error"));
+      const result = spawnSync("test", [], Nothing);
+      assert.ok(result.isLeft());
+      try {
+        result.unsafeCoerce();
+      } catch (e) {
+        assert.equal(ensureError(e).message, "error");
+      }
+      spawnMock.verify();
     });
   });
 });
