@@ -1,7 +1,9 @@
 import { describe, it } from "node:test";
 import * as assert from "node:assert/strict";
-import { ensureError, hideSecrets, orThrow } from "./misc.js";
+import { ensureError, hideSecrets, orThrow, readPackageJson } from "./misc.js";
 import { Maybe } from "purify-ts";
+import sinon from "sinon";
+import fs from "node:fs";
 
 void describe("utils.ts", () => {
   void describe("hideSecrets", () => {
@@ -81,6 +83,47 @@ void describe("utils.ts", () => {
         () => orThrow(Maybe.empty(), "Custom error"),
         error => error instanceof Error && error.message === "Custom error",
       );
+    });
+  });
+
+  void describe("readPackageJson", () => {
+    void it("should read package.json file and return its content", () => {
+      const fsMock = sinon.mock(fs);
+      fsMock
+        .expects("readFileSync")
+        .once()
+        .withArgs("package.json")
+        .returns(Buffer.from('{"name": "my-package", "version": "1.0.0"}'));
+
+      const packageJsonContent = readPackageJson();
+      assert.ok(packageJsonContent.isJust());
+      assert.equal(packageJsonContent.unsafeCoerce().name, "my-package");
+      assert.equal(packageJsonContent.unsafeCoerce().version, "1.0.0");
+      fsMock.verify();
+    });
+    void it("should validate the package.json file and return Nothing if it fails", () => {
+      const fsMock = sinon.mock(fs);
+      fsMock
+        .expects("readFileSync")
+        .once()
+        .withArgs("package.json")
+        .returns(Buffer.from('{"test": "my teste"}'));
+
+      const packageJsonContent = readPackageJson();
+      assert.ok(packageJsonContent.isNothing());
+      fsMock.verify();
+    });
+    void it("should return Nothing if the file read fails", () => {
+      const fsMock = sinon.mock(fs);
+      fsMock
+        .expects("readFileSync")
+        .once()
+        .withArgs("package.json")
+        .throws(Error("FileNotFoundError"));
+
+      const packageJsonContent = readPackageJson();
+      assert.ok(packageJsonContent.isNothing());
+      fsMock.verify();
     });
   });
 });
