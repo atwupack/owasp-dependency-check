@@ -133,7 +133,9 @@ const command = program
     new Option(
       "--suppressionMode <mode>",
       "controls how the suppression file is applied: CLI (pass to OWASP binary) or UI (annotate reports only)",
-    ).choices(Object.values(SuppressionMode)).default(SuppressionMode.CLI),
+    )
+      .choices(Object.values(SuppressionMode))
+      .default(SuppressionMode.CLI),
   )
   .optionsGroup("General information:")
   .version(version, undefined, `print the version of ${name}`)
@@ -175,7 +177,7 @@ export function parseCli() {
     keepOldVersions: !!command.opts().keepOldVersions,
     javaBinary: Maybe.fromNullable(command.opts().javaBin),
     suppressionFile: Maybe.fromNullable(command.opts().suppression),
-    suppressionMode: (command.opts().suppressionMode ?? SuppressionMode.CLI) as SuppressionMode,
+    suppressionMode: command.opts().suppressionMode as SuppressionMode,
     formats: command.opts().format,
   };
 }
@@ -232,7 +234,7 @@ function buildCmdArguments() {
     args.push("--format", format);
   });
 
-  const suppressionMode = command.opts().suppressionMode ?? SuppressionMode.CLI;
+  const suppressionMode = command.opts().suppressionMode as SuppressionMode;
   if (suppressionMode === SuppressionMode.CLI) {
     Maybe.fromNullable(command.opts().suppression).ifJust(file => {
       args.push("--suppression", file);

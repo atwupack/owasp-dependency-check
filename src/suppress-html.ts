@@ -8,10 +8,7 @@ const log = createLogger(`${name} Suppressor`);
 
 const HTML_OUTPUT_FILE = "dependency-check-report.html";
 
-export function addSuppressionColumnToHtml(
-  html: string,
-  xml: string,
-): string {
+export function addSuppressionColumnToHtml(html: string, xml: string): string {
   const suppressions = parseSuppressionXml(xml);
 
   const tableStartIndex = html.indexOf('<table id="summaryTable"');
@@ -40,7 +37,7 @@ export function addSuppressionColumnToHtml(
   const modifiedBody = bodyPart.replace(
     /(<tr[^>]*>)([\s\S]*?)(<\/tr>)/g,
     (match, openTag: string, content: string, closeTag: string) => {
-      const packageUrlMatch = content.match(/data-sort-value="(pkg:[^"]+)"/);
+      const packageUrlMatch = /data-sort-value="(pkg:[^"]+)"/.exec(content);
 
       let isSuppressed = false;
       if (packageUrlMatch) {

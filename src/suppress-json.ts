@@ -95,7 +95,9 @@ export function processJsonSuppression(xml: string, outDir: string): void {
   }
 
   const suppressions = parseSuppressionXml(xml);
-  const reportJson: ReportJson = JSON.parse(fs.readFileSync(jsonFile, "utf-8"));
+  const reportJson = JSON.parse(
+    fs.readFileSync(jsonFile, "utf-8"),
+  ) as unknown as ReportJson;
 
   let suppressedCount = 0;
   reportJson.dependencies?.forEach(dep => {
@@ -106,5 +108,5 @@ export function processJsonSuppression(xml: string, outDir: string): void {
   });
 
   fs.writeFileSync(jsonFile, JSON.stringify(reportJson, null, 2));
-  log.info(`Marked ${suppressedCount} dependencies as suppressed.`);
+  log.info(`Marked ${String(suppressedCount)} dependencies as suppressed.`);
 }

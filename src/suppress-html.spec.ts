@@ -35,7 +35,10 @@ ${rows.join("\n")}
 </suppressions>`;
 
     void it("should add Suppressed column header to summaryTable thead", () => {
-      const result = addSuppressionColumnToHtml(makeHtml(adobeRow), suppressionXml);
+      const result = addSuppressionColumnToHtml(
+        makeHtml(adobeRow),
+        suppressionXml,
+      );
       assert.ok(
         result.includes(
           '<th class="sortable" data-sort="string" title="Whether the dependency is suppressed">Suppressed</th>',
@@ -44,20 +47,39 @@ ${rows.join("\n")}
     });
 
     void it("should add a checked checkbox for a suppressed dependency", () => {
-      const result = addSuppressionColumnToHtml(makeHtml(adobeRow), suppressionXml);
-      assert.ok(result.includes('<input type="checkbox" onclick="return false;" checked>'));
+      const result = addSuppressionColumnToHtml(
+        makeHtml(adobeRow),
+        suppressionXml,
+      );
+      assert.ok(
+        result.includes(
+          '<input type="checkbox" onclick="return false;" checked>',
+        ),
+      );
     });
 
     void it("should add an unchecked checkbox for a non-suppressed dependency", () => {
-      const result = addSuppressionColumnToHtml(makeHtml(lodashRow), suppressionXml);
-      assert.ok(result.includes('<input type="checkbox" onclick="return false;">'));
-      assert.ok(!result.includes('checked>'));
+      const result = addSuppressionColumnToHtml(
+        makeHtml(lodashRow),
+        suppressionXml,
+      );
+      assert.ok(
+        result.includes('<input type="checkbox" onclick="return false;">'),
+      );
+      assert.ok(!result.includes("checked>"));
     });
 
     void it("should correctly mark only the suppressed row when multiple rows are present", () => {
-      const result = addSuppressionColumnToHtml(makeHtml(adobeRow, lodashRow), suppressionXml);
-      const checkedCount = (result.match(/onclick="return false;" checked/g) ?? []).length;
-      const uncheckedCount = (result.match(/<input type="checkbox" onclick="return false;">/g) ?? []).length;
+      const result = addSuppressionColumnToHtml(
+        makeHtml(adobeRow, lodashRow),
+        suppressionXml,
+      );
+      const checkedCount = (
+        result.match(/onclick="return false;" checked/g) ?? []
+      ).length;
+      const uncheckedCount = (
+        result.match(/<input type="checkbox" onclick="return false;">/g) ?? []
+      ).length;
       assert.equal(checkedCount, 1);
       assert.equal(uncheckedCount, 1);
     });

@@ -55,10 +55,10 @@ void describe("suppress-json.ts", () => {
 
   void describe("matchesPackageUrl", () => {
     void it("should match a regex pattern against the name@version part of a PURL", () => {
-      const result = matchesPackageUrl("pkg:npm/@adobe/aem-react-editable-components@5.0.0", {
-        pattern: "^@adobe/aem-react-editable-components@.*$",
-        isRegex: true,
-      });
+      const result = matchesPackageUrl(
+        "pkg:npm/@adobe/aem-react-editable-components@5.0.0",
+        { pattern: "^@adobe/aem-react-editable-components@.*$", isRegex: true },
+      );
       assert.equal(result, true);
     });
 
