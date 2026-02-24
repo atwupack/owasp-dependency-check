@@ -2,11 +2,12 @@
 import { ensureError } from "./util/misc.js";
 import { installDependencyCheck } from "./installer.js";
 import { executeDependencyCheck } from "./executor.js";
-import { parseCli } from "./cli.js";
+import { parseCli, SuppressionMode } from "./cli.js";
 import { Maybe } from "purify-ts";
 import { createLogger } from "./util/log.js";
 import { name } from "./info.js";
 import { setExitCode } from "./util/proc.js";
+import { processSuppression } from "./suppressor.js";
 
 const log = createLogger(name);
 
@@ -41,6 +42,9 @@ export async function run() {
       cli.hideOwaspOutput,
       cli.javaBinary,
     ).unsafeCoerce();
+    if (cli.suppressionMode === SuppressionMode.UI) {
+      processSuppression(cli.suppressionFile, cli.outDir, cli.formats);
+    }
     setExitCode(result, ignoreErrors, log);
   }
 }

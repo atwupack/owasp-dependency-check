@@ -14,6 +14,11 @@ import { resolveFile } from "./util/fs.js";
 
 const log = createLogger(name);
 
+export enum SuppressionMode {
+  CLI = "CLI",
+  UI = "UI",
+}
+
 const command = program
   .configureOutput({
     writeErr(str: string) {
@@ -119,6 +124,17 @@ const command = program
       "PROJECT_NAME",
     ),
   )
+  .option(
+    "--suppression <file>",
+    "path to a suppression XML file (see --suppressionMode for how it is applied)",
+    parseFile,
+  )
+  .addOption(
+    new Option(
+      "--suppressionMode <mode>",
+      "controls how the suppression file is applied: CLI (pass to OWASP binary) or UI (annotate reports only)",
+    ).choices(Object.values(SuppressionMode)).default(SuppressionMode.CLI),
+  )
   .optionsGroup("General information:")
   .version(version, undefined, `print the version of ${name}`)
   .helpOption("-h, --help", "display this help information")
@@ -135,7 +151,7 @@ Some defaults are provided:
 
 The following environment variables are supported:
 - OWASP_BIN: path to a local installation of the dependency-check-cli
-- NVD_API_KET: personal NVD API key to authenticate against API
+- NVD_API_KEY: personal NVD API key to authenticate against API
 - OSS_INDEX_USERNAME: Sonatype OSS Index username to authenticate against API
 - OSS_INDEX_PASSWORD: Sonatype OSS Index password to authenticate against API
 - GITHUB_TOKEN: personal GitHub token to authenticate against API
@@ -158,6 +174,9 @@ export function parseCli() {
     ignoreErrors: !!command.opts().ignoreErrors,
     keepOldVersions: !!command.opts().keepOldVersions,
     javaBinary: Maybe.fromNullable(command.opts().javaBin),
+    suppressionFile: Maybe.fromNullable(command.opts().suppression),
+    suppressionMode: (command.opts().suppressionMode ?? SuppressionMode.CLI) as SuppressionMode,
+    formats: command.opts().format,
   };
 }
 
@@ -212,6 +231,13 @@ function buildCmdArguments() {
   command.opts().format.forEach(format => {
     args.push("--format", format);
   });
+
+  const suppressionMode = command.opts().suppressionMode ?? SuppressionMode.CLI;
+  if (suppressionMode === SuppressionMode.CLI) {
+    Maybe.fromNullable(command.opts().suppression).ifJust(file => {
+      args.push("--suppression", file);
+    });
+  }
 
   return args;
 }
