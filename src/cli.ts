@@ -124,6 +124,13 @@ const command = program
       "PROJECT_NAME",
     ),
   )
+  .option("--noupdate", "disables the automatic updating of the NVD-CVE")
+  .option("--log <file>", "file path to write verbose logging information")
+  .option(
+    "--failOnCVSS <score>",
+    "the score set between 0 and 10 the exit code from dependency-check will indicate if a vulnerability with a CVSS score equal to or higher was identified",
+    parseCvssScore,
+  )
   .option(
     "--suppression <file>",
     "path to a suppression XML file (see --suppressionMode for how it is applied)",
@@ -234,6 +241,18 @@ function buildCmdArguments() {
     args.push("--format", format);
   });
 
+  if (command.opts().noupdate) {
+    args.push("--noupdate");
+  }
+
+  Maybe.fromNullable(command.opts().log).ifJust(file => {
+    args.push("--log", file);
+  });
+
+  Maybe.fromNullable(command.opts().failOnCVSS).ifJust(score => {
+    args.push("--failOnCVSS", String(score));
+  });
+
   const suppressionMode = command.opts().suppressionMode as SuppressionMode;
   if (suppressionMode === SuppressionMode.CLI) {
     Maybe.fromNullable(command.opts().suppression).ifJust(file => {
@@ -262,4 +281,14 @@ export function parseFile(path: string) {
   return filePath
     .toEither(new InvalidArgumentError(`The file "${path}" does not exist.`))
     .unsafeCoerce();
+}
+
+export function parseCvssScore(value: string) {
+  const score = Number(value);
+  if (!Number.isInteger(score) || score < 0 || score > 10) {
+    throw new InvalidArgumentError(
+      "The CVSS score must be an integer between 0 and 10.",
+    );
+  }
+  return score;
 }
