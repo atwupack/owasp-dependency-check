@@ -135,7 +135,7 @@ Some defaults are provided:
 
 The following environment variables are supported:
 - OWASP_BIN: path to a local installation of the dependency-check-cli
-- NVD_API_KET: personal NVD API key to authenticate against API
+- NVD_API_KEY: personal NVD API key to authenticate against API
 - OSS_INDEX_USERNAME: Sonatype OSS Index username to authenticate against API
 - OSS_INDEX_PASSWORD: Sonatype OSS Index password to authenticate against API
 - GITHUB_TOKEN: personal GitHub token to authenticate against API
