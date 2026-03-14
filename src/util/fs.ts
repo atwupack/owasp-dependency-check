@@ -1,6 +1,6 @@
 import { Logger } from "./log.js";
 import fs from "node:fs";
-import extract from "extract-zip";
+import extract from "./extract.js";
 import path from "node:path";
 import { EitherAsync, Maybe } from "purify-ts";
 import { ensureError } from "./misc.js";
