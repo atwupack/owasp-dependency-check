@@ -46,4 +46,4 @@ jobs:
     steps:
       - name: Deploy reports to GitHub Pages
         id: reports
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
