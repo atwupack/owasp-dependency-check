@@ -68,7 +68,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "genversion": "^3.2.0",
-    "knip": "^5.61.0",
+    "knip": "^6.0.6",
     "prettier": "^3.7.4",
     "rimraf": "^6.0.1",
     "rollup": "^4.44.1",
