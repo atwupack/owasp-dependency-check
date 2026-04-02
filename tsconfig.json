@@ -7,7 +7,7 @@
     "alwaysStrict": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
-    "sourceMap": true
-  },
-  "include": ["src"]
+    "sourceMap": true,
+    "rootDir": "./src"
+  }
 }
