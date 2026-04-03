@@ -48,7 +48,7 @@
     "commander": "^14.0.0",
     "cross-spawn": "^7.0.6",
     "purify-ts": "^2.1.4",
-    "undici": "^7.16.0",
+    "undici": "^8.0.1",
     "yup": "^1.7.0",
     "yauzl": "^3.2.1"
   },
