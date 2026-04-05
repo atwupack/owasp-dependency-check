@@ -1,1 +1,5 @@
 /src/info.ts
+/build
+/dist
+/reports
+/pnpm-lock.yaml
