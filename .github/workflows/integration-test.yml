@@ -26,12 +26,18 @@ jobs:
         with:
           distribution: "corretto"
           java-version: "11"
-      - uses: actions/checkout@v6
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: latest
+          cache: true
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          cache: "pnpm"
       - id: cache-odc-data-dir
         uses: actions/cache@v5
         with:
@@ -39,9 +45,9 @@ jobs:
           path: tmp/owasp/data
           key: odc-data-cache-${{needs.current-date.outputs.date}}
           restore-keys: odc-data-cache-
-      - run: npm ci
-      - run: npm run build
-      - run: npm run owasp -- -f HTML
+      - run: pnpm install
+      - run: pnpm run build
+      - run: pnpm run owasp -f HTML
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
