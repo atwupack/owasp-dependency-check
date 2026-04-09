@@ -28,5 +28,5 @@ jobs:
       - run: pnpm run build
       - run: pnpm run validate
       - run: pnpm test
-      - run: pnpm run owasp -- --help
-      - run: pnpm run owasp -- --version
+      - run: pnpm run owasp --help
+      - run: pnpm run owasp --version
