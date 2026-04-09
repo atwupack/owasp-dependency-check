@@ -12,14 +12,21 @@ jobs:
     name: Build and test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ vars.BASE_NODE_VERSION }}
           cache: "npm"
-      - run: npm ci
-      - run: npm run build
-      - run: npm run validate
-      - run: npm test
-      - run: npm run owasp -- --help
-      - run: npm run owasp -- --version
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: latest
+          cache: true
+      - run: pnpm install
+      - run: pnpm run build
+      - run: pnpm run validate
+      - run: pnpm test
+      - run: pnpm run owasp -- --help
+      - run: pnpm run owasp -- --version
