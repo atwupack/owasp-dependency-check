@@ -1,8 +1,10 @@
 # Changelog
 
-## Version 1.1.0
+## Version 2.0.0
 
 - Added project's version to the `--project` argument.
+- Dropped support for Node 20.
+- Removed `extract-zip` dependency.
 
 ## Version 1.0.1
 

@@ -143,7 +143,7 @@ class Extractor {
 
     const openReadStream = promisify(
       this.zipfile.openReadStream.bind(this.zipfile),
-    ) as (entry: Entry) => Promise<Readable>;
+    );
 
     const readStream = await openReadStream(entry);
 
