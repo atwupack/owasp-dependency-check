@@ -49,7 +49,7 @@
     "commander": "^14.0.3",
     "cross-spawn": "^7.0.6",
     "purify-ts": "^2.1.4",
-    "undici": "^7.29.0",
+    "undici": "^8.10.0",
     "yauzl": "^3.4.0",
     "yup": "^1.7.1"
   },
