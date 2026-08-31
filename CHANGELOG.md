@@ -2,9 +2,10 @@
 
 ## Version 2.0.0
 
-- Added project's version to the `--project` argument.
+- Added the project's version to the `--project` argument.
 - Dropped support for Node 20.
 - Removed `extract-zip` dependency.
+- Update `commander` dependency to version 15.
 
 ## Version 1.0.1
 
@@ -27,7 +28,7 @@
 
 ## Version 0.8.1
 
-- Added `commander` as dependency to fix problems with `yarn`.
+- Added `commander` as a dependency to fix problems with `yarn`.
 
 ## Version 0.8.0
 
